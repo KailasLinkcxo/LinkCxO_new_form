@@ -1,0 +1,2386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaders'Edge — FY 2025-26 Board Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface2: #eef0f4;
+  --surface3: #e8eaf0;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.05);
+  --gold: #9a6f00;
+  --gold-light: #b8860b;
+  --gold-dim: rgba(184,134,11,0.1);
+  --green: #0f7f56;
+  --green-mid: #1a9e6a;
+  --green-dim: rgba(15,127,86,0.1);
+  --red: #c0284e;
+  --red-mid: #d63864;
+  --red-dim: rgba(192,40,78,0.1);
+  --blue: #1a68cc;
+  --blue-mid: #2a7de1;
+  --blue-dim: rgba(26,104,204,0.1);
+  --orange: #c96a10;
+  --orange-mid: #e07b20;
+  --orange-dim: rgba(201,106,16,0.1);
+  --purple: #6b3fa0;
+  --purple-dim: rgba(107,63,160,0.1);
+  --text: #12151f;
+  --text-muted: #525870;
+  --text-dim: #8b91a8;
+  --nav-w: 220px;
+  --header-h: 64px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══════════════════════════════
+   TOP HEADER BAR
+═══════════════════════════════ */
+.top-bar {
+  height: var(--header-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+
+.logo-mark {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.logo-mark span { color: var(--text); }
+
+.top-bar-divider {
+  width: 1px; height: 28px;
+  background: var(--border);
+}
+
+.top-bar-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  flex: 1;
+}
+
+.top-bar-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  padding: 4px 12px;
+  background: var(--gold-dim);
+  border: 1px solid rgba(184,134,11,0.25);
+  border-radius: 20px;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+}
+
+.top-bar-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* ═══════════════════════════════
+   LAYOUT
+═══════════════════════════════ */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════
+   LEFT NAV
+═══════════════════════════════ */
+.sidenav {
+  width: var(--nav-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 12px;
+  gap: 4px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.nav-section-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 8px 10px 4px;
+  margin-top: 8px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+  transition: all 0.15s;
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+.nav-item:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.nav-item.active {
+  background: var(--gold-dim);
+  color: var(--gold);
+  font-weight: 600;
+  border-color: rgba(184,134,11,0.2);
+}
+
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.nav-item.active .nav-icon { opacity: 1; }
+
+/* ═══════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════ */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+}
+
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.3s ease; }
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* ═══════════════════════════════
+   PAGE HEADER
+═══════════════════════════════ */
+.page-header {
+  margin-bottom: 28px;
+}
+
+.page-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 6px;
+}
+
+.page-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.15;
+}
+
+.page-title em { font-style: italic; color: var(--gold); }
+
+.page-subtitle {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 300;
+}
+
+/* ═══════════════════════════════
+   SECTION LABEL
+═══════════════════════════════ */
+.sec-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  margin-top: 28px;
+}
+.sec-label:first-of-type { margin-top: 0; }
+.sec-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ═══════════════════════════════
+   CARDS
+═══════════════════════════════ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.card-title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+.card-headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 18px;
+  line-height: 1.25;
+}
+
+/* ═══════════════════════════════
+   GRIDS
+═══════════════════════════════ */
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; }
+.g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+.g6 { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; }
+.wide { grid-column: 1/-1; }
+.g2-wide { display:grid; grid-template-columns:1.5fr 1fr; gap:18px; }
+.g2-slim { display:grid; grid-template-columns:1fr 1.5fr; gap:18px; }
+.mb18 { margin-bottom:18px; }
+.mb28 { margin-bottom:28px; }
+
+/* ═══════════════════════════════
+   KPI CARDS
+═══════════════════════════════ */
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+}
+.kpi:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.09); }
+.kpi::before {
+  content:''; position:absolute;
+  top:0; left:0; right:0; height:3px;
+}
+.kpi.gold::before { background:var(--gold-light); }
+.kpi.green::before { background:var(--green-mid); }
+.kpi.red::before { background:var(--red-mid); }
+.kpi.blue::before { background:var(--blue-mid); }
+.kpi.orange::before { background:var(--orange-mid); }
+.kpi.purple::before { background:var(--purple); }
+
+.kpi-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.kpi-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.kpi-value.gold { color: var(--gold); }
+.kpi-value.green { color: var(--green); }
+.kpi-value.red { color: var(--red); }
+.kpi-value.blue { color: var(--blue); }
+.kpi-value.orange { color: var(--orange); }
+.kpi-value.purple { color: var(--purple); }
+
+.kpi-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: 'DM Mono', monospace;
+}
+
+/* ═══════════════════════════════
+   CHART WRAPPERS
+═══════════════════════════════ */
+.ch160 { position:relative; height:160px; }
+.ch200 { position:relative; height:200px; }
+.ch220 { position:relative; height:220px; }
+.ch260 { position:relative; height:260px; }
+.ch300 { position:relative; height:300px; }
+.ch340 { position:relative; height:340px; }
+
+/* ═══════════════════════════════
+   TABLES
+═══════════════════════════════ */
+.tbl { width:100%; border-collapse:collapse; }
+.tbl th {
+  font-size: 10px; font-weight:600;
+  letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--text-dim); text-align:left;
+  padding: 0 14px 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tbl td {
+  padding: 11px 14px 11px 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border2);
+  vertical-align: middle;
+}
+.tbl tr:last-child td { border-bottom:none; }
+.mono { font-family:'DM Mono',monospace; font-size:12px; color:var(--text-muted); }
+
+/* ═══════════════════════════════
+   BADGES / TAGS
+═══════════════════════════════ */
+.tag {
+  display:inline-block; font-size:9px; font-weight:700;
+  letter-spacing:0.08em; text-transform:uppercase;
+  padding:3px 8px; border-radius:20px;
+  font-family:'DM Mono',monospace;
+}
+.tag.green { background:var(--green-dim); color:var(--green); }
+.tag.red { background:var(--red-dim); color:var(--red); }
+.tag.blue { background:var(--blue-dim); color:var(--blue); }
+.tag.orange { background:var(--orange-dim); color:var(--orange); }
+.tag.gold { background:var(--gold-dim); color:var(--gold); }
+.tag.purple { background:var(--purple-dim); color:var(--purple); }
+.tag.grey { background:var(--surface2); color:var(--text-dim); }
+
+/* ═══════════════════════════════
+   PROGRESS BAR
+═══════════════════════════════ */
+.prog-wrap { width:100%; }
+.prog-bar {
+  height:5px; background:var(--surface2);
+  border-radius:3px; overflow:hidden;
+}
+.prog-fill { height:100%; border-radius:3px; }
+
+/* ═══════════════════════════════
+   AVATAR
+═══════════════════════════════ */
+.avatar {
+  width:30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:700; flex-shrink:0;
+}
+
+/* ═══════════════════════════════
+   PIPELINE FUNNEL BARS
+═══════════════════════════════ */
+.funnel-row {
+  display:flex; align-items:center; gap:12px; margin-bottom:10px;
+}
+.funnel-label { font-size:12px; color:var(--text-muted); width:140px; flex-shrink:0; }
+.funnel-track {
+  flex:1; height:30px; background:var(--surface2);
+  border-radius:5px; position:relative;
+}
+.funnel-fill {
+  height:100%; border-radius:5px;
+  transition: width 0.6s ease;
+  position:absolute; top:0; left:0;
+}
+.funnel-track-label {
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  display:flex; align-items:center; padding-left:12px;
+  font-size:11px; font-family:'DM Mono',monospace;
+  font-weight:600; white-space:nowrap; pointer-events:none;
+  z-index:2; color:var(--text-muted);
+}
+.funnel-count {
+  font-family:'DM Mono',monospace; font-size:12px;
+  color:var(--text-muted); width:28px; text-align:right; flex-shrink:0;
+}
+
+/* ═══════════════════════════════
+   INSIGHT PILLS
+═══════════════════════════════ */
+.insight-pill {
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px; padding:12px 16px;
+  font-size:12px; color:var(--text-muted);
+  display:flex; align-items:flex-start; gap:10px;
+}
+.insight-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:3px; }
+
+/* ═══════════════════════════════
+   QUARTER BLOCKS
+═══════════════════════════════ */
+.q-block {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:16px;
+}
+.q-label { font-family:'DM Mono',monospace; font-size:10px; color:var(--text-dim); letter-spacing:0.08em; margin-bottom:6px; }
+.q-pct { font-family:'Cormorant Garamond',serif; font-size:34px; font-weight:700; line-height:1; margin-bottom:4px; }
+.q-nums { font-size:11px; color:var(--text-dim); font-family:'DM Mono',monospace; }
+.q-bar { margin-top:10px; height:4px; background:rgba(0,0,0,0.08); border-radius:2px; overflow:hidden; }
+.q-bar-fill { height:100%; border-radius:2px; }
+
+/* ═══════════════════════════════
+   RISK METER
+═══════════════════════════════ */
+.risk-row {
+  display:flex; align-items:center; gap:12px;
+  padding:10px 0; border-bottom:1px solid var(--border2);
+}
+.risk-row:last-child { border-bottom:none; }
+.risk-client { font-size:13px; font-weight:500; flex:1; }
+.risk-amount { font-family:'DM Mono',monospace; font-size:12px; color:var(--red); font-weight:600; width:70px; text-align:right; }
+.risk-bar-wrap { width:120px; }
+.risk-bar { height:6px; background:var(--surface2); border-radius:3px; overflow:hidden; margin-top:4px; }
+.risk-fill { height:100%; border-radius:3px; background:var(--red-mid); }
+
+/* ═══════════════════════════════
+   RETAINER TIMELINE
+═══════════════════════════════ */
+.ret-row {
+  display:flex; align-items:center; gap:10px;
+  padding:9px 0; border-bottom:1px solid var(--border2);
+}
+.ret-row:last-child { border-bottom:none; }
+.ret-client { font-size:12px; font-weight:500; flex:1; color:var(--text); }
+.ret-role { font-size:11px; color:var(--text-dim); }
+.ret-amt { font-family:'DM Mono',monospace; font-size:11px; color:var(--text-muted); width:65px; text-align:right; }
+
+/* ═══════════════════════════════
+   CANDIDATE LOG
+═══════════════════════════════ */
+.cand-row {
+  display:grid; grid-template-columns:2fr 2fr 1.5fr 1fr 1fr 1fr;
+  align-items:center; gap:12px;
+  padding:11px 0; border-bottom:1px solid var(--border2);
+}
+.cand-row:last-child { border-bottom:none; }
+.cand-row.header-row {
+  font-size:10px; font-weight:600; letter-spacing:0.08em;
+  text-transform:uppercase; color:var(--text-dim);
+  padding-bottom:10px; border-bottom:1px solid var(--border);
+}
+
+/* ═══════════════════════════════
+   STAT HIGHLIGHT BOX
+═══════════════════════════════ */
+.stat-box {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:14px 16px;
+}
+.stat-box-label { font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); margin-bottom:4px; }
+.stat-box-val { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:700; line-height:1; }
+
+/* ═══════════════════════════════
+   SCROLLABLE
+═══════════════════════════════ */
+.scroll-y {
+  overflow-y:auto; scrollbar-width:thin;
+  scrollbar-color:var(--border) transparent;
+}
+
+/* ═══════════════════════════════
+   DIVIDER
+═══════════════════════════════ */
+.divider { height:1px; background:var(--border); margin:20px 0; }
+
+/* ═══════════════════════════════
+   RECON
+═══════════════════════════════ */
+.recon-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 0; border-bottom:1px solid var(--border2);
+  font-size:13px;
+}
+.recon-row:last-child { border-bottom:none; }
+
+/* ═══════════════════════════════
+   INCENTIVE
+═══════════════════════════════ */
+.inc-row {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 0; border-bottom:1px solid var(--border2);
+}
+.inc-row:last-child { border-bottom:none; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+@media (max-width:900px) {
+  .sidenav { display:none; }
+  .g2,.g3,.g4,.g6,.g2-wide,.g2-slim { grid-template-columns:1fr; }
+}
+
+/* ═══════════════════════════════
+   QUARTER FILTER BAR
+═══════════════════════════════ */
+.qfilter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 28px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 90;
+}
+.qf-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-right: 4px;
+  white-space: nowrap;
+}
+.qbtn {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.qbtn:hover { background: var(--surface3); color: var(--text); }
+.qbtn.active { background: var(--gold); color: #fff; border-color: var(--gold); font-weight: 600; }
+.qbtn.q1.active { background: var(--green); border-color: var(--green); }
+.qbtn.q2.active { background: var(--blue);  border-color: var(--blue); }
+.qbtn.q3.active { background: var(--orange); border-color: var(--orange); }
+.qbtn.q4.active { background: var(--red);   border-color: var(--red); }
+.qf-divider { width:1px; height:18px; background:var(--border); margin:0 2px; }
+.qf-badge {
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: var(--gold-dim);
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  margin-left: auto;
+  white-space: nowrap;
+}
+.qf-note {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-style: italic;
+  margin-left: 8px;
+}
+/* dim transitions */
+.q-block      { transition: opacity 0.2s, filter 0.2s; }
+.q-block.dim  { opacity: 0.2; filter: grayscale(0.5); }
+.cand-row[data-q] { transition: opacity 0.2s; }
+.cand-row.dim { opacity: 0.12; }
+
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="logo-mark">Leaders<span>'</span>Edge</div>
+  <div class="top-bar-divider"></div>
+  <div class="top-bar-title">FY 2025–26 Board Performance Dashboard</div>
+  <div class="top-bar-badge">Confidential</div>
+  <div class="top-bar-date">As of March 10, 2026</div>
+</div>
+
+
+<!-- ═══ QUARTER FILTER BAR ═══ -->
+<div class="qfilter-bar" id="qfilter-bar" style="display:none;">
+  <span class="qf-label">Quarter</span>
+  <button class="qbtn active"  id="qbtn-all" onclick="setQ('all',this)">All</button>
+  <div class="qf-divider"></div>
+  <button class="qbtn q1" id="qbtn-q1" onclick="setQ('q1',this)">Q1 · Apr–Jun</button>
+  <button class="qbtn q2" id="qbtn-q2" onclick="setQ('q2',this)">Q2 · Jul–Sep</button>
+  <button class="qbtn q3" id="qbtn-q3" onclick="setQ('q3',this)">Q3 · Oct–Dec</button>
+  <button class="qbtn q4" id="qbtn-q4" onclick="setQ('q4',this)">Q4 · Jan–Mar</button>
+  <span class="qf-badge" id="qf-badge">FY 2025–26</span>
+  <span class="qf-note" id="qf-note">Filtering: Overview · Quarterly · Placements</span>
+</div>
+
+<div class="app-body">
+
+<!-- SIDE NAV -->
+<nav class="sidenav">
+  <div class="nav-section-label">Overview</div>
+  <div class="nav-item active" onclick="showPage('overview',this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Executive Summary
+  </div>
+
+  <div class="nav-section-label">Revenue</div>
+  <div class="nav-item" onclick="showPage('quarterly',this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Quarterly Performance
+  </div>
+  <div class="nav-item" onclick="showPage('recon',this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+    Revenue Reconciliation
+  </div>
+
+  <div class="nav-section-label">Pipeline</div>
+  <div class="nav-item" onclick="showPage('pipeline',this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+    Pipeline Funnel
+  </div>
+  <div class="nav-item" onclick="showPage('atrisk',this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Deals at Risk
+  </div>
+
+  <div class="nav-section-label">People</div>
+  <div class="nav-item" onclick="showPage('recruiter',this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+    Recruiter Scorecards
+  </div>
+  <div class="nav-item" onclick="showPage('placements',this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    Joined Candidates
+  </div>
+  <div class="nav-item" onclick="showPage('incentive',this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+    Incentive Structure
+  </div>
+
+  <div class="nav-section-label">Clients</div>
+  <div class="nav-item" onclick="showPage('clients',this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    Client Overview
+  </div>
+  <div class="nav-item" onclick="showPage('retainer',this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+    Retainer Health
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- ══════════════════════════════════════
+     PAGE 1 · EXECUTIVE SUMMARY
+══════════════════════════════════════ -->
+<div id="page-overview" class="page active">
+  <div class="page-header">
+    <div class="page-eyebrow">Board Summary · FY 2025-26</div>
+    <h1 class="page-title">Executive <em>Overview</em></h1>
+    <p class="page-subtitle">Full-year performance snapshot — April 2025 through March 2026 (Q4 partial)</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="sec-label">Key Performance Indicators</div>
+  <div class="g6 mb18">
+    <div class="kpi gold">
+      <div class="kpi-label">Annual Target</div>
+      <div class="kpi-value gold">₹4 Cr</div>
+      <div class="kpi-sub">FY 2025–26</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">Revenue Achieved</div>
+      <div class="kpi-value green">₹1.97 Cr</div>
+      <div class="kpi-sub">49.2% of target</div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">Backlog Remaining</div>
+      <div class="kpi-value red">₹2.03 Cr</div>
+      <div class="kpi-sub">50.8% gap</div>
+    </div>
+    <div class="kpi blue">
+      <div class="kpi-label">Total Mandates</div>
+      <div class="kpi-value blue">90</div>
+      <div class="kpi-sub">All quarters</div>
+    </div>
+    <div class="kpi gold">
+      <div class="kpi-label">Closed by LE</div>
+      <div class="kpi-value gold">10</div>
+      <div class="kpi-sub">11.1% close rate</div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-label">Active Pipeline</div>
+      <div class="kpi-value orange">37</div>
+      <div class="kpi-sub">Live mandates</div>
+    </div>
+  </div>
+
+  <!-- Quarterly overview + funnel -->
+  <div class="g2 mb18">
+    <div class="card">
+      <div class="card-title">Quarterly Achievement</div>
+      <div class="card-headline">Q1 & Q2 strong — Q3/Q4 critical</div>
+      <div class="g2 mb18">
+        <div class="q-block" data-q="q1">
+          <div class="q-label">Q1 · Apr–Jun 2025</div>
+          <div class="q-pct" style="color:var(--green)">87.2%</div>
+          <div class="q-nums">₹43.6L / ₹50L</div>
+          <div class="q-bar"><div class="q-bar-fill" style="width:87%;background:var(--green-mid)"></div></div>
+        </div>
+        <div class="q-block" data-q="q2">
+          <div class="q-label">Q2 · Jul–Sep 2025</div>
+          <div class="q-pct" style="color:var(--green)">94.0%</div>
+          <div class="q-nums">₹70.5L / ₹75L</div>
+          <div class="q-bar"><div class="q-bar-fill" style="width:94%;background:var(--green-mid)"></div></div>
+        </div>
+        <div class="q-block" data-q="q3">
+          <div class="q-label">Q3 · Oct–Dec 2025</div>
+          <div class="q-pct" style="color:var(--orange)">41.5%</div>
+          <div class="q-nums">₹51.9L / ₹1.25Cr</div>
+          <div class="q-bar"><div class="q-bar-fill" style="width:41%;background:var(--orange-mid)"></div></div>
+        </div>
+        <div class="q-block" data-q="q4">
+          <div class="q-label">Q4 · Jan–Mar 2026</div>
+          <div class="q-pct" style="color:var(--red)">20.4%</div>
+          <div class="q-nums">₹30.6L / ₹1.5Cr</div>
+          <div class="q-bar"><div class="q-bar-fill" style="width:13%;background:var(--red-mid)"></div></div>
+        </div>
+      </div>
+      <div class="ch220"><canvas id="ov-quarterly"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Mandate Pipeline</div>
+      <div class="card-headline">90 Total · 11% Conversion</div>
+      <div class="funnel-row">
+        <div class="funnel-label">Total Received</div>
+        <div class="funnel-track"><div class="funnel-fill" style="width:100%;background:var(--blue-mid)"></div><span class="funnel-track-label">90 mandates</span></div>
+        <div class="funnel-count">90</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-label">Interview in Progress</div>
+        <div class="funnel-track"><div class="funnel-fill" style="width:55%;background:#3a8fe8"></div><span class="funnel-track-label">25 active</span></div>
+        <div class="funnel-count">25</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-label">Shortlisted</div>
+        <div class="funnel-track"><div class="funnel-fill" style="width:22%;background:var(--gold-light)"></div><span class="funnel-track-label">5 roles</span></div>
+        <div class="funnel-count">5</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-label">Offered to Join</div>
+        <div class="funnel-track"><div class="funnel-fill" style="width:10%;background:var(--orange-mid)"></div><span class="funnel-track-label">2 offered</span></div>
+        <div class="funnel-count">2</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-label">✓ Joined / Closed</div>
+        <div class="funnel-track"><div class="funnel-fill" style="width:12%;background:var(--green-mid)"></div><span class="funnel-track-label">10 joined</span></div>
+        <div class="funnel-count">10</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-label">On Hold / Stalled</div>
+        <div class="funnel-track"><div class="funnel-fill" style="width:48%;background:var(--red-mid)"></div><span class="funnel-track-label">43 blocked</span></div>
+        <div class="funnel-count">43</div>
+      </div>
+      <div style="margin-top:18px" class="ch160"><canvas id="ov-donut"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Insights -->
+  <div class="sec-label">Board-Level Insights</div>
+  <div class="g3">
+    <div class="insight-pill">
+      <div class="insight-dot" style="background:var(--red-mid)"></div>
+      <span><strong style="color:var(--text)">Revenue at 49%.</strong> Half the annual target is unachieved. Q4 pipeline conversion is the only lever left this year.</span>
+    </div>
+    <div class="insight-pill">
+      <div class="insight-dot" style="background:var(--orange-mid)"></div>
+      <span><strong style="color:var(--text)">Sharp Q3/Q4 drop.</strong> Achievement fell from 94% in Q2 to 41.5% in Q3 and 20.4% in Q4. Closure acceleration is critical.</span>
+    </div>
+    <div class="insight-pill">
+      <div class="insight-dot" style="background:var(--blue-mid)"></div>
+      <span><strong style="color:var(--text)">₹5Cr+ live pipeline.</strong> 37 active mandates remain open. Accelerating these is the highest-priority action.</span>
+    </div>
+    <div class="insight-pill">
+      <div class="insight-dot" style="background:var(--red-mid)"></div>
+      <span><strong style="color:var(--text)">43 mandates blocked.</strong> Nearly half of all mandates are on hold due to client-side decisions.</span>
+    </div>
+    <div class="insight-pill">
+      <div class="insight-dot" style="background:var(--gold-light)"></div>
+      <span><strong style="color:var(--text)">Single closer.</strong> Of 6 recruiters, only Diksha Sehgal shows meaningful joined revenue. Team-wide closure support is needed.</span>
+    </div>
+    <div class="insight-pill">
+      <div class="insight-dot" style="background:var(--green-mid)"></div>
+      <span><strong style="color:var(--text)">Retainer at 31%.</strong> Increasing retainer penetration secures upfront revenue and reduces dependency on closures.</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 2 · QUARTERLY PERFORMANCE
+══════════════════════════════════════ -->
+<div id="page-quarterly" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Revenue Analysis</div>
+    <h1 class="page-title">Quarterly <em>Performance</em></h1>
+    <p class="page-subtitle">Month-by-month revenue trends and quarter-over-quarter breakdown</p>
+  </div>
+
+  <div class="sec-label">Achievement by Quarter</div>
+  <div class="g4 mb18">
+    <div class="kpi green">
+      <div class="kpi-label">Q1 · Apr–Jun</div>
+      <div class="kpi-value green">87.2%</div>
+      <div class="kpi-sub">₹43.6L of ₹50L</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">Q2 · Jul–Sep</div>
+      <div class="kpi-value green">94.0%</div>
+      <div class="kpi-sub">₹70.5L of ₹75L</div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-label">Q3 · Oct–Dec</div>
+      <div class="kpi-value orange">41.5%</div>
+      <div class="kpi-sub">₹51.9L of ₹1.25Cr</div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">Q4 · Jan–Mar</div>
+      <div class="kpi-value red">20.4%</div>
+      <div class="kpi-sub">₹30.6L of ₹1.5Cr</div>
+    </div>
+  </div>
+
+  <div class="g2 mb18">
+    <div class="card">
+      <div class="card-title">Target vs. Achieved (₹ Lakhs)</div>
+      <div class="card-headline">Quarterly Revenue Comparison</div>
+      <div class="ch300"><canvas id="q-bar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Cumulative Revenue Trend</div>
+      <div class="card-headline">Actual vs. Target Trajectory</div>
+      <div class="ch300"><canvas id="q-trend"></canvas></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Quarterly Revenue Breakdown</div>
+  <div class="card mb18">
+    <div class="card-title">Revenue Components by Quarter</div>
+    <div class="card-headline">Joined + Retainer Received + Pipeline</div>
+    <div class="ch260"><canvas id="q-stacked"></canvas></div>
+  </div>
+
+  <div class="sec-label">Mandate Activity by Quarter</div>
+  <div class="card">
+    <div class="card-title">Roles Received · Closed · Active · On Hold</div>
+    <div class="card-headline">Quarter-on-Quarter Mandate Growth</div>
+    <div class="ch260"><canvas id="q-mandates"></canvas></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 3 · REVENUE RECONCILIATION
+══════════════════════════════════════ -->
+<div id="page-recon" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Finance</div>
+    <h1 class="page-title">Revenue <em>Reconciliation</em></h1>
+    <p class="page-subtitle">Tally LE ledger vs. operational tracker — variance analysis</p>
+  </div>
+
+  <div class="sec-label">Variance Summary</div>
+  <div class="g3 mb18">
+    <div class="kpi blue">
+      <div class="kpi-label">Tally LE Ledger</div>
+      <div class="kpi-value blue">₹1.53 Cr</div>
+      <div class="kpi-sub">Accounting system</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">Operational Tracker</div>
+      <div class="kpi-value green">₹1.97 Cr</div>
+      <div class="kpi-sub">Business summary</div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-label">Variance</div>
+      <div class="kpi-value orange">₹43.4L</div>
+      <div class="kpi-sub">Fully explained ✓</div>
+    </div>
+  </div>
+
+  <div class="g2-wide mb18">
+    <div class="card">
+      <div class="card-title">Reconciliation Note</div>
+      <div class="card-headline">Tally vs. Tracker — Full Breakdown</div>
+      <div class="recon-row">
+        <span style="color:var(--text-muted)">As per Tally LE</span>
+        <span class="mono" style="color:var(--text)">₹1,53,23,556</span>
+      </div>
+      <div class="recon-row">
+        <span style="color:var(--text-muted)">As per Operational Tracker</span>
+        <span class="mono" style="color:var(--green)">₹1,96,63,060</span>
+      </div>
+      <div style="height:1px;background:var(--gold-light);opacity:0.3;margin:8px 0"></div>
+      <div class="recon-row">
+        <span style="font-weight:600">Total Variance</span>
+        <span class="mono" style="color:var(--orange);font-weight:600">₹43,39,505</span>
+      </div>
+
+      <div style="margin-top:20px;margin-bottom:10px;font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">Variance Explained By:</div>
+
+      <div class="recon-row">
+        <div>
+          <div style="font-size:13px;font-weight:500">ExoTalent Cross-Billings</div>
+          <div style="font-size:11px;color:var(--text-dim)">John Deere, ICRA, Godrej — billed via Exo where LE contributed</div>
+        </div>
+        <span class="mono" style="color:var(--gold)">₹23,10,005</span>
+      </div>
+      <div class="recon-row">
+        <div>
+          <div style="font-size:13px;font-weight:500">Offer-Stage Pipeline Revenue</div>
+          <div style="font-size:11px;color:var(--text-dim)">Ruchi Agarwal & Anil Soharu — candidates at offer, tracked as pipeline</div>
+        </div>
+        <span class="mono" style="color:var(--gold)">₹7,11,000</span>
+      </div>
+      <div class="recon-row">
+        <div>
+          <div style="font-size:13px;font-weight:500">Rajeev Nanda Joining</div>
+          <div style="font-size:11px;color:var(--text-dim)">L&T Hydrocarbon — confirmed joining in business summary</div>
+        </div>
+        <span class="mono" style="color:var(--gold)">₹6,34,500</span>
+      </div>
+      <div class="recon-row">
+        <div>
+          <div style="font-size:13px;font-weight:500">Marcos Joining</div>
+          <div style="font-size:11px;color:var(--text-dim)">Endurance LATAM — retainer adjusted across VP and Africa roles</div>
+        </div>
+        <span class="mono" style="color:var(--gold)">₹6,84,000</span>
+      </div>
+      <div style="height:1px;background:var(--border);margin:8px 0"></div>
+      <div class="recon-row">
+        <span style="font-weight:600">Total Variance Explained</span>
+        <span class="mono" style="color:var(--green);font-weight:600">₹43,39,505</span>
+      </div>
+      <div style="margin-top:14px;padding:10px 14px;background:var(--green-dim);border-radius:8px;border:1px solid rgba(15,127,86,0.2);font-size:12px;color:var(--green)">
+        ✓ Variance fully reconciled. Negligible rounding difference of ₹0.10 remains.
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="card">
+        <div class="card-title">Variance Composition</div>
+        <div class="card-headline">Where the ₹43.4L comes from</div>
+        <div class="ch220"><canvas id="recon-pie"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Revenue Comparison</div>
+        <div class="card-headline">Tally vs. Tracker</div>
+        <div class="ch160"><canvas id="recon-bar"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 4 · PIPELINE FUNNEL
+══════════════════════════════════════ -->
+<div id="page-pipeline" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Pipeline Analysis</div>
+    <h1 class="page-title">Pipeline <em>Funnel</em></h1>
+    <p class="page-subtitle">90 mandates tracked across all stages — conversion analysis and stage breakdown</p>
+  </div>
+
+  <div class="sec-label">Pipeline Stage Summary</div>
+  <div class="g6 mb18">
+    <div class="kpi blue">
+      <div class="kpi-label">Total In</div>
+      <div class="kpi-value blue">90</div>
+      <div class="kpi-sub">All mandates</div>
+    </div>
+    <div class="kpi blue">
+      <div class="kpi-label">Interview</div>
+      <div class="kpi-value blue">25</div>
+      <div class="kpi-sub">In progress</div>
+    </div>
+    <div class="kpi gold">
+      <div class="kpi-label">Shortlisted</div>
+      <div class="kpi-value gold">5</div>
+      <div class="kpi-sub">Candidates ready</div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-label">Offered</div>
+      <div class="kpi-value orange">2</div>
+      <div class="kpi-sub">Offer extended</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">Joined</div>
+      <div class="kpi-value green">10</div>
+      <div class="kpi-sub">11.1% close rate</div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">On Hold</div>
+      <div class="kpi-value red">43</div>
+      <div class="kpi-sub">Stalled / blocked</div>
+    </div>
+  </div>
+
+  <div class="g2 mb18">
+    <div class="card">
+      <div class="card-title">Stage Distribution</div>
+      <div class="card-headline">All 90 Mandates by Stage</div>
+      <div class="ch300"><canvas id="pipe-stages"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Expected Revenue by Stage</div>
+      <div class="card-headline">Active Pipeline Value (₹L)</div>
+      <div class="ch300"><canvas id="pipe-rev"></canvas></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Pipeline Value by Recruiter</div>
+  <div class="card mb18">
+    <div class="card-title">Active Mandates · Expected Revenue per Recruiter</div>
+    <div class="card-headline">Who holds the most pipeline value</div>
+    <div class="ch260"><canvas id="pipe-recruiter"></canvas></div>
+  </div>
+
+  <div class="sec-label">Retainer vs. Non-Retainer Split</div>
+  <div class="g3">
+    <div class="card">
+      <div class="card-title">Mandate Mix</div>
+      <div class="card-headline">Retainer Penetration</div>
+      <div class="ch200"><canvas id="pipe-mix"></canvas></div>
+      <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="stat-box">
+          <div class="stat-box-label">Retainer Roles</div>
+          <div class="stat-box-val" style="color:var(--blue)">26</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-label">Non-Retainer</div>
+          <div class="stat-box-val" style="color:var(--text-muted)">64</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="grid-column:span 2">
+      <div class="card-title">Quarter-wise Mandate Intake</div>
+      <div class="card-headline">Mandates Received Each Quarter</div>
+      <div class="ch200"><canvas id="pipe-qwise"></canvas></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 5 · DEALS AT RISK
+══════════════════════════════════════ -->
+<div id="page-atrisk" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Risk Analysis</div>
+    <h1 class="page-title">Deals <em>at Risk</em></h1>
+    <p class="page-subtitle">High-value mandates currently stalled, on hold, or at risk of being lost</p>
+  </div>
+
+  <div class="sec-label">Revenue at Risk Summary</div>
+  <div class="g3 mb18">
+    <div class="kpi red">
+      <div class="kpi-label">Mandates On Hold</div>
+      <div class="kpi-value red">43</div>
+      <div class="kpi-sub">Client-side blocks</div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">Revenue at Risk</div>
+      <div class="kpi-value red">₹7.8 Cr</div>
+      <div class="kpi-sub">If all holds remain lost</div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-label">Top 5 Clients at Risk</div>
+      <div class="kpi-value orange">₹3.34 Cr</div>
+      <div class="kpi-sub">Combined value</div>
+    </div>
+  </div>
+
+  <div class="g2 mb18">
+    <div class="card">
+      <div class="card-title">Top Stalled Deals by Value</div>
+      <div class="card-headline">Highest-Value Mandates On Hold</div>
+      <div class="risk-row">
+        <div>
+          <div class="risk-client">AMPL</div>
+          <div style="font-size:11px;color:var(--text-dim)">TA-Head, CEO/Business Head, Business Advisor</div>
+        </div>
+        <span class="tag red">3 roles</span>
+        <div class="risk-bar-wrap">
+          <div style="font-size:11px;color:var(--red);font-weight:600;text-align:right">₹85.1L</div>
+          <div class="risk-bar"><div class="risk-fill" style="width:100%"></div></div>
+        </div>
+      </div>
+      <div class="risk-row">
+        <div>
+          <div class="risk-client">L&T</div>
+          <div style="font-size:11px;color:var(--text-dim)">CRO, Sr. Mgr HR, Chief Exec. Hospital + more</div>
+        </div>
+        <span class="tag red">4 roles</span>
+        <div class="risk-bar-wrap">
+          <div style="font-size:11px;color:var(--red);font-weight:600;text-align:right">₹56L</div>
+          <div class="risk-bar"><div class="risk-fill" style="width:66%"></div></div>
+        </div>
+      </div>
+      <div class="risk-row">
+        <div>
+          <div class="risk-client">Gallagher</div>
+          <div style="font-size:11px;color:var(--text-dim)">AVP HR ×3, VP Talent Acquisition — agreement pending</div>
+        </div>
+        <span class="tag red">4 roles</span>
+        <div class="risk-bar-wrap">
+          <div style="font-size:11px;color:var(--red);font-weight:600;text-align:right">₹50.6L</div>
+          <div class="risk-bar"><div class="risk-fill" style="width:60%"></div></div>
+        </div>
+      </div>
+      <div class="risk-row">
+        <div>
+          <div class="risk-client">Agratas</div>
+          <div style="font-size:11px;color:var(--text-dim)">Head of Plant Launch, Shift Manager, Prod Eng.</div>
+        </div>
+        <span class="tag red">3 roles</span>
+        <div class="risk-bar-wrap">
+          <div style="font-size:11px;color:var(--red);font-weight:600;text-align:right">₹64L</div>
+          <div class="risk-bar"><div class="risk-fill" style="width:75%"></div></div>
+        </div>
+      </div>
+      <div class="risk-row">
+        <div>
+          <div class="risk-client">Hindustan Platinum</div>
+          <div style="font-size:11px;color:var(--text-dim)">Global R&D Head — on hold</div>
+        </div>
+        <span class="tag orange">1 role</span>
+        <div class="risk-bar-wrap">
+          <div style="font-size:11px;color:var(--red);font-weight:600;text-align:right">₹40L</div>
+          <div class="risk-bar"><div class="risk-fill" style="width:47%"></div></div>
+        </div>
+      </div>
+      <div class="risk-row">
+        <div>
+          <div class="risk-client">Xoriant</div>
+          <div style="font-size:11px;color:var(--text-dim)">India Sales Head, VP Data & Science</div>
+        </div>
+        <span class="tag orange">2 roles</span>
+        <div class="risk-bar-wrap">
+          <div style="font-size:11px;color:var(--red);font-weight:600;text-align:right">₹30L</div>
+          <div class="risk-bar"><div class="risk-fill" style="width:35%"></div></div>
+        </div>
+      </div>
+      <div class="risk-row">
+        <div>
+          <div class="risk-client">Cprime</div>
+          <div style="font-size:11px;color:var(--text-dim)">CHRO — on hold</div>
+        </div>
+        <span class="tag orange">1 role</span>
+        <div class="risk-bar-wrap">
+          <div style="font-size:11px;color:var(--red);font-weight:600;text-align:right">₹37.5L</div>
+          <div class="risk-bar"><div class="risk-fill" style="width:44%"></div></div>
+        </div>
+      </div>
+      <div class="risk-row">
+        <div>
+          <div class="risk-client">Tredence</div>
+          <div style="font-size:11px;color:var(--text-dim)">Director Delivery + Pre-Sale Data Science</div>
+        </div>
+        <span class="tag orange">2 roles</span>
+        <div class="risk-bar-wrap">
+          <div style="font-size:11px;color:var(--red);font-weight:600;text-align:right">₹30L</div>
+          <div class="risk-bar"><div class="risk-fill" style="width:35%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="card">
+        <div class="card-title">Risk by Category</div>
+        <div class="card-headline">On Hold Revenue Split</div>
+        <div class="ch220"><canvas id="risk-donut"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Why Deals Are Stalling</div>
+        <div class="card-headline">Root Cause Breakdown</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--red-dim);border-radius:8px">
+            <span style="font-size:12px;font-weight:500">Client put on hold</span>
+            <span class="mono" style="color:var(--red)">48%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--orange-dim);border-radius:8px">
+            <span style="font-size:12px;font-weight:500">Agreement / PO pending</span>
+            <span class="mono" style="color:var(--orange)">22%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--blue-dim);border-radius:8px">
+            <span style="font-size:12px;font-weight:500">Interview feedback awaited</span>
+            <span class="mono" style="color:var(--blue)">18%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--gold-dim);border-radius:8px">
+            <span style="font-size:12px;font-weight:500">Closed by client</span>
+            <span class="mono" style="color:var(--gold)">12%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 6 · RECRUITER SCORECARDS
+══════════════════════════════════════ -->
+<div id="page-recruiter" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">People Performance</div>
+    <h1 class="page-title">Recruiter <em>Scorecards</em></h1>
+    <p class="page-subtitle">Individual performance against targets — joined revenue, active pipeline, and mandate counts</p>
+  </div>
+
+  <div class="sec-label">Team Overview</div>
+  <div class="card mb18">
+    <div class="card-title">All Recruiters · Target vs. Achieved vs. Pipeline</div>
+    <div class="card-headline">Performance Comparison</div>
+    <div class="ch300"><canvas id="rec-compare"></canvas></div>
+  </div>
+
+  <div class="sec-label">Individual Scorecards</div>
+  <div class="g3">
+
+    <!-- Diksha -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div class="avatar" style="width:40px;height:40px;background:var(--green-dim);color:var(--green);font-size:14px">DS</div>
+        <div>
+          <div style="font-size:15px;font-weight:600">Diksha Sehgal</div>
+          <div style="font-size:11px;color:var(--text-dim)">Band B3 · Team: Raman Dhiman</div>
+        </div>
+        <span class="tag green" style="margin-left:auto">Top Closer</span>
+      </div>
+      <div class="g2" style="gap:10px;margin-bottom:14px">
+        <div class="stat-box"><div class="stat-box-label">Target</div><div class="stat-box-val" style="color:var(--text-muted)">₹40L</div></div>
+        <div class="stat-box"><div class="stat-box-label">Joined Rev.</div><div class="stat-box-val" style="color:var(--green)">₹25.03L</div></div>
+        <div class="stat-box"><div class="stat-box-label">Achievement</div><div class="stat-box-val" style="color:var(--green)">62.6%</div></div>
+        <div class="stat-box"><div class="stat-box-label">Active Mandates</div><div class="stat-box-val" style="color:var(--blue)">7</div></div>
+      </div>
+      <div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:62.6%;background:var(--green-mid)"></div></div></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text-dim)">Pipeline: ₹76.6L interview + ₹1.5L offer stage</div>
+    </div>
+
+    <!-- Raman -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div class="avatar" style="width:40px;height:40px;background:var(--blue-dim);color:var(--blue);font-size:14px">RD</div>
+        <div>
+          <div style="font-size:15px;font-weight:600">Raman Dhiman</div>
+          <div style="font-size:11px;color:var(--text-dim)">Band B4 · Team Manager</div>
+        </div>
+        <span class="tag orange" style="margin-left:auto">High Pipeline</span>
+      </div>
+      <div class="g2" style="gap:10px;margin-bottom:14px">
+        <div class="stat-box"><div class="stat-box-label">Target</div><div class="stat-box-val" style="color:var(--text-muted)">₹70L</div></div>
+        <div class="stat-box"><div class="stat-box-label">Joined Rev.</div><div class="stat-box-val" style="color:var(--orange)">₹6.35L</div></div>
+        <div class="stat-box"><div class="stat-box-label">Achievement</div><div class="stat-box-val" style="color:var(--orange)">9.1%</div></div>
+        <div class="stat-box"><div class="stat-box-label">Active Mandates</div><div class="stat-box-val" style="color:var(--blue)">5</div></div>
+      </div>
+      <div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:9.1%;background:var(--orange-mid)"></div></div></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text-dim)">Pipeline: ₹61L interview + ₹51L shortlisted + ₹16L under discussion</div>
+    </div>
+
+    <!-- Anand -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div class="avatar" style="width:40px;height:40px;background:var(--gold-dim);color:var(--gold);font-size:14px">AR</div>
+        <div>
+          <div style="font-size:15px;font-weight:600">Anand Raj</div>
+          <div style="font-size:11px;color:var(--text-dim)">Band B2 · Team: Raman Dhiman</div>
+        </div>
+        <span class="tag red" style="margin-left:auto">0% Closed</span>
+      </div>
+      <div class="g2" style="gap:10px;margin-bottom:14px">
+        <div class="stat-box"><div class="stat-box-label">Target</div><div class="stat-box-val" style="color:var(--text-muted)">₹50L</div></div>
+        <div class="stat-box"><div class="stat-box-label">Joined Rev.</div><div class="stat-box-val" style="color:var(--red)">₹0</div></div>
+        <div class="stat-box"><div class="stat-box-label">Achievement</div><div class="stat-box-val" style="color:var(--red)">0%</div></div>
+        <div class="stat-box"><div class="stat-box-label">Active Mandates</div><div class="stat-box-val" style="color:var(--blue)">5</div></div>
+      </div>
+      <div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:1%;background:var(--red-mid)"></div></div></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text-dim)">Pipeline: ₹31.6L interview + ₹15.3L under discussion. 2 retainer roles.</div>
+    </div>
+
+    <!-- Nikhil -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div class="avatar" style="width:40px;height:40px;background:var(--red-dim);color:var(--red);font-size:14px">NJ</div>
+        <div>
+          <div style="font-size:15px;font-weight:600">Nikhil Jagtap</div>
+          <div style="font-size:11px;color:var(--text-dim)">Band B4 · Independent Contributor</div>
+        </div>
+        <span class="tag red" style="margin-left:auto">0% Closed</span>
+      </div>
+      <div class="g2" style="gap:10px;margin-bottom:14px">
+        <div class="stat-box"><div class="stat-box-label">Target</div><div class="stat-box-val" style="color:var(--text-muted)">₹40L</div></div>
+        <div class="stat-box"><div class="stat-box-label">Joined Rev.</div><div class="stat-box-val" style="color:var(--red)">₹0</div></div>
+        <div class="stat-box"><div class="stat-box-label">Achievement</div><div class="stat-box-val" style="color:var(--red)">0%</div></div>
+        <div class="stat-box"><div class="stat-box-label">Active Mandates</div><div class="stat-box-val" style="color:var(--blue)">6</div></div>
+      </div>
+      <div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:1%;background:var(--red-mid)"></div></div></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text-dim)">Pipeline: ₹61.3L interview + ₹14.85L shortlisted + ₹5.61L offer stage</div>
+    </div>
+
+    <!-- Lucky -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div class="avatar" style="width:40px;height:40px;background:var(--orange-dim);color:var(--orange);font-size:14px">LM</div>
+        <div>
+          <div style="font-size:15px;font-weight:600">Lucky Matlani</div>
+          <div style="font-size:11px;color:var(--text-dim)">Band B3 · Independent Contributor</div>
+        </div>
+        <span class="tag red" style="margin-left:auto">0% Closed</span>
+      </div>
+      <div class="g2" style="gap:10px;margin-bottom:14px">
+        <div class="stat-box"><div class="stat-box-label">Target</div><div class="stat-box-val" style="color:var(--text-muted)">₹25L</div></div>
+        <div class="stat-box"><div class="stat-box-label">Joined Rev.</div><div class="stat-box-val" style="color:var(--red)">₹0</div></div>
+        <div class="stat-box"><div class="stat-box-label">Achievement</div><div class="stat-box-val" style="color:var(--red)">0%</div></div>
+        <div class="stat-box"><div class="stat-box-label">Active Mandates</div><div class="stat-box-val" style="color:var(--blue)">3</div></div>
+      </div>
+      <div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:1%;background:var(--red-mid)"></div></div></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text-dim)">Pipeline: ₹28.95L interview stage. 1 retainer role.</div>
+    </div>
+
+    <!-- Shweta -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div class="avatar" style="width:40px;height:40px;background:var(--purple-dim);color:var(--purple);font-size:14px">SJ</div>
+        <div>
+          <div style="font-size:15px;font-weight:600">Shweta Jadhav</div>
+          <div style="font-size:11px;color:var(--text-dim)">Band B4 · Independent Contributor</div>
+        </div>
+        <span class="tag purple" style="margin-left:auto">Large Pipeline</span>
+      </div>
+      <div class="g2" style="gap:10px;margin-bottom:14px">
+        <div class="stat-box"><div class="stat-box-label">Target</div><div class="stat-box-val" style="color:var(--text-muted)">₹60L</div></div>
+        <div class="stat-box"><div class="stat-box-label">Joined Rev.</div><div class="stat-box-val" style="color:var(--red)">₹0</div></div>
+        <div class="stat-box"><div class="stat-box-label">Achievement</div><div class="stat-box-val" style="color:var(--red)">0%</div></div>
+        <div class="stat-box"><div class="stat-box-label">Active Mandates</div><div class="stat-box-val" style="color:var(--blue)">11</div></div>
+      </div>
+      <div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:1%;background:var(--red-mid)"></div></div></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text-dim)">Pipeline: ₹67.3L interview + ₹21L shortlisted + ₹52.5L under discussion — most active mandates on team</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 7 · JOINED CANDIDATES
+══════════════════════════════════════ -->
+<div id="page-placements" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Closed Deals</div>
+    <h1 class="page-title">Joined <em>Candidates</em></h1>
+    <p class="page-subtitle">All confirmed placements this financial year — 10 candidates successfully placed</p>
+  </div>
+
+  <div class="sec-label">Placement Summary</div>
+  <div class="g4 mb18">
+    <div class="kpi green">
+      <div class="kpi-label">Total Placements</div>
+      <div class="kpi-value green">10</div>
+      <div class="kpi-sub">FY 2025–26</div>
+    </div>
+    <div class="kpi blue">
+      <div class="kpi-label">Total Billing</div>
+      <div class="kpi-value blue">₹81.9L</div>
+      <div class="kpi-sub">Joined revenue</div>
+    </div>
+    <div class="kpi gold">
+      <div class="kpi-label">Avg. Billing / Deal</div>
+      <div class="kpi-value gold">₹8.2L</div>
+      <div class="kpi-sub">Per placement</div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-label">Highest Billing</div>
+      <div class="kpi-value orange">₹23.1L</div>
+      <div class="kpi-sub">Mahindra Powerol</div>
+    </div>
+  </div>
+
+  <div class="g2 mb18">
+    <div class="card">
+      <div class="card-title">Revenue per Placement</div>
+      <div class="card-headline">Billing Amount by Candidate (₹L)</div>
+      <div class="ch300"><canvas id="pl-bar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Placements by Quarter</div>
+      <div class="card-headline">When Closures Happened</div>
+      <div class="ch300"><canvas id="pl-qtr"></canvas></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Full Placement Log</div>
+  <div class="card">
+    <div class="card-title">All 10 Confirmed Joinings — FY 2025-26</div>
+    <div class="card-headline">Complete Candidate Record</div>
+    <div class="cand-row header-row">
+      <span>Candidate</span><span>Client · Role</span><span>Recruiter</span><span>CTC</span><span>Billing</span><span>DOJ · Quarter</span>
+    </div>
+    <div class="cand-row" data-q="q1">
+      <div><div style="font-size:13px;font-weight:600">Amiya Rajan Jena</div></div>
+      <div><div style="font-size:13px">Godrej</div><div style="font-size:11px;color:var(--text-dim)">Manager – Labour Resource</div></div>
+      <div><span class="tag green">Diksha S.</span></div>
+      <div class="mono">₹29.5L</div>
+      <div class="mono" style="color:var(--green)">₹2.07L</div>
+      <div><div class="mono">02 Apr 2025</div><span class="tag blue">Q1</span></div>
+    </div>
+    <div class="cand-row" data-q="q1">
+      <div><div style="font-size:13px;font-weight:600">Vaibhav Agarwal</div></div>
+      <div><div style="font-size:13px">ICRA</div><div style="font-size:11px;color:var(--text-dim)">VP Market Data</div></div>
+      <div><span class="tag green">Diksha S.</span></div>
+      <div class="mono">₹65L</div>
+      <div class="mono" style="color:var(--green)">₹9.75L</div>
+      <div><div class="mono">22 Apr 2025</div><span class="tag blue">Q1</span></div>
+    </div>
+    <div class="cand-row" data-q="q1">
+      <div><div style="font-size:13px;font-weight:600">Mukherji</div></div>
+      <div><div style="font-size:13px">Endurance</div><div style="font-size:11px;color:var(--text-dim)">Retired Internal Audit</div></div>
+      <div><span class="tag gold">Anand R.</span></div>
+      <div class="mono">₹32L</div>
+      <div class="mono" style="color:var(--green)">₹5L</div>
+      <div><div class="mono">15 May 2025</div><span class="tag blue">Q1</span></div>
+    </div>
+    <div class="cand-row" data-q="q1">
+      <div><div style="font-size:13px;font-weight:600">Abhijeet Kadam</div></div>
+      <div><div style="font-size:13px">Mahindra Logistics</div><div style="font-size:11px;color:var(--text-dim)">SGM – Head Workforce Ops</div></div>
+      <div><span class="tag green">Diksha S.</span></div>
+      <div class="mono">₹90L</div>
+      <div class="mono" style="color:var(--green)">₹14.85L</div>
+      <div><div class="mono">04 Jun 2025</div><span class="tag blue">Q1</span></div>
+    </div>
+    <div class="cand-row" data-q="q2">
+      <div><div style="font-size:13px;font-weight:600">Manvi</div></div>
+      <div><div style="font-size:13px">Amaraja Batteries</div><div style="font-size:11px;color:var(--text-dim)">HR Head</div></div>
+      <div><span class="tag grey">SI</span></div>
+      <div class="mono">₹67.2L</div>
+      <div class="mono" style="color:var(--green)">₹16.8L</div>
+      <div><div class="mono">03 Sep 2025</div><span class="tag orange">Q2</span></div>
+    </div>
+    <div class="cand-row" data-q="q2">
+      <div><div style="font-size:13px;font-weight:600">Rajendra Kumar</div></div>
+      <div><div style="font-size:13px">EPL</div><div style="font-size:11px;color:var(--text-dim)">SAP Lead</div></div>
+      <div><span class="tag grey">Bhagya (Exo)</span></div>
+      <div class="mono">—</div>
+      <div class="mono" style="color:var(--green)">₹5.06L</div>
+      <div><div class="mono">09 Sep 2025</div><span class="tag orange">Q2</span></div>
+    </div>
+    <div class="cand-row" data-q="q3">
+      <div><div style="font-size:13px;font-weight:600">PRASAD M R</div></div>
+      <div><div style="font-size:13px">Godrej</div><div style="font-size:11px;color:var(--text-dim)">Manager – Labour Resource</div></div>
+      <div><span class="tag green">Diksha S.</span></div>
+      <div class="mono">₹33.6L</div>
+      <div class="mono" style="color:var(--green)">₹2.35L</div>
+      <div><div class="mono">22 Oct 2025</div><span class="tag purple">Q3</span></div>
+    </div>
+    <div class="cand-row" data-q="q3">
+      <div><div style="font-size:13px;font-weight:600">Ankur Srivastav</div></div>
+      <div><div style="font-size:13px">Mahindra Powerol</div><div style="font-size:11px;color:var(--text-dim)">Business Unit Head</div></div>
+      <div><span class="tag green">Raman + Diksha</span></div>
+      <div class="mono">₹1.05Cr</div>
+      <div class="mono" style="color:var(--green)">₹23.1L</div>
+      <div><div class="mono">24 Dec 2025</div><span class="tag purple">Q3</span></div>
+    </div>
+    <div class="cand-row" data-q="q4">
+      <div><div style="font-size:13px;font-weight:600">Rajeev Nanda</div></div>
+      <div><div style="font-size:13px">L&T Hydrocarbon</div><div style="font-size:11px;color:var(--text-dim)">Head – Project Control</div></div>
+      <div><span class="tag blue">Raman D.</span></div>
+      <div class="mono">₹80L</div>
+      <div class="mono" style="color:var(--green)">₹6.35L</div>
+      <div><div class="mono">28 Jan 2026</div><span class="tag red">Q4</span></div>
+    </div>
+    <div class="cand-row" data-q="q4">
+      <div><div style="font-size:13px;font-weight:600">Marcos Paulo Monteiro</div></div>
+      <div><div style="font-size:13px">Endurance</div><div style="font-size:11px;color:var(--text-dim)">Continent Head (LATAM)</div></div>
+      <div><span class="tag green">Diksha S.</span></div>
+      <div class="mono">₹1.2Cr</div>
+      <div class="mono" style="color:var(--green)">₹6.84L</div>
+      <div><div class="mono">13 Jan 2026</div><span class="tag red">Q4</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 8 · INCENTIVE STRUCTURE
+══════════════════════════════════════ -->
+<div id="page-incentive" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Compensation</div>
+    <h1 class="page-title">Incentive <em>Structure</em></h1>
+    <p class="page-subtitle">Existing vs. proposed incentive policy — payout modelling across achievement scenarios</p>
+  </div>
+
+  <div class="sec-label">Policy Comparison Summary</div>
+  <div class="g3 mb18">
+    <div class="kpi gold">
+      <div class="kpi-label">Existing · At 100%</div>
+      <div class="kpi-value gold">₹16.5L</div>
+      <div class="kpi-sub">Team total payout</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">Proposed · At 100%</div>
+      <div class="kpi-value green">₹9L</div>
+      <div class="kpi-sub">Lower base, higher upside</div>
+    </div>
+    <div class="kpi blue">
+      <div class="kpi-label">Proposed · At 121%+</div>
+      <div class="kpi-value blue">₹25.4L</div>
+      <div class="kpi-sub">Rewards overperformance</div>
+    </div>
+  </div>
+
+  <div class="g2 mb18">
+    <div class="card">
+      <div class="card-title">Payout Curves · Existing vs. Proposed</div>
+      <div class="card-headline">How payouts scale with achievement</div>
+      <div class="ch300"><canvas id="inc-curve"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Individual Payouts · Proposed at 100% Achievement</div>
+      <div class="card-headline">Per-recruiter proposed incentive</div>
+      <div class="ch300"><canvas id="inc-individual"></canvas></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Detailed Policy Table</div>
+  <div class="card mb18">
+    <div class="card-title">Existing vs. Proposed — All Scenarios</div>
+    <div class="card-headline">Incentive by Recruiter and Achievement Level</div>
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Recruiter</th><th>Band</th><th>Target</th><th>Existing</th>
+          <th style="color:var(--orange)">Proposed 80%</th>
+          <th style="color:var(--gold)">Proposed 100%</th>
+          <th style="color:var(--green)">Proposed 110%</th>
+          <th style="color:var(--blue)">Proposed 121%+</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600">Anand Raj</td>
+          <td><span class="tag gold">B2→B4</span></td>
+          <td class="mono">₹50L</td>
+          <td class="mono">₹1.5L</td>
+          <td class="mono" style="color:var(--orange)">₹1.2L</td>
+          <td class="mono" style="color:var(--gold)">₹1.5L</td>
+          <td class="mono" style="color:var(--green)">₹2.75L</td>
+          <td class="mono" style="color:var(--blue)">₹4.24L</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">Diksha Sehgal</td>
+          <td><span class="tag blue">B3</span></td>
+          <td class="mono">₹40L</td>
+          <td class="mono">₹1.5L</td>
+          <td class="mono" style="color:var(--orange)">₹0.96L</td>
+          <td class="mono" style="color:var(--gold)">₹1.2L</td>
+          <td class="mono" style="color:var(--green)">₹2.2L</td>
+          <td class="mono" style="color:var(--blue)">₹3.39L</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">Raman Dhiman</td>
+          <td><span class="tag green">B4</span></td>
+          <td class="mono">₹70L</td>
+          <td class="mono">₹4.5L</td>
+          <td class="mono" style="color:var(--orange)">₹1.68L</td>
+          <td class="mono" style="color:var(--gold)">₹2.1L</td>
+          <td class="mono" style="color:var(--green)">₹3.85L</td>
+          <td class="mono" style="color:var(--blue)">₹5.93L</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">Shweta Jadhav</td>
+          <td><span class="tag green">B4</span></td>
+          <td class="mono">₹55L</td>
+          <td class="mono">₹2L</td>
+          <td class="mono" style="color:var(--orange)">₹1.32L</td>
+          <td class="mono" style="color:var(--gold)">₹1.65L</td>
+          <td class="mono" style="color:var(--green)">₹3.03L</td>
+          <td class="mono" style="color:var(--blue)">₹4.66L</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">Lucky Matlani</td>
+          <td><span class="tag blue">B3</span></td>
+          <td class="mono">₹25L</td>
+          <td class="mono">₹5L</td>
+          <td class="mono" style="color:var(--orange)">₹0.6L</td>
+          <td class="mono" style="color:var(--gold)">₹0.75L</td>
+          <td class="mono" style="color:var(--green)">₹1.38L</td>
+          <td class="mono" style="color:var(--blue)">₹2.12L</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">Nikhil Jagtap</td>
+          <td><span class="tag green">B4</span></td>
+          <td class="mono">₹60L</td>
+          <td class="mono">₹2L</td>
+          <td class="mono" style="color:var(--orange)">₹1.44L</td>
+          <td class="mono" style="color:var(--gold)">₹1.8L</td>
+          <td class="mono" style="color:var(--green)">₹3.3L</td>
+          <td class="mono" style="color:var(--blue)">₹5.08L</td>
+        </tr>
+        <tr style="background:var(--surface2)">
+          <td style="font-weight:700">Team Total</td>
+          <td>—</td>
+          <td class="mono" style="font-weight:700">₹3Cr</td>
+          <td class="mono" style="font-weight:700">₹16.5L</td>
+          <td class="mono" style="color:var(--orange);font-weight:700">₹7.2L</td>
+          <td class="mono" style="color:var(--gold);font-weight:700">₹9L</td>
+          <td class="mono" style="color:var(--green);font-weight:700">₹16.5L</td>
+          <td class="mono" style="color:var(--blue);font-weight:700">₹25.4L</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-label">Team Manager Incentive · Raman Dhiman</div>
+  <div class="g3">
+    <div class="card">
+      <div class="card-title">Scenario 1 · 80% Achievement</div>
+      <div class="card-headline" style="font-size:16px">Total: ₹2.4L</div>
+      <div class="recon-row"><span style="color:var(--text-muted)">IC Incentive (at 80%)</span><span class="mono" style="color:var(--orange)">₹1.68L</span></div>
+      <div class="recon-row"><span style="color:var(--text-muted)">Team Manager (at 80%)</span><span class="mono" style="color:var(--orange)">₹0.72L</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Scenario 2 · 101% Achievement</div>
+      <div class="card-headline" style="font-size:16px">Total: ₹5.35L</div>
+      <div class="recon-row"><span style="color:var(--text-muted)">IC Incentive (at 101%)</span><span class="mono" style="color:var(--green)">₹3.54L</span></div>
+      <div class="recon-row"><span style="color:var(--text-muted)">Team Manager (at 101%)</span><span class="mono" style="color:var(--green)">₹1.82L</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Scenario 3 · 121%+ Achievement</div>
+      <div class="card-headline" style="font-size:16px">Total: ₹9.2L</div>
+      <div class="recon-row"><span style="color:var(--text-muted)">IC Incentive (at 121%)</span><span class="mono" style="color:var(--blue)">₹5.93L</span></div>
+      <div class="recon-row"><span style="color:var(--text-muted)">Team Manager (at 121%)</span><span class="mono" style="color:var(--blue)">₹3.27L</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 9 · CLIENT OVERVIEW
+══════════════════════════════════════ -->
+<div id="page-clients" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Client Intelligence</div>
+    <h1 class="page-title">Client <em>Overview</em></h1>
+    <p class="page-subtitle">Revenue earned, pipeline value, and engagement status by client</p>
+  </div>
+
+  <div class="sec-label">Client Revenue Summary</div>
+  <div class="g4 mb18">
+    <div class="kpi blue"><div class="kpi-label">Total Clients</div><div class="kpi-value blue">39</div><div class="kpi-sub">Across all mandates</div></div>
+    <div class="kpi green"><div class="kpi-label">Revenue Generating</div><div class="kpi-value green">9</div><div class="kpi-sub">Actual joined billing</div></div>
+    <div class="kpi red"><div class="kpi-label">On Hold / Stalled</div><div class="kpi-value red">24</div><div class="kpi-sub">No revenue yet</div></div>
+    <div class="kpi orange"><div class="kpi-label">Active Pipeline</div><div class="kpi-value orange">14</div><div class="kpi-sub">Interview / shortlist</div></div>
+  </div>
+
+  <div class="card mb18">
+    <div class="card-title">Top Clients by Revenue + Pipeline</div>
+    <div class="card-headline">Earned Revenue vs. Pipeline Value (₹L)</div>
+    <div class="ch300"><canvas id="cl-bar"></canvas></div>
+  </div>
+
+  <div class="sec-label">Full Client Status</div>
+  <div class="card">
+    <div class="card-title">All Clients · Status and Revenue</div>
+    <table class="tbl">
+      <thead>
+        <tr><th>Client</th><th>Status</th><th>Mandates</th><th>Recruiter</th><th>Revenue Earned</th><th>Pipeline Value</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="font-weight:500">Mahindra Powerol</td><td><span class="tag green">Joined</span></td><td class="mono">2</td><td class="mono">Diksha, Raman</td><td class="mono" style="color:var(--green)">₹23.1L</td><td class="mono">—</td></tr>
+        <tr><td style="font-weight:500">Mahindra Logistics</td><td><span class="tag orange">Mixed</span></td><td class="mono">3</td><td class="mono">Nikhil J.</td><td class="mono" style="color:var(--green)">₹14.85L</td><td class="mono" style="color:var(--blue)">₹20.5L</td></tr>
+        <tr><td style="font-weight:500">Amaraja Batteries</td><td><span class="tag orange">Mixed</span></td><td class="mono">3</td><td class="mono">Anand R., Diksha</td><td class="mono" style="color:var(--green)">₹16.8L</td><td class="mono" style="color:var(--red)">₹39.5L at risk</td></tr>
+        <tr><td style="font-weight:500">ICRA</td><td><span class="tag orange">Mixed</span></td><td class="mono">3</td><td class="mono">Diksha S.</td><td class="mono" style="color:var(--green)">₹9.75L</td><td class="mono" style="color:var(--red)">₹21L at risk</td></tr>
+        <tr><td style="font-weight:500">Endurance</td><td><span class="tag orange">Mixed</span></td><td class="mono">4</td><td class="mono">Diksha S.</td><td class="mono" style="color:var(--green)">₹5L</td><td class="mono" style="color:var(--blue)">₹1.5L offer</td></tr>
+        <tr><td style="font-weight:500">L&T Hydrocarbon</td><td><span class="tag green">Joined</span></td><td class="mono">2</td><td class="mono">Raman D.</td><td class="mono" style="color:var(--green)">₹6.35L</td><td class="mono" style="color:var(--blue)">₹21L active</td></tr>
+        <tr><td style="font-weight:500">EPL</td><td><span class="tag green">Joined</span></td><td class="mono">1</td><td class="mono">Bhagya (Exo)</td><td class="mono" style="color:var(--green)">₹5.06L</td><td class="mono">—</td></tr>
+        <tr><td style="font-weight:500">Godrej</td><td><span class="tag green">Joined</span></td><td class="mono">2</td><td class="mono">Diksha S.</td><td class="mono" style="color:var(--green)">₹4.42L</td><td class="mono">—</td></tr>
+        <tr><td style="font-weight:500">L&T</td><td><span class="tag red">On Hold</span></td><td class="mono">5</td><td class="mono">Raman D.</td><td class="mono">—</td><td class="mono" style="color:var(--red)">₹56L at risk</td></tr>
+        <tr><td style="font-weight:500">KPMG</td><td><span class="tag blue">Active</span></td><td class="mono">5</td><td class="mono">Shweta J.</td><td class="mono">—</td><td class="mono" style="color:var(--blue)">₹40.5L pipeline</td></tr>
+        <tr><td style="font-weight:500">AMPL</td><td><span class="tag red">On Hold</span></td><td class="mono">3</td><td class="mono">Diksha, Nikhil</td><td class="mono">—</td><td class="mono" style="color:var(--red)">₹85.1L at risk</td></tr>
+        <tr><td style="font-weight:500">Gallagher</td><td><span class="tag red">On Hold</span></td><td class="mono">4</td><td class="mono">Anand R., Shweta</td><td class="mono">—</td><td class="mono" style="color:var(--red)">₹50.6L at risk</td></tr>
+        <tr><td style="font-weight:500">Mahindra Farm</td><td><span class="tag blue">Active</span></td><td class="mono">4</td><td class="mono">Diksha, Nikhil, Shweta</td><td class="mono">—</td><td class="mono" style="color:var(--blue)">₹51L pipeline</td></tr>
+        <tr><td style="font-weight:500">Mahindra MRV/Swaraj</td><td><span class="tag blue">Active</span></td><td class="mono">6</td><td class="mono">Diksha, Nikhil, Shweta</td><td class="mono">—</td><td class="mono" style="color:var(--blue)">₹99L pipeline</td></tr>
+        <tr><td style="font-weight:500">Agratas</td><td><span class="tag red">On Hold</span></td><td class="mono">3</td><td class="mono">Raman D., Lucky</td><td class="mono">—</td><td class="mono" style="color:var(--red)">₹64L at risk</td></tr>
+        <tr><td style="font-weight:500">LTI-Mindtree</td><td><span class="tag blue">Active</span></td><td class="mono">1</td><td class="mono">Raman D.</td><td class="mono">—</td><td class="mono" style="color:var(--blue)">₹40L pipeline</td></tr>
+        <tr><td style="font-weight:500">Trontek</td><td><span class="tag blue">Active</span></td><td class="mono">5</td><td class="mono">Diksha, Lucky, Shweta</td><td class="mono">—</td><td class="mono" style="color:var(--blue)">₹34.4L pipeline</td></tr>
+        <tr><td style="font-weight:500">Ramky</td><td><span class="tag blue">Active</span></td><td class="mono">3</td><td class="mono">Anand R., Diksha</td><td class="mono">—</td><td class="mono" style="color:var(--blue)">₹20.4L pipeline</td></tr>
+        <tr><td style="font-weight:500">Bericap</td><td><span class="tag blue">Active</span></td><td class="mono">1</td><td class="mono">Anand R.</td><td class="mono">—</td><td class="mono" style="color:var(--blue)">₹10.9L pipeline</td></tr>
+        <tr><td style="font-weight:500">Cprime</td><td><span class="tag red">On Hold</span></td><td class="mono">1</td><td class="mono">Shweta J.</td><td class="mono">—</td><td class="mono" style="color:var(--red)">₹37.5L at risk</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 10 · RETAINER HEALTH
+══════════════════════════════════════ -->
+<div id="page-retainer" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Financial Health</div>
+    <h1 class="page-title">Retainer <em>Health</em></h1>
+    <p class="page-subtitle">Retainer mandate tracking — collection status, pending amounts, and revenue visibility</p>
+  </div>
+
+  <div class="sec-label">Retainer Portfolio Summary</div>
+  <div class="g4 mb18">
+    <div class="kpi blue"><div class="kpi-label">Total Retainer Roles</div><div class="kpi-value blue">26</div><div class="kpi-sub">31% of all mandates</div></div>
+    <div class="kpi green"><div class="kpi-label">Retainer 1 Collected</div><div class="kpi-value green">23</div><div class="kpi-sub">₹1.009Cr collected</div></div>
+    <div class="kpi orange"><div class="kpi-label">Retainer 2 Collected</div><div class="kpi-value orange">7</div><div class="kpi-sub">Progressed clients</div></div>
+    <div class="kpi red"><div class="kpi-label">Pending Ret. 2</div><div class="kpi-value red">16</div><div class="kpi-sub">Yet to collect</div></div>
+  </div>
+
+  <div class="g2 mb18">
+    <div class="card">
+      <div class="card-title">Retainer Status Distribution</div>
+      <div class="card-headline">23 Retainer Roles by Current Status</div>
+      <div class="ch260"><canvas id="ret-status"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Retainer Collection by Quarter</div>
+      <div class="card-headline">When Retainers Were Received (₹L)</div>
+      <div class="ch260"><canvas id="ret-qtr"></canvas></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Retainer Received Log</div>
+  <div class="card mb18">
+    <div class="card-title">All Retainer Payments Received This FY</div>
+    <div class="card-headline">₹1.009 Cr collected across 23 mandates</div>
+    <div class="scroll-y" style="max-height:360px">
+      <div class="ret-row" style="background:var(--surface2);padding:6px 8px;border-radius:6px;margin-bottom:6px">
+        <span style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);flex:1">Client</span>
+        <span style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);width:180px">Position</span>
+        <span style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);width:80px">Date</span>
+        <span style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);width:65px;text-align:right">Amount</span>
+      </div>
+      <div class="ret-row"><div class="ret-client">Amaraja Batteries<div class="ret-role">HR Head</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">HR Head</div><div style="width:80px" class="mono">21 May 25</div><div class="ret-amt" style="color:var(--green)">₹3L</div></div>
+      <div class="ret-row"><div class="ret-client">IndoAsia – Kiri<div class="ret-role">CEO</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">CEO</div><div style="width:80px" class="mono">29 May 25</div><div class="ret-amt" style="color:var(--green)">₹4.5L</div></div>
+      <div class="ret-row"><div class="ret-client">John Deere<div class="ret-role">G8 – CUDA</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">G8 – CUDA</div><div style="width:80px" class="mono">04 Jun 25</div><div class="ret-amt" style="color:var(--green)">₹2.69L</div></div>
+      <div class="ret-row"><div class="ret-client">John Deere<div class="ret-role">G8/G9 – Robotics</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">G8/G9 Robotics</div><div style="width:80px" class="mono">04 Jun 25</div><div class="ret-amt" style="color:var(--green)">₹3.56L</div></div>
+      <div class="ret-row"><div class="ret-client">John Deere<div class="ret-role">G8 – CVML</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">G8 – CVML</div><div style="width:80px" class="mono">27 Jun 25</div><div class="ret-amt" style="color:var(--green)">₹2.69L</div></div>
+      <div class="ret-row"><div class="ret-client">Endurance<div class="ret-role">VP Aftermarket</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">VP Aftermarket</div><div style="width:80px" class="mono">09 Jul 25</div><div class="ret-amt" style="color:var(--green)">₹6.6L</div></div>
+      <div class="ret-row"><div class="ret-client">Writer Corporation<div class="ret-role">Head New Ventures</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">Head New Ventures</div><div style="width:80px" class="mono">21 Jul 25</div><div class="ret-amt" style="color:var(--green)">₹3.75L</div></div>
+      <div class="ret-row"><div class="ret-client">IndoAsia – Kiri<div class="ret-role">CEO (2nd)</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">CEO</div><div style="width:80px" class="mono">20 Aug 25</div><div class="ret-amt" style="color:var(--green)">₹4.5L</div></div>
+      <div class="ret-row"><div class="ret-client">Endurance<div class="ret-role">Head of Civil</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">Head of Civil</div><div style="width:80px" class="mono">29 Aug 25</div><div class="ret-amt" style="color:var(--green)">₹11.5L</div></div>
+      <div class="ret-row"><div class="ret-client">L&T<div class="ret-role">Chief Executive Hospital</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">Chief Exec. Hospital</div><div style="width:80px" class="mono">03 Sep 25</div><div class="ret-amt" style="color:var(--green)">₹3L</div></div>
+      <div class="ret-row"><div class="ret-client">Endurance<div class="ret-role">Continent Head (Africa)</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">Continent Head Africa</div><div style="width:80px" class="mono">08 Sep 25</div><div class="ret-amt" style="color:var(--green)">₹10.56L</div></div>
+      <div class="ret-row"><div class="ret-client">Mahindra Powerol<div class="ret-role">Business Unit Head</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">Business Unit Head</div><div style="width:80px" class="mono">19 Sep 25</div><div class="ret-amt" style="color:var(--green)">₹7.26L</div></div>
+      <div class="ret-row"><div class="ret-client">L&T<div class="ret-role">Head – Data Centre</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">Head Data Centre</div><div style="width:80px" class="mono">06 Oct 25</div><div class="ret-amt" style="color:var(--green)">₹3L</div></div>
+      <div class="ret-row"><div class="ret-client">Bericap<div class="ret-role">Sales Director</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">Sales Director</div><div style="width:80px" class="mono">07 Oct 25</div><div class="ret-amt" style="color:var(--green)">₹3.56L</div></div>
+      <div class="ret-row"><div class="ret-client">Mahindra Logistics<div class="ret-role">Finance Controller</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">Finance Controller</div><div style="width:80px" class="mono">22 Oct 25</div><div class="ret-amt" style="color:var(--green)">₹5.45L</div></div>
+      <div class="ret-row"><div class="ret-client">Trontek (×4 roles)<div class="ret-role">Multiple</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">4 roles across Trontek</div><div style="width:80px" class="mono">29 Oct 25</div><div class="ret-amt" style="color:var(--green)">₹12.8L</div></div>
+      <div class="ret-row"><div class="ret-client">Micro Plastics<div class="ret-role">Business Dev. Head</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">Business Dev. Head</div><div style="width:80px" class="mono">07 Nov 25</div><div class="ret-amt" style="color:var(--green)">₹4L</div></div>
+      <div class="ret-row"><div class="ret-client">Mahindra Logistics<div class="ret-role">Finance Controller (2nd)</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">Finance Controller</div><div style="width:80px" class="mono">01 Dec 25</div><div class="ret-amt" style="color:var(--green)">₹5.45L</div></div>
+      <div class="ret-row"><div class="ret-client">L&T Hydrocarbon<div class="ret-role">Head Project Control</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">Head Project Control</div><div style="width:80px" class="mono">01 Dec 25</div><div class="ret-amt" style="color:var(--green)">₹3L</div></div>
+      <div class="ret-row"><div class="ret-client">Bericap (2nd)<div class="ret-role">Sales Director</div></div><div style="width:180px;font-size:11px;color:var(--text-dim)">Sales Director</div><div style="width:80px" class="mono">28 Jan 26</div><div class="ret-amt" style="color:var(--orange)">₹3.56L</div></div>
+    </div>
+
+    <div style="margin-top:16px">
+      <div class="sec-label" style="margin-top:0">Retainer Pending Collection</div>
+      <div class="ret-row" style="background:var(--orange-dim);border-radius:8px;padding:10px 14px;border:1px solid rgba(201,106,16,0.2)">
+        <div class="ret-client">Trontek<div class="ret-role">Distribution Head</div></div>
+        <div style="width:180px;font-size:11px;color:var(--text-dim)">Distribution Head</div>
+        <div style="width:80px" class="mono">12 Jan 26</div>
+        <div class="ret-amt" style="color:var(--orange)">₹3.2L</div>
+      </div>
+      <div class="ret-row" style="background:var(--orange-dim);border-radius:8px;padding:10px 14px;border:1px solid rgba(201,106,16,0.2);margin-top:6px">
+        <div class="ret-client">Bericap<div class="ret-role">Sales Director (Ret. 2)</div></div>
+        <div style="width:180px;font-size:11px;color:var(--text-dim)">Sales Director</div>
+        <div style="width:80px" class="mono">28 Jan 26</div>
+        <div class="ret-amt" style="color:var(--orange)">₹3.56L</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// QUARTER FILTER — applies ONLY to:
+//   1. Overview page (KPI blocks, q-blocks, funnel, charts)
+//   2. Quarterly Performance page (charts highlight selected Q)
+//   3. Placements page (candidate rows + bar chart)
+// All other pages are UNAFFECTED by the filter.
+// ═══════════════════════════════════════════════════
+
+const chartInstances = {};
+let currentQ = 'all';
+
+// Per-quarter data
+const QD = {
+  all: {
+    badge: 'FY 2025–26',
+    // Overview KPIs
+    targetLbl:'Annual Target',  targetVal:'₹4 Cr',     targetSub:'FY 2025–26',
+    achVal:'₹1.97 Cr',         achSub:'49.2% of target',
+    backlogVal:'₹2.03 Cr',     backlogSub:'50.8% gap',
+    mandatesVal:90,             mandatesSub:'All quarters',
+    closedVal:10,               closedSub:'11.1% close rate',
+    activeVal:37,               activeSub:'Live mandates',
+    // Overview bar chart [Q1,Q2,Q3,Q4]
+    ovLabels:['Q1','Q2','Q3','Q4'],
+    ovTargets:[50,75,125,150],
+    ovAchieved:[43.6,70.5,51.9,30.6],
+    ovColors:['rgba(15,127,86,0.75)','rgba(15,127,86,0.75)','rgba(201,106,16,0.75)','rgba(192,40,78,0.75)'],
+    // Donut
+    donutData:[10,25,5,2,43],
+    // Funnel text
+    fTotal:'90 mandates', fIP:'25 active', fSL:'5 roles', fOF:'2', fJoined:'10', fHold:'43 blocked',
+    fTotalN:90, fIPN:25, fSLN:5, fOFN:2, fJoinedN:10, fHoldN:43,
+    fIPpct:55, fSLpct:22, fOFpct:10, fJpct:12, fHpct:48,
+  },
+  q1: {
+    badge: 'Q1 · Apr–Jun 2025',
+    targetLbl:'Q1 Target',     targetVal:'₹50L',      targetSub:'Apr–Jun 2025',
+    achVal:'₹43.6L',           achSub:'87.2% of Q1 target',
+    backlogVal:'₹6.4L',        backlogSub:'12.8% shortfall',
+    mandatesVal:16,             mandatesSub:'Received in Q1',
+    closedVal:4,                closedSub:'25% close rate',
+    activeVal:2,                activeSub:'End of Q1',
+    ovLabels:['Q1 · Apr–Jun'],
+    ovTargets:[50], ovAchieved:[43.6],
+    ovColors:['rgba(15,127,86,0.75)'],
+    donutData:[4,0,0,0,8],
+    fTotal:'16 mandates', fIP:'0 active', fSL:'0 roles', fOF:'0', fJoined:'4 joined', fHold:'8 blocked',
+    fTotalN:16, fIPN:0, fSLN:0, fOFN:0, fJoinedN:4, fHoldN:8,
+    fIPpct:0, fSLpct:0, fOFpct:0, fJpct:25, fHpct:50,
+  },
+  q2: {
+    badge: 'Q2 · Jul–Sep 2025',
+    targetLbl:'Q2 Target',     targetVal:'₹75L',      targetSub:'Jul–Sep 2025',
+    achVal:'₹70.5L',           achSub:'94.0% of Q2 target',
+    backlogVal:'₹4.5L',        backlogSub:'6% shortfall',
+    mandatesVal:24,             mandatesSub:'Received in Q2',
+    closedVal:2,                closedSub:'8.3% close rate',
+    activeVal:5,                activeSub:'End of Q2',
+    ovLabels:['Q2 · Jul–Sep'],
+    ovTargets:[75], ovAchieved:[70.5],
+    ovColors:['rgba(15,127,86,0.75)'],
+    donutData:[2,0,0,0,17],
+    fTotal:'24 mandates', fIP:'0 active', fSL:'0 roles', fOF:'0', fJoined:'2 joined', fHold:'17 blocked',
+    fTotalN:24, fIPN:0, fSLN:0, fOFN:0, fJoinedN:2, fHoldN:17,
+    fIPpct:0, fSLpct:0, fOFpct:0, fJpct:8, fHpct:71,
+  },
+  q3: {
+    badge: 'Q3 · Oct–Dec 2025',
+    targetLbl:'Q3 Target',     targetVal:'₹1.25 Cr',  targetSub:'Oct–Dec 2025',
+    achVal:'₹51.9L',           achSub:'41.5% of Q3 target',
+    backlogVal:'₹73.1L',       backlogSub:'58.5% shortfall',
+    mandatesVal:42,             mandatesSub:'Received in Q3',
+    closedVal:2,                closedSub:'4.8% close rate',
+    activeVal:18,               activeSub:'End of Q3',
+    ovLabels:['Q3 · Oct–Dec'],
+    ovTargets:[125], ovAchieved:[51.9],
+    ovColors:['rgba(201,106,16,0.75)'],
+    donutData:[2,0,0,0,18],
+    fTotal:'42 mandates', fIP:'0 active', fSL:'0 roles', fOF:'0', fJoined:'2 joined', fHold:'18 blocked',
+    fTotalN:42, fIPN:0, fSLN:0, fOFN:0, fJoinedN:2, fHoldN:18,
+    fIPpct:0, fSLpct:0, fOFpct:0, fJpct:5, fHpct:43,
+  },
+  q4: {
+    badge: 'Q4 · Jan–Mar 2026',
+    targetLbl:'Q4 Target',     targetVal:'₹1.5 Cr',   targetSub:'Jan–Mar 2026',
+    achVal:'₹30.6L',           achSub:'20.4% of Q4 target',
+    backlogVal:'₹1.19 Cr',     backlogSub:'79.6% remaining',
+    mandatesVal:8,              mandatesSub:'Received in Q4',
+    closedVal:0,                closedSub:'In progress',
+    activeVal:7,                activeSub:'Currently live',
+    ovLabels:['Q4 · Jan–Mar'],
+    ovTargets:[150], ovAchieved:[30.6],
+    ovColors:['rgba(192,40,78,0.75)'],
+    donutData:[0,7,0,0,0],
+    fTotal:'8 mandates', fIP:'7 active', fSL:'0 roles', fOF:'0', fJoined:'0 joined', fHold:'0 blocked',
+    fTotalN:8, fIPN:7, fSLN:0, fOFN:0, fJoinedN:0, fHoldN:0,
+    fIPpct:87, fSLpct:0, fOFpct:0, fJpct:0, fHpct:0,
+  },
+};
+
+// ─────────────────────────────
+// setQ — main filter function
+// ─────────────────────────────
+function setQ(q, btn) {
+  currentQ = q;
+
+  // Update buttons
+  document.querySelectorAll('.qbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('qf-badge').textContent = QD[q].badge;
+
+  // ── 1. OVERVIEW PAGE: dim q-blocks, update KPIs, funnel
+  document.querySelectorAll('.q-block[data-q]').forEach(el => {
+    el.classList.toggle('dim', q !== 'all' && el.dataset.q !== q);
+  });
+  updateOverviewKPIs(q);
+  updateFunnel(q);
+
+  // ── 2. PLACEMENTS PAGE: dim non-matching candidate rows
+  document.querySelectorAll('.cand-row[data-q]').forEach(el => {
+    el.classList.toggle('dim', q !== 'all' && el.dataset.q !== q);
+  });
+  // Update placements subtitle
+  const plSub = document.querySelector('#page-placements .page-subtitle');
+  if (plSub) {
+    const counts = {all:10, q1:4, q2:2, q3:2, q4:2};
+    plSub.textContent = q === 'all'
+      ? 'All confirmed placements this financial year — 10 candidates successfully placed'
+      : `${counts[q]} placement${counts[q]!==1?'s':''} in ${QD[q].badge} — other rows dimmed`;
+  }
+
+  // ── 3. RE-RENDER charts for whichever page is active
+  const activePid = document.querySelector('.page.active')?.id?.replace('page-','');
+  if (activePid) renderChartsForPage(activePid);
+}
+
+// Update overview KPI card values
+function updateOverviewKPIs(q) {
+  const d = QD[q];
+  const kpis = document.querySelectorAll('#page-overview .g6.mb18 .kpi');
+  const vals = [
+    [d.targetLbl, d.targetVal, d.targetSub],
+    ['Revenue Achieved', d.achVal, d.achSub],
+    ['Backlog Remaining', d.backlogVal, d.backlogSub],
+    ['Total Mandates', d.mandatesVal, d.mandatesSub],
+    ['Closed by LE', d.closedVal, d.closedSub],
+    ['Active Pipeline', d.activeVal, d.activeSub],
+  ];
+  kpis.forEach((kpi, i) => {
+    if (!vals[i]) return;
+    kpi.querySelector('.kpi-label').textContent = vals[i][0];
+    kpi.querySelector('.kpi-value').textContent = vals[i][1];
+    kpi.querySelector('.kpi-sub').textContent   = vals[i][2];
+  });
+  // Update overview page eyebrow / subtitle
+  const eyebrow = document.querySelector('#page-overview .page-eyebrow');
+  const subtitle = document.querySelector('#page-overview .page-subtitle');
+  if (eyebrow) eyebrow.textContent = q === 'all' ? "Board Summary · FY 2025-26" : `Board Summary · ${QD[q].badge}`;
+  if (subtitle) subtitle.textContent = q === 'all'
+    ? 'Full-year performance snapshot — April 2025 through March 2026 (Q4 partial)'
+    : `Filtered to ${QD[q].badge} — KPIs, chart and funnel reflect this quarter only`;
+}
+
+// Update overview funnel
+function updateFunnel(q) {
+  const d = QD[q];
+  const rows = document.querySelectorAll('#page-overview .funnel-row');
+  const data = [
+    { txt: d.fTotal,  n: d.fTotalN,   pct: 100,       color:'var(--blue-mid)' },
+    { txt: d.fIP,     n: d.fIPN,      pct: d.fIPpct,  color:'#3a8fe8' },
+    { txt: d.fSL,     n: d.fSLN,      pct: d.fSLpct,  color:'var(--gold-light)' },
+    { txt: d.fOF,     n: d.fOFN,      pct: d.fOFpct,  color:'var(--orange-mid)' },
+    { txt: d.fJoined, n: d.fJoinedN,  pct: d.fJpct,   color:'var(--green-mid)' },
+    { txt: d.fHold,   n: d.fHoldN,    pct: d.fHpct,   color:'var(--red-mid)' },
+  ];
+  rows.forEach((row, i) => {
+    if (!data[i]) return;
+    const fill  = row.querySelector('.funnel-fill');
+    const label = row.querySelector('.funnel-track-label');
+    const count = row.querySelector('.funnel-count');
+    if (fill)  { fill.style.width = Math.max(data[i].pct, 3) + '%'; fill.style.background = data[i].color; }
+    if (label) label.textContent = data[i].txt;
+    if (count) count.textContent = data[i].n;
+  });
+  // Mandate pipeline headline
+  const mHead = document.querySelectorAll('#page-overview .card-headline');
+  if (mHead[1]) {
+    const conv = d.fTotalN > 0 ? Math.round(d.fJoinedN / d.fTotalN * 100) : 0;
+    mHead[1].textContent = `${d.fTotalN} Total · ${conv}% Conversion`;
+  }
+}
+
+// ═══════════════════════════════
+// NAV
+// ═══════════════════════════════
+const FILTER_PAGES = new Set(['overview', 'quarterly', 'placements']);
+
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  el.classList.add('active');
+  // Show filter bar only on pages where it applies
+  const bar = document.getElementById('qfilter-bar');
+  if (bar) bar.style.display = FILTER_PAGES.has(id) ? 'flex' : 'none';
+  setTimeout(() => renderChartsForPage(id), 50);
+}
+
+// ═══════════════════════════════
+// CHART DEFAULTS
+// ═══════════════════════════════
+Chart.defaults.font.family = "'Outfit', sans-serif";
+Chart.defaults.color = '#525870';
+Chart.defaults.plugins.legend.labels.boxWidth = 10;
+Chart.defaults.plugins.legend.labels.padding = 12;
+
+const COLORS = {
+  green: '#0f7f56', greenA: 'rgba(15,127,86,0.75)',
+  red: '#c0284e',   redA:   'rgba(192,40,78,0.75)',
+  blue: '#1a68cc',  blueA:  'rgba(26,104,204,0.75)',
+  orange: '#c96a10',orangeA:'rgba(201,106,16,0.75)',
+  gold: '#9a6f00',  goldA:  'rgba(154,111,0,0.75)',
+  purple: '#6b3fa0',purpleA:'rgba(107,63,160,0.75)',
+  grey: '#9099b0',  greyA:  'rgba(144,153,176,0.4)',
+  gridLine: 'rgba(0,0,0,0.05)', white: '#ffffff'
+};
+
+function scaleOpts(yLabel) {
+  return {
+    x: { grid:{color:COLORS.gridLine}, ticks:{font:{size:11}} },
+    y: { grid:{color:COLORS.gridLine}, ticks:{font:{size:11}, callback: v => yLabel ? yLabel+v : v } }
+  };
+}
+
+function mkChart(id, config) {
+  if (chartInstances[id]) chartInstances[id].destroy();
+  const el = document.getElementById(id);
+  if (!el) return;
+  chartInstances[id] = new Chart(el, config);
+}
+
+// ═══════════════════════════════
+// RENDER PER PAGE
+// ═══════════════════════════════
+function renderChartsForPage(id) {
+  if (id === 'overview')   renderOverview();
+  if (id === 'quarterly')  renderQuarterly();
+  if (id === 'recon')      renderRecon();
+  if (id === 'pipeline')   renderPipeline();
+  if (id === 'atrisk')     renderRisk();
+  if (id === 'recruiter')  renderRecruiter();
+  if (id === 'placements') renderPlacements();
+  if (id === 'incentive')  renderIncentive();
+  if (id === 'clients')    renderClients();
+  if (id === 'retainer')   renderRetainer();
+}
+
+// ── OVERVIEW  ← quarter-aware
+function renderOverview() {
+  const d = QD[currentQ];
+  mkChart('ov-quarterly', {
+    type:'bar',
+    data:{
+      labels: d.ovLabels,
+      datasets:[
+        {label:'Target (₹L)',   data:d.ovTargets,  backgroundColor:COLORS.greyA,   borderRadius:4},
+        {label:'Achieved (₹L)', data:d.ovAchieved, backgroundColor:d.ovColors, borderRadius:4}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top'}}, scales:scaleOpts('₹')}
+  });
+  const donutTotal = d.donutData.reduce((a,b)=>a+b,0);
+  mkChart('ov-donut',{
+    type:'doughnut',
+    data:{labels:['Joined','Interview','Shortlisted','Offered','On Hold'],
+      datasets:[{data: donutTotal > 0 ? d.donutData : [1],
+        backgroundColor: donutTotal > 0
+          ? [COLORS.green,COLORS.blue,COLORS.gold,COLORS.orange,COLORS.red]
+          : ['rgba(144,153,176,0.2)'],
+        borderColor:COLORS.white,borderWidth:3,hoverOffset: donutTotal > 0 ? 6 : 0}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{
+        legend:{ display: donutTotal > 0, position:'right'},
+        tooltip:{ enabled: donutTotal > 0 }
+      }}
+  });
+}
+
+// ── QUARTERLY  ← quarter-aware: highlights selected Q, dims others
+function renderQuarterly() {
+  const qColors = (base) => ['q1','q2','q3','q4'].map((q,i) =>
+    currentQ === 'all' || currentQ === q ? base[i] : 'rgba(144,153,176,0.18)'
+  );
+  const achievedBase = [COLORS.greenA, COLORS.greenA, COLORS.orangeA, COLORS.redA];
+  const blueBase     = [COLORS.blueA,  COLORS.blueA,  COLORS.blueA,  COLORS.blueA];
+
+  mkChart('q-bar',{
+    type:'bar',
+    data:{labels:['Q1 (Apr–Jun)','Q2 (Jul–Sep)','Q3 (Oct–Dec)','Q4 (Jan–Mar)'],
+      datasets:[
+        {label:'Target',   data:[50,75,125,150],   backgroundColor:COLORS.greyA, borderRadius:4},
+        {label:'Achieved', data:[43.6,70.5,51.9,30.6], backgroundColor:qColors(achievedBase), borderRadius:4}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:scaleOpts('₹')}
+  });
+  mkChart('q-trend',{
+    type:'line',
+    data:{labels:['Q1','Q2','Q3','Q4'],
+      datasets:[
+        {label:'Cumulative Target',   data:[50,125,250,400], borderColor:COLORS.grey, borderDash:[5,4],borderWidth:2,tension:0.3,pointRadius:4,fill:false},
+        {label:'Cumulative Achieved', data:[43.6,114.1,166,196.6], borderColor:COLORS.blue, backgroundColor:'rgba(26,104,204,0.08)',borderWidth:2.5,tension:0.3,pointRadius:5,fill:true,
+          pointBackgroundColor: ['q1','q2','q3','q4'].map(q => currentQ==='all'||currentQ===q ? COLORS.blue : COLORS.greyA),
+          pointRadius: ['q1','q2','q3','q4'].map(q => currentQ==='all'||currentQ===q ? 7 : 3),
+        }
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:scaleOpts('₹')}
+  });
+  mkChart('q-stacked',{
+    type:'bar',
+    data:{labels:['Q1','Q2','Q3','Q4'],
+      datasets:[
+        {label:'Joined Revenue',   data:[31.67,18.86,18.19,13.19], backgroundColor:qColors([COLORS.greenA,COLORS.greenA,COLORS.greenA,COLORS.greenA]), borderRadius:2},
+        {label:'Retainer Received',data:[11.93,51.67,33.69,3.56],  backgroundColor:qColors([COLORS.blueA,COLORS.blueA,COLORS.blueA,COLORS.blueA]),  borderRadius:2},
+        {label:'Pipeline / Offers',data:[0,0,0,7.11],              backgroundColor:qColors([COLORS.orangeA,COLORS.orangeA,COLORS.orangeA,COLORS.orangeA]),borderRadius:2}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top'}},
+      scales:{x:{stacked:true,grid:{color:COLORS.gridLine}},y:{stacked:true,grid:{color:COLORS.gridLine},ticks:{callback:v=>'₹'+v+'L'}}}}
+  });
+  mkChart('q-mandates',{
+    type:'bar',
+    data:{labels:['Q1','Q2','Q3','Q4'],
+      datasets:[
+        {label:'Received', data:[16,24,42,8],  backgroundColor:qColors([COLORS.blueA,COLORS.blueA,COLORS.blueA,COLORS.blueA]),   borderRadius:3},
+        {label:'Closed',   data:[6,2,2,0],     backgroundColor:qColors([COLORS.greenA,COLORS.greenA,COLORS.greenA,COLORS.greenA]),borderRadius:3},
+        {label:'Active',   data:[2,5,18,7],    backgroundColor:qColors([COLORS.goldA,COLORS.goldA,COLORS.goldA,COLORS.goldA]),    borderRadius:3},
+        {label:'On Hold',  data:[8,17,18,0],   backgroundColor:qColors([COLORS.redA,COLORS.redA,COLORS.redA,COLORS.redA]),       borderRadius:3}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:scaleOpts()}
+  });
+
+  // Highlight the matching KPI card
+  document.querySelectorAll('#page-quarterly .g4 .kpi').forEach((kpi,i)=>{
+    const qs = ['q1','q2','q3','q4'];
+    if (currentQ==='all') { kpi.style.opacity='1'; kpi.style.outline=''; }
+    else {
+      kpi.style.opacity = qs[i]===currentQ ? '1' : '0.2';
+      kpi.style.outline = qs[i]===currentQ ? '2px solid var(--gold)' : '';
+      kpi.style.borderRadius = qs[i]===currentQ ? '12px' : '';
+    }
+  });
+}
+
+// ── RECON (static — not quarter-filtered)
+function renderRecon() {
+  mkChart('recon-pie',{
+    type:'doughnut',
+    data:{labels:['ExoTalent Cross-Billing','Offer Stage Pipeline','Rajeev Nanda Joining','Marcos Joining'],
+      datasets:[{data:[23.1,7.11,6.35,6.84],
+        backgroundColor:[COLORS.blue,COLORS.orange,COLORS.green,COLORS.gold],
+        borderColor:COLORS.white,borderWidth:3,hoverOffset:5}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'right'}}}
+  });
+  mkChart('recon-bar',{
+    type:'bar',
+    data:{labels:['Tally LE','Operational Tracker'],
+      datasets:[{label:'Revenue (₹L)',data:[153.24,196.63],
+        backgroundColor:[COLORS.blueA,COLORS.greenA],borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:scaleOpts('₹')}
+  });
+}
+
+// ── PIPELINE (static — live snapshot, not quarter-filtered)
+function renderPipeline() {
+  mkChart('pipe-stages',{
+    type:'bar',
+    data:{labels:['Under Discussion','Interview in Progress','Shortlisted','Offered','Joined','On Hold / Closed'],
+      datasets:[{label:'Mandates',data:[5,25,5,2,10,43],
+        backgroundColor:[COLORS.greyA,COLORS.blueA,COLORS.goldA,COLORS.orangeA,COLORS.greenA,COLORS.redA],
+        borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:scaleOpts()}
+  });
+  mkChart('pipe-rev',{
+    type:'bar',
+    data:{labels:['Under Discussion','Interview','Shortlisted','Offered'],
+      datasets:[{label:'Pipeline Value (₹L)',data:[83.8,326.7,86.9,7.1],
+        backgroundColor:[COLORS.greyA,COLORS.blueA,COLORS.goldA,COLORS.orangeA],borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:scaleOpts('₹')}
+  });
+  mkChart('pipe-recruiter',{
+    type:'bar',
+    data:{labels:['Diksha','Raman','Anand','Nikhil','Lucky','Shweta'],
+      datasets:[
+        {label:'Interview (₹L)',   data:[76.6,61,31.6,61.3,28.95,67.3], backgroundColor:COLORS.blueA, borderRadius:3},
+        {label:'Shortlisted (₹L)', data:[0,51,0,14.85,0,21],           backgroundColor:COLORS.goldA, borderRadius:3},
+        {label:'Offered (₹L)',     data:[1.5,0,0,5.61,0,0],            backgroundColor:COLORS.orangeA,borderRadius:3}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top'}},
+      scales:{x:{stacked:true,grid:{color:COLORS.gridLine}},y:{stacked:true,grid:{color:COLORS.gridLine},ticks:{callback:v=>'₹'+v+'L'}}}}
+  });
+  mkChart('pipe-mix',{
+    type:'doughnut',
+    data:{labels:['Non-Retainer (64)','Retainer (26)'],
+      datasets:[{data:[64,26],backgroundColor:[COLORS.greyA,COLORS.blue],borderColor:COLORS.white,borderWidth:3}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'right'}}}
+  });
+  mkChart('pipe-qwise',{
+    type:'bar',
+    data:{labels:['Q1','Q2','Q3','Q4'],
+      datasets:[{label:'Mandates Received',data:[16,24,42,8],
+        backgroundColor:[COLORS.blueA,COLORS.blueA,COLORS.blueA,COLORS.goldA],borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:scaleOpts()}
+  });
+}
+
+// ── RISK (static)
+function renderRisk() {
+  mkChart('risk-donut',{
+    type:'doughnut',
+    data:{labels:['AMPL','L&T','Gallagher','Agratas','Others on Hold'],
+      datasets:[{data:[85.1,56,50.6,64,60],
+        backgroundColor:[COLORS.red,COLORS.redA,'rgba(192,40,78,0.5)','rgba(201,106,16,0.8)',COLORS.greyA],
+        borderColor:COLORS.white,borderWidth:3,hoverOffset:5}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'50%',plugins:{legend:{position:'right'}}}
+  });
+}
+
+// ── RECRUITER (static)
+function renderRecruiter() {
+  mkChart('rec-compare',{
+    type:'bar',
+    data:{labels:['Diksha','Raman','Anand','Nikhil','Lucky','Shweta'],
+      datasets:[
+        {label:'Target (₹L)',       data:[40,70,50,40,25,60],              backgroundColor:COLORS.greyA, borderRadius:3},
+        {label:'Joined Rev. (₹L)',  data:[25.03,6.35,0,0,0,0],            backgroundColor:COLORS.greenA,borderRadius:3},
+        {label:'Active Pipeline (₹L)',data:[78.1,128,46.9,81.76,28.95,140.8],backgroundColor:COLORS.blueA, borderRadius:3}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:scaleOpts('₹')}
+  });
+}
+
+// ── PLACEMENTS  ← quarter-aware: filters bar chart + dims rows
+function renderPlacements() {
+  const allLabels= ['Ankur\n(Mahindra Powerol)','Abhijeet\n(Mahindra Log.)','Manvi\n(Amaraja)','Vaibhav\n(ICRA)','Marcos\n(Endurance)','Rajeev\n(L&T HC)','Rajendra\n(EPL)','Mukherji\n(Endurance)','PRASAD\n(Godrej)','Amiya\n(Godrej)'];
+  const allVals  = [23.1,14.85,16.8,9.75,6.84,6.35,5.06,5,2.35,2.07];
+  const allQtrs  = ['q3','q1','q2','q1','q4','q4','q2','q1','q3','q1'];
+  const allCols  = [COLORS.greenA,COLORS.greenA,COLORS.greenA,COLORS.blueA,COLORS.blueA,COLORS.goldA,COLORS.goldA,COLORS.orangeA,COLORS.greyA,COLORS.greyA];
+
+  let labels, vals, cols;
+  if (currentQ === 'all') {
+    labels = allLabels; vals = allVals; cols = allCols;
+  } else {
+    labels=[]; vals=[]; cols=[];
+    allLabels.forEach((l,i)=>{ if(allQtrs[i]===currentQ){labels.push(l);vals.push(allVals[i]);cols.push(allCols[i]);} });
+    if (!labels.length) { labels=['No placements this quarter']; vals=[0]; cols=[COLORS.greyA]; }
+  }
+
+  mkChart('pl-bar',{
+    type:'bar',
+    data:{labels, datasets:[{label:'Billing Amount (₹L)',data:vals,backgroundColor:cols,borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:COLORS.gridLine},ticks:{callback:v=>'₹'+v+'L'}},y:{grid:{display:false},ticks:{font:{size:10}}}}}
+  });
+
+  const qCols = [COLORS.greenA,COLORS.blueA,COLORS.goldA,COLORS.orangeA];
+  const qHighlight = ['q1','q2','q3','q4'].map((q,i)=> currentQ==='all'||currentQ===q ? qCols[i] : 'rgba(144,153,176,0.2)');
+  mkChart('pl-qtr',{
+    type:'bar',
+    data:{labels:['Q1 (Apr–Jun)','Q2 (Jul–Sep)','Q3 (Oct–Dec)','Q4 (Jan–Mar)'],
+      datasets:[
+        {label:'# Placements',data:[4,2,2,2],backgroundColor:qHighlight,borderRadius:5,yAxisID:'y'},
+        {label:'Revenue (₹L)',data:[31.67,21.86,25.45,13.19],type:'line',borderColor:COLORS.purple,backgroundColor:'rgba(107,63,160,0.08)',fill:true,tension:0.3,pointRadius:5,yAxisID:'y1'}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},
+      scales:{
+        x:{grid:{color:COLORS.gridLine}},
+        y:{position:'left',grid:{color:COLORS.gridLine},ticks:{callback:v=>v+' placements'}},
+        y1:{position:'right',grid:{display:false},ticks:{callback:v=>'₹'+v+'L'}}
+      }}
+  });
+}
+
+// ── INCENTIVE (static)
+function renderIncentive() {
+  mkChart('inc-curve',{
+    type:'line',
+    data:{labels:['80%','90%','100%','110%','120%','121%+'],
+      datasets:[
+        {label:'Existing Policy', data:[16.5,16.5,16.5,16.5,16.5,16.5],borderColor:COLORS.grey,borderDash:[5,4],borderWidth:2.5,pointRadius:4,tension:0,fill:false},
+        {label:'Proposed Policy', data:[7.2,8.1,9.0,16.5,18.0,25.41],borderColor:COLORS.green,backgroundColor:'rgba(15,127,86,0.07)',borderWidth:2.5,fill:true,tension:0.3,pointRadius:5}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},
+      scales:{x:{grid:{color:COLORS.gridLine}},y:{grid:{color:COLORS.gridLine},ticks:{callback:v=>'₹'+v+'L'}}}}
+  });
+  mkChart('inc-individual',{
+    type:'bar',
+    data:{labels:['Anand','Diksha','Raman','Shweta','Lucky','Nikhil'],
+      datasets:[
+        {label:'Existing',      data:[1.5,1.5,4.5,2,5,2],  backgroundColor:COLORS.greyA, borderRadius:4},
+        {label:'Proposed @100%',data:[1.5,1.2,2.1,1.65,0.75,1.8],backgroundColor:COLORS.greenA,borderRadius:4}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:scaleOpts('₹')}
+  });
+}
+
+// ── CLIENTS (static)
+function renderClients() {
+  mkChart('cl-bar',{
+    type:'bar',
+    data:{labels:['Mahindra Powerol','Mahindra Log.','Amaraja','ICRA','L&T HC','Endurance','EPL','Godrej'],
+      datasets:[
+        {label:'Revenue Earned (₹L)',data:[23.1,14.85,16.8,9.75,6.35,5,5.06,4.42],backgroundColor:COLORS.greenA,borderRadius:4},
+        {label:'Pipeline Value (₹L)', data:[0,20.5,0,0,21,1.5,0,0],               backgroundColor:COLORS.blueA, borderRadius:4}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:scaleOpts('₹')}
+  });
+}
+
+// ── RETAINER (static)
+function renderRetainer() {
+  mkChart('ret-status',{
+    type:'doughnut',
+    data:{labels:['Active (Interview/Shortlist)','On Hold / Closed','Joined'],
+      datasets:[{data:[10,11,2],
+        backgroundColor:[COLORS.blue,COLORS.red,COLORS.green],
+        borderColor:COLORS.white,borderWidth:3,hoverOffset:5}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right'}}}
+  });
+  mkChart('ret-qtr',{
+    type:'bar',
+    data:{labels:['Q1','Q2','Q3','Q4 (partial)'],
+      datasets:[{label:'Retainer Collected (₹L)',data:[11.93,51.67,33.69,3.56],
+        backgroundColor:[COLORS.greenA,COLORS.blueA,COLORS.goldA,COLORS.orangeA],borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:scaleOpts('₹')}
+  });
+}
+
+// ── INITIAL RENDER
+renderOverview();
+// Show filter bar on initial load (Overview is default)
+(function(){ const b = document.getElementById('qfilter-bar'); if(b) b.style.display='flex'; })();
+</script>
+</body>
+</html>
