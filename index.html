@@ -60,7 +60,7 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
 .hamburger span { display:block; width:20px; height:2px; background:var(--text-muted); border-radius:2px; transition:all 0.2s; }
 
 /* ═══ LAYOUT ═══ */
-.app-body { display:flex; flex:1; overflow:hidden; }
+.app-body { display:flex; flex:1; overflow:hidden; min-height:0; }
 
 /* ═══ SIDENAV ═══ */
 .sidenav {
@@ -196,29 +196,29 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
 /* ── MOBILE TOP BAR TITLE STACK ── */
 @media (max-width: 860px) {
   .top-bar {
-    flex-wrap: wrap;
-    height: auto;
-    padding: 10px 16px 8px;
-    gap: 0;
-    row-gap: 2px;
+    flex-wrap: nowrap;
+    height: var(--header-h);
+    padding: 0 16px;
+    gap: 10px;
   }
   .top-bar-row1 {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
+    gap: 10px;
+    flex-shrink: 0;
+    min-width: 0;
+    flex: 1;
   }
   .top-bar-title {
-    width: 100%;
     font-size: 11px;
     color: var(--text-dim);
-    padding-left: 36px; /* indent under hamburger */
-    white-space: normal;
-    overflow: visible;
-    text-overflow: unset;
-    line-height: 1.3;
-    padding-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    min-width: 0;
+    flex: 1;
+    padding: 0;
   }
+  .top-bar-badge, .top-bar-date { display: none; }
 }
 
 /* ── FILTER BUTTON — strong interactive states ── */
@@ -293,9 +293,15 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
 .stat-box-val { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:700; line-height:1; }
 
 /* ═══ TREEMAP ═══ */
-.tm-section { margin-bottom:10px; }
+.tm-section { margin-bottom:12px; }
 .tm-section-label { font-family:'DM Mono',monospace; font-size:9px; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-dim); margin-bottom:5px; display:flex; align-items:center; gap:8px; }
-.tm-row { display:flex; gap:6px; flex-wrap:wrap; }
+.tm-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  width: 100%;
+  min-width: 0;
+}
 
 /* ── TREEMAP CELL — prominent interactive states ── */
 .tm-cell {
@@ -305,13 +311,16 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  min-width: 0;        /* allow shrinking below content size */
+  min-height: 90px;
+  flex-basis: 120px;   /* CSS handles the base; JS only sets flex-grow */
   transition: transform 0.18s cubic-bezier(.4,0,.2,1), box-shadow 0.18s, opacity 0.2s, border-color 0.15s;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: 82px;
   user-select: none;
   -webkit-user-select: none;
+  word-break: break-word;
 }
 .tm-cell::after {
   content: 'tap to explore →';
@@ -324,6 +333,7 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
   opacity: 0;
   transition: opacity 0.15s;
   font-weight: 600;
+  white-space: nowrap;
 }
 .tm-cell:hover { transform:translateY(-4px) scale(1.01); box-shadow:0 10px 30px rgba(0,0,0,0.13); }
 .tm-cell:hover::after { opacity: 0.5; }
@@ -335,10 +345,35 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
 }
 .tm-cell.selected::after { content:'selected ✓'; opacity:0.65; }
 .tm-cell.dimmed { opacity:0.25; transform:none; pointer-events:none; }
-.tm-cell-name { font-size:12px; font-weight:600; line-height:1.3; margin-bottom:5px; }
-.tm-cell-count { font-family:'DM Mono',monospace; font-size:24px; font-weight:700; line-height:1; }
+.tm-cell-name { font-size:11.5px; font-weight:600; line-height:1.3; margin-bottom:5px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; }
+.tm-cell-count { font-family:'DM Mono',monospace; font-size:22px; font-weight:700; line-height:1; }
 .tm-cell-sub { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.06em; opacity:0.65; margin-top:2px; }
 .tm-cell-watermark { position:absolute; right:-6px; bottom:-10px; font-family:'Cormorant Garamond',serif; font-size:72px; font-weight:700; opacity:0.06; line-height:1; pointer-events:none; }
+
+/* Others / minor tile */
+.tm-cell-others { cursor:default; }
+.tm-minor-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 8px;
+}
+.tm-minor-tags { display:flex; flex-wrap:wrap; gap:5px; }
+.tm-minor-tag {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 9px;
+  border-radius: 6px;
+  border: 1.5px solid;
+  background: rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  line-height: 1.3;
+}
+.tm-minor-tag:hover { background:rgba(255,255,255,0.85); transform:translateY(-1px); }
 
 /* Legend */
 .tm-legend-item { display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-muted); }
@@ -420,11 +455,12 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
   .top-bar-divider, .top-bar-date { display:none; }
   .top-bar { padding:0 16px; }
 
+  /* sidenav slides in as overlay — remove from flow entirely */
   .sidenav {
     position: fixed;
     left: -260px;
     top: 0;
-    padding-top: 80px;
+    padding-top: 70px;
     bottom: 0;
     width: 240px;
     transition: left 0.25s cubic-bezier(.4,0,.2,1);
@@ -433,8 +469,8 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
   }
   .sidenav.open { left:0; box-shadow:4px 0 24px rgba(0,0,0,0.18); }
 
-  .app-body { flex-direction: column; }
-  .main { padding:18px 16px calc(18px + var(--bnav-h)); overflow-y:auto; flex:1; }
+  /* main fills full width since sidenav is out of flow */
+  .main { padding:18px 14px calc(18px + var(--bnav-h)); overflow-y:auto; flex:1; }
 
   .bottom-nav { display:block; }
 
@@ -446,26 +482,25 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
   .filter-bar { gap:6px; }
   .filt-btn { padding:8px 11px; font-size:11px; }
 
-  /* treemap wraps into smaller tiles */
-  .tm-row { flex-wrap:wrap; }
-  .tm-cell { flex: 1 1 140px !important; min-width:130px !important; }
+  /* treemap: cells wrap, each takes at least 45% width so 2 per row */
+  .tm-row { flex-wrap:wrap; gap:5px; }
+  .tm-cell { flex:1 1 calc(50% - 5px) !important; min-height:80px !important; }
 
   /* charts shorter on mobile */
   .ch240 { height:180px; }
   .ch260 { height:200px; }
   .ch300 { height:220px; }
+
+  /* treemap legend wraps */
+  .tm-legend-item { font-size:11px; }
 }
 
 @media (max-width: 480px) {
   .g4 { grid-template-columns:1fr; }
   .top-bar-badge { display:none; }
+  /* on very small screens, cells go full width */
   .tm-cell { flex:1 1 100% !important; }
 }
-
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width:5px; height:5px; }
-::-webkit-scrollbar-track { background:transparent; }
-::-webkit-scrollbar-thumb { background:var(--border); border-radius:10px; }
 </style>
 </head>
 <body>
@@ -478,10 +513,10 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
     </button>
     <div class="logo-mark">Leaders'<span>Edge</span></div>
     <div class="top-bar-divider"></div>
+    <div class="top-bar-title">Head of Total Rewards — Talent Mapping</div>
     <div class="top-bar-badge">CONFIDENTIAL</div>
     <div class="top-bar-date" id="topDate"></div>
   </div>
-  <div class="top-bar-title">Head of Total Rewards — Talent Mapping</div>
 </div>
 
 <div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
@@ -516,7 +551,7 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
 <!-- ═══════ OVERVIEW ═══════ -->
 <div class="page active" id="page-overview">
   <div class="page-header">
-    <div class="page-eyebrow">Talent Intelligence · 2025</div>
+    <div class="page-eyebrow">Talent Intelligence Report</div>
     <h1 class="page-title">Head of <em>Total Rewards</em><br>Leadership Landscape</h1>
     <p class="page-subtitle">A curated mapping of India's most experienced Total Rewards leaders across 15 leading organisations — for strategic talent acquisition.</p>
   </div>
@@ -708,7 +743,7 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
   </div>
 
   <!-- TREEMAP -->
-  <div id="tm-grid" class="mb18"></div>
+  <div id="tm-grid" class="mb18" style="width:100%;overflow:hidden;"></div>
 
   <!-- DRILLDOWN PANEL -->
   <div id="tm-panel" class="card" style="display:none;">
@@ -753,21 +788,111 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
 <script>
 // ── DATA ──────────────────────────────────────────────────────────
 const LEADERS = [
-  { id:1,  name:"Sanjay Gawde",          company:"Mahindra Logistics",  title:"CHRO",                                              yoe:22, city:"Mumbai",    edu:"MMS · University of Mumbai",    sector:"Conglomerate", focus:["Strategic HR Leadership","Total Rewards & Performance Mgmt","Talent Management","HR Digitalization","Skill Development"],               linkedin:"https://www.linkedin.com/in/sanjay-gawde-1851888/" },
-  { id:2,  name:"Suresh Babu",            company:"Hero MotoCorp",        title:"Head — Total Rewards & HR Automation",              yoe:28, city:"New Delhi", edu:"MBA HR · IIM Ghaziabad",        sector:"Conglomerate", focus:["Total Rewards & Compensation","M&A Integration","Digital Transformation","Talent Acquisition","Industrial Relations"],               linkedin:"https://www.linkedin.com/in/suresh-babu-70072017/" },
-  { id:3,  name:"Ritu Dubey",             company:"Mahindra Group",       title:"Head — Total Rewards",                              yoe:19, city:"Mumbai",    edu:"MBA HR · ISB&M",                sector:"Conglomerate", focus:["Global Mobility","Total Rewards","Digital Transformation","Workforce Planning"],                                                         linkedin:"https://www.linkedin.com/in/ritu-dubey-910080a/" },
-  { id:4,  name:"Ankita Subba",           company:"Vedanta",              title:"Group Head — Performance & Total Rewards",          yoe:23, city:"Gurugram",  edu:"MBA HR · FMS CMM Jabalpur",     sector:"Conglomerate", focus:["Total Rewards & Performance Mgmt","Change Management","Executive Education","Talent Acquisition","Strategic HR Leadership"],           linkedin:"https://www.linkedin.com/in/ankita-subba-b2b44012/" },
-  { id:5,  name:"Pooja Gupta Bhagat",     company:"Mondelez",             title:"Head TR & Performance — Asia, Middle East & Africa", yoe:26, city:"Mumbai",    edu:"MBA HR · Asian Institute of Management", sector:"MNC", focus:["Strategic Leadership","Data-Driven HR","Performance Governance","Change Management","Culture Building"],                          linkedin:"https://www.linkedin.com/in/poojgupta/" },
-  { id:6,  name:"Megha Chatterjee",       company:"Syngenta",             title:"Head of Total Rewards — AMEA & JANZ",               yoe:16, city:"Mumbai",    edu:"MBA HRM · XIMB Bhubaneswar",    sector:"MNC",          focus:["Compensation Strategy","Global Mobility","Benefits Administration","Salary Benchmarking","HR Technology"],                           linkedin:"https://www.linkedin.com/in/megha-chatterjee-ccp%C2%AE-67320956/" },
-  { id:7,  name:"Prasanna Kumar Reddy C", company:"HP",                   title:"Head of Total Rewards, India",                      yoe:26, city:"Bangalore", edu:"PGCHRM · XLRI Jamshedpur",      sector:"MNC",          focus:["Digital Transformation","Compensation and Benefits","Total Rewards"],                                                                   linkedin:"https://www.linkedin.com/in/prasanna-kumar-reddy-c-236b678/" },
-  { id:8,  name:"Gaurav Mahajan",         company:"L'Oréal",              title:"Head — Total Rewards",                              yoe:17, city:"Mumbai",    edu:"MBA HR · Delhi School of Economics", sector:"MNC",     focus:["Global Mobility","Change Management"],                                                                                                linkedin:"https://www.linkedin.com/in/gaurav-mahajan-5248b511/" },
-  { id:9,  name:"Rajiv Purohit",          company:"IKEA",                 title:"Country Head — Total Rewards, Payroll & Mobility",  yoe:17, city:"Bangalore", edu:"PGDM · XLRI Jamshedpur",        sector:"MNC",          focus:["HR Technology","Process Optimization","Payroll","Talent Acquisition"],                                                                 linkedin:"https://www.linkedin.com/in/rajiv-purohit-a8722134/" },
-  { id:10, name:"Deepika Maskara",        company:"Piramal Pharma",       title:"Global Head — Total Rewards & Corporate HR",        yoe:19, city:"Mumbai",    edu:"MBA · Symbiosis",               sector:"Conglomerate", focus:["Total Rewards","Performance Management","Digitalization"],                                                                              linkedin:"https://www.linkedin.com/in/deepika-maskara/" },
-  { id:11, name:"Praveen Gandhi",         company:"Tata Technologies",    title:"Global Head & VP — Performance & Rewards, Mobility", yoe:21, city:"Pune",     edu:"MBA · Singapore Management University", sector:"Conglomerate", focus:["Total Rewards","Policy & Processes","Global Mobility"],                                                                  linkedin:"https://www.linkedin.com/in/praveengandhi-tr-boardcomp-genai-gphr/" },
-  { id:12, name:"Ananta Bhatia",          company:"Nestle",               title:"Head Total Rewards",                                yoe:16, city:"Gurugram",  edu:"MBA · Asian Institute of Management", sector:"MNC",     focus:["Talent Management","Performance & Rewards","Change Management"],                                                                    linkedin:"https://www.linkedin.com/in/ananta-bhatia-17192a30/" },
-  { id:13, name:"Balaji Subbaraman",      company:"Bosch",                title:"Head — TR, HR Analytics & Digitalisation",          yoe:26, city:"Bangalore", edu:"MBA · University of Mumbai",    sector:"MNC",          focus:["HR Analytics","Talent Acquisition","Performance Management"],                                                                           linkedin:"https://www.linkedin.com/in/balajisubbaraman/" },
-  { id:14, name:"Neha Khanna",            company:"Tata Projects",        title:"AVP and Head HR — Buildings & Infrastructure",      yoe:18, city:"Mumbai",    edu:"MBA · Symbiosis",               sector:"Conglomerate", focus:["Business Partnering","Total Rewards","Organisation Change Management"],                                                                linkedin:"https://www.linkedin.com/in/neha-khanna-456b181b/" },
-  { id:15, name:"Sumit Katyal",           company:"Biocon",               title:"AVP HR — Global Head (Total Rewards)",              yoe:27, city:"Bangalore", edu:"MBA · Symbiosis",               sector:"Pharma / Life Sciences", focus:["Compensation and Benefits","Global Payroll","Global Mobility","Change Management"],                                     linkedin:"https://www.linkedin.com/in/sumit-katyal-29baa32/" },
+  {
+    id:1, name:"Sanjay Gawde", company:"Mahindra Logistics", title:"CHRO",
+    yoe:22, city:"Mumbai", edu:"MMS · University of Mumbai (2002)",
+    sector:"Conglomerate",
+    focus:["Strategic HR Leadership","Total Rewards & Performance","Talent Management","HR Digitalisation & Analytics","Entrepreneurship & Skill Development"],
+    linkedin:"https://www.linkedin.com/in/sanjay-gawde-1851888/"
+  },
+  {
+    id:2, name:"Suresh Babu", company:"Hero MotoCorp", title:"Head - Total Rewards & HR Automation",
+    yoe:28, city:"New Delhi", edu:"MBA HR · Institute of Management Technology, Ghaziabad",
+    sector:"Conglomerate",
+    focus:["Total Rewards & Compensation","Mergers, Acquisitions & Divestitures","Digital Transformation","Talent Acquisition & Workforce Planning","Industrial Relations & Statutory Compliance"],
+    linkedin:"https://www.linkedin.com/in/suresh-babu-70072017/"
+  },
+  {
+    id:3, name:"Ritu Dubey", company:"Mahindra Group", title:"Head - Total Rewards",
+    yoe:19, city:"Mumbai", edu:"MBA HR · International School of Business & Media (2005)",
+    sector:"Conglomerate",
+    focus:["Global Mobility","Total Rewards","Digital Transformation","Workforce Planning"],
+    linkedin:"https://www.linkedin.com/in/ritu-dubey-910080a/"
+  },
+  {
+    id:4, name:"Ankita Subba", company:"Vedanta", title:"Group Head - Performance & Total Rewards",
+    yoe:23, city:"Gurugram", edu:"MBA HR · Faculty of Management Studies, CMM, Jabalpur (2003)",
+    sector:"Conglomerate",
+    focus:["Total Rewards & Performance","Strategic HR Leadership","Change Management","Executive Education","Talent Acquisition"],
+    linkedin:"https://www.linkedin.com/in/ankita-subba-b2b44012/"
+  },
+  {
+    id:5, name:"Pooja Gupta Bhagat", company:"Mondelez", title:"Head Total Rewards & Performance - Asia, Middle East & Africa",
+    yoe:26, city:"Mumbai", edu:"MBA HR · Asian Institute of Management (2000)",
+    sector:"MNC",
+    focus:["Strategic HR Leadership","Data-Driven HR & Performance","Change Management","Culture & Employee Experience"],
+    linkedin:"https://www.linkedin.com/in/poojgupta/"
+  },
+  {
+    id:6, name:"Megha Chatterjee", company:"Syngenta", title:"Head of Total Rewards AMEA & JANZ",
+    yoe:16, city:"Mumbai", edu:"MBA HRM · Xavier Institute of Management, Bhubaneswar (2016)",
+    sector:"MNC",
+    focus:["Total Rewards & Compensation","Global Mobility","Benefits Administration","Performance Management","HR Technology"],
+    linkedin:"https://www.linkedin.com/in/megha-chatterjee-ccp%C2%AE-67320956/"
+  },
+  {
+    id:7, name:"Prasanna Kumar Reddy C", company:"HP", title:"Head of Total Rewards, India",
+    yoe:26, city:"Bangalore", edu:"PGCHRM · XLRI Jamshedpur (2015)",
+    sector:"MNC",
+    focus:["Digital Transformation","Compensation & Benefits","Total Rewards"],
+    linkedin:"https://www.linkedin.com/in/prasanna-kumar-reddy-c-236b678/"
+  },
+  {
+    id:8, name:"Gaurav Mahajan", company:"L'Oréal", title:"Head - Total Rewards",
+    yoe:17, city:"Mumbai", edu:"MBA HR · Delhi School of Economics (2008)",
+    sector:"MNC",
+    focus:["Global Mobility","Change Management"],
+    linkedin:"https://www.linkedin.com/in/gaurav-mahajan-5248b511/"
+  },
+  {
+    id:9, name:"Rajiv Purohit", company:"IKEA", title:"Country Head - Total Rewards, Payroll & Mobility",
+    yoe:17, city:"Bangalore", edu:"PGDM · XLRI Jamshedpur (2012)",
+    sector:"MNC",
+    focus:["HR Technology","Payroll","Talent Acquisition"],
+    linkedin:"https://www.linkedin.com/in/rajiv-purohit-a8722134/"
+  },
+  {
+    id:10, name:"Deepika Maskara", company:"Piramal Pharma", title:"Global Head - Total Rewards and Corporate HR Head",
+    yoe:19, city:"Mumbai", edu:"MBA · Symbiosis",
+    sector:"Conglomerate",
+    focus:["Total Rewards","Performance Management","Digitalisation"],
+    linkedin:"https://www.linkedin.com/in/deepika-maskara/"
+  },
+  {
+    id:11, name:"Praveen Gandhi", company:"Tata Technologies", title:"Global Head & Vice President – Performance & Rewards, Mobility and GSD",
+    yoe:21, city:"Pune", edu:"MBA · Singapore Management University (2011)",
+    sector:"Conglomerate",
+    focus:["Total Rewards","Policy & Processes","Global Mobility"],
+    linkedin:"https://www.linkedin.com/in/praveengandhi-tr-boardcomp-genai-gphr/"
+  },
+  {
+    id:12, name:"Ananta Bhatia", company:"Nestle", title:"Head Total Rewards",
+    yoe:16, city:"Gurugram", edu:"MBA · Asian Institute of Management (2013)",
+    sector:"MNC",
+    focus:["Talent Management","Performance & Rewards","Change Management"],
+    linkedin:"https://www.linkedin.com/in/ananta-bhatia-17192a30/"
+  },
+  {
+    id:13, name:"Balaji Subbaraman", company:"Bosch", title:"Head - Total Rewards, HR Analytics & Digitalisation",
+    yoe:26, city:"Bangalore", edu:"MBA · University of Mumbai (2000)",
+    sector:"MNC",
+    focus:["HR Analytics","Talent Acquisition","Performance Management"],
+    linkedin:"https://www.linkedin.com/in/balajisubbaraman/"
+  },
+  {
+    id:14, name:"Neha Khanna", company:"Tata Projects", title:"AVP and Head HR - Buildings & Infrastructure",
+    yoe:18, city:"Mumbai", edu:"MBA · Symbiosis (2008)",
+    sector:"Conglomerate",
+    focus:["Business Partnering","Total Rewards","Change Management"],
+    linkedin:"https://www.linkedin.com/in/neha-khanna-456b181b/"
+  },
+  {
+    id:15, name:"Sumit Katyal", company:"Biocon", title:"AVP HR - Global Head (Total Rewards)",
+    yoe:27, city:"Bangalore", edu:"MBA · Symbiosis (2004)",
+    sector:"Pharma / Life Sciences",
+    focus:["Compensation & Benefits","Global Payroll","Global Mobility","Change Management"],
+    linkedin:"https://www.linkedin.com/in/sumit-katyal-29baa32/"
+  },
 ];
 
 // Skill frequency
@@ -815,6 +940,10 @@ function showPage(id, el) {
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(el) el.classList.add('active');
+  // sync bottom nav
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));
+  const bnav = document.getElementById('bnav-'+id);
+  if(bnav) bnav.classList.add('active');
   renderPage(id);
 }
 
@@ -1131,31 +1260,31 @@ const TM_GROUPS = [
     id: 'rewards',
     label: 'Rewards & Compensation',
     color: { bg:'rgba(29,138,104,0.12)', border:'#1d8a68', text:'#0e5c43', count:'#1d8a68', swatch:'rgba(29,138,104,0.18)' },
-    skills: ['Total Rewards','Total Rewards & Performance Mgmt','Total Rewards & Compensation','Compensation Strategy','Compensation and Benefits','Benefits Administration','Salary Benchmarking','Performance Management','Performance & Rewards','Performance Governance']
+    skills: ['Total Rewards','Total Rewards & Performance','Total Rewards & Compensation','Compensation & Benefits','Performance Management','Performance & Rewards','Data-Driven HR & Performance','Benefits Administration','Global Payroll']
   },
   {
     id: 'talent',
     label: 'Talent & People',
     color: { bg:'rgba(26,104,204,0.10)', border:'#1a68cc', text:'#1a4a99', count:'#1a68cc', swatch:'rgba(26,104,204,0.15)' },
-    skills: ['Talent Management','Talent Acquisition','Strategic HR Leadership','Strategic Leadership','Business Partnering','Culture Building','Workforce Planning','Industrial Relations','Skill Development','Executive Education']
+    skills: ['Talent Management','Talent Acquisition','Talent Acquisition & Workforce Planning','Strategic HR Leadership','Business Partnering','Culture & Employee Experience','Workforce Planning','Industrial Relations & Statutory Compliance','Executive Education','Entrepreneurship & Skill Development']
   },
   {
     id: 'digital',
     label: 'Digital & Analytics',
     color: { bg:'rgba(107,63,160,0.10)', border:'#6b3fa0', text:'#4a2a80', count:'#6b3fa0', swatch:'rgba(107,63,160,0.14)' },
-    skills: ['Digital Transformation','HR Digitalization','Digitalization','Data-Driven HR','HR Analytics','HR Technology','Process Optimization']
+    skills: ['Digital Transformation','HR Digitalisation & Analytics','Digitalisation','HR Analytics','HR Technology','Policy & Processes']
   },
   {
     id: 'strategy',
     label: 'Strategy & Change',
     color: { bg:'rgba(201,106,16,0.10)', border:'#c96a10', text:'#8a4400', count:'#c96a10', swatch:'rgba(201,106,16,0.14)' },
-    skills: ['Change Management','Organisation Change Management','M&A Integration','Policy & Processes','Strategic Leadership']
+    skills: ['Change Management','Mergers, Acquisitions & Divestitures']
   },
   {
     id: 'operations',
-    label: 'Operations & Mobility',
+    label: 'Mobility & Operations',
     color: { bg:'rgba(192,40,78,0.09)', border:'#c0284e', text:'#880028', count:'#c0284e', swatch:'rgba(192,40,78,0.13)' },
-    skills: ['Global Mobility','Global Payroll','Payroll']
+    skills: ['Global Mobility','Payroll']
   }
 ];
 
@@ -1165,14 +1294,12 @@ function renderCompetencies() {
   const grid = document.getElementById('tm-grid');
   if (!grid) return;
 
-  // Pre-compute counts for every skill
   const freq = {};
   LEADERS.forEach(l => l.focus.forEach(s => { freq[s] = (freq[s]||0)+1; }));
 
   grid.innerHTML = '';
 
   TM_GROUPS.forEach(group => {
-    // Only include skills that actually appear in data
     const cells = group.skills
       .map(s => ({ skill: s, count: freq[s] || 0 }))
       .filter(c => c.count > 0)
@@ -1180,38 +1307,28 @@ function renderCompetencies() {
 
     if (!cells.length) return;
 
+    // Split into main cells (count ≥ 2) and minor (count = 1)
+    const main  = cells.filter(c => c.count >= 2);
+    const minor = cells.filter(c => c.count === 1);
+
     const section = document.createElement('div');
     section.className = 'tm-section';
 
-    // Section label
     const lbl = document.createElement('div');
     lbl.className = 'tm-section-label';
     lbl.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${group.color.border};flex-shrink:0"></span>${group.label}`;
     section.appendChild(lbl);
 
-    // Cells row
     const row = document.createElement('div');
     row.className = 'tm-row';
 
-    const maxCount = cells[0].count;
-    cells.forEach(({ skill, count }) => {
-      const pct = count / 15; // proportion of all leaders
-      // flex-grow proportional to count so big skills take more space
-      const flexGrow = Math.max(count, 1);
-      const minH = 76 + count * 10; // taller = higher count
-
+    // Render main cells (count ≥ 2) — sized proportionally
+    main.forEach(({ skill, count }) => {
       const cell = document.createElement('div');
       cell.className = 'tm-cell';
       cell.dataset.skill = skill;
       cell.dataset.group = group.id;
-      cell.style.cssText = `
-        flex: ${flexGrow} 1 0;
-        min-width: ${Math.max(100, count * 22)}px;
-        min-height: ${minH}px;
-        background: ${group.color.bg};
-        border-color: ${group.color.border};
-        color: ${group.color.text};
-      `;
+      cell.style.cssText = `flex:${count * 2} 1 0;background:${group.color.bg};border-color:${group.color.border};`;
       cell.innerHTML = `
         <div class="tm-cell-watermark" style="color:${group.color.border}">${count}</div>
         <div class="tm-cell-name" style="color:${group.color.text}">${skill}</div>
@@ -1228,6 +1345,59 @@ function renderCompetencies() {
       row.appendChild(cell);
     });
 
+    // If there are minor (count=1) skills, render them as a compact list tile
+    if (minor.length > 0) {
+      const otherCell = document.createElement('div');
+      otherCell.className = 'tm-cell tm-cell-others';
+      otherCell.style.cssText = `flex:${Math.max(minor.length, 2)} 1 0;background:${group.color.bg};border-color:${group.color.border};border-style:dashed;justify-content:flex-start;`;
+      const tagHtml = minor.map(({skill}) =>
+        `<span class="tm-minor-tag" style="border-color:${group.color.border};color:${group.color.text};">${skill}</span>`
+      ).join('');
+      otherCell.innerHTML = `
+        <div class="tm-minor-label" style="color:${group.color.text};">Also covered</div>
+        <div class="tm-minor-tags">${tagHtml}</div>
+      `;
+      // clicking any individual tag selects it
+      minor.forEach(({skill}) => {
+        const tag = otherCell.querySelector(`[data-minor="${skill}"]`);
+      });
+      otherCell.addEventListener('click', (e) => {
+        const tag = e.target.closest('.tm-minor-tag');
+        if (tag) {
+          const skill = tag.textContent.trim();
+          tmSelect(skill, group);
+        }
+      });
+      // Add hover per tag
+      otherCell.querySelectorAll('.tm-minor-tag').forEach(tag => {
+        tag.addEventListener('mouseenter', () => {
+          document.getElementById('tm-hint').textContent = `${tag.textContent.trim()} — 1 leader`;
+        });
+        tag.addEventListener('mouseleave', () => {
+          document.getElementById('tm-hint').textContent = tmSelected ? `${tmSelected} selected` : 'Click a cell to explore';
+        });
+      });
+      row.appendChild(otherCell);
+    }
+
+    // If ALL skills are count=1 (no main cells), render them as individual small cells
+    if (main.length === 0 && minor.length > 0) {
+      row.innerHTML = ''; // clear the others cell we just made
+      minor.forEach(({ skill, count }) => {
+        const cell = document.createElement('div');
+        cell.className = 'tm-cell';
+        cell.dataset.skill = skill;
+        cell.style.cssText = `flex:1 1 0;background:${group.color.bg};border-color:${group.color.border};`;
+        cell.innerHTML = `
+          <div class="tm-cell-name" style="color:${group.color.text};font-size:11px;">${skill}</div>
+          <div class="tm-cell-count" style="color:${group.color.count};font-size:18px;">1</div>
+          <div class="tm-cell-sub" style="color:${group.color.text}">of 15 leaders</div>
+        `;
+        cell.addEventListener('click', () => tmSelect(skill, group));
+        row.appendChild(cell);
+      });
+    }
+
     section.appendChild(row);
     grid.appendChild(section);
   });
@@ -1237,16 +1407,21 @@ function tmSelect(skill, group) {
   if (tmSelected === skill) { tmClear(); return; }
   tmSelected = skill;
 
-  // Visual state
-  document.querySelectorAll('.tm-cell').forEach(c => {
+  // Visual state for main cells
+  document.querySelectorAll('.tm-cell:not(.tm-cell-others)').forEach(c => {
     const isThis = c.dataset.skill === skill;
     c.classList.toggle('selected', isThis);
     c.classList.toggle('dimmed', !isThis);
   });
+  // Visual state for minor tags
+  document.querySelectorAll('.tm-minor-tag').forEach(t => {
+    const isThis = t.textContent.trim() === skill;
+    t.style.opacity = isThis ? '1' : '0.3';
+    t.style.fontWeight = isThis ? '700' : '500';
+  });
 
   document.getElementById('tm-hint').textContent = `${skill} selected`;
 
-  // Panel
   const matches = LEADERS.filter(l => l.focus.includes(skill));
   const pct = Math.round(matches.length / 15 * 100);
 
@@ -1273,9 +1448,8 @@ function tmSelect(skill, group) {
 
 function tmClear() {
   tmSelected = null;
-  document.querySelectorAll('.tm-cell').forEach(c => {
-    c.classList.remove('selected', 'dimmed');
-  });
+  document.querySelectorAll('.tm-cell').forEach(c => c.classList.remove('selected','dimmed'));
+  document.querySelectorAll('.tm-minor-tag').forEach(t => { t.style.opacity='1'; t.style.fontWeight='500'; });
   document.getElementById('tm-panel').style.display = 'none';
   document.getElementById('tm-hint').textContent = 'Click a cell to explore';
 }
@@ -1284,33 +1458,12 @@ function tmClear() {
 function toggleNav() {
   const nav = document.getElementById('sidenav');
   const overlay = document.getElementById('navOverlay');
-  const isOpen = nav.classList.contains('open');
-  if (isOpen) { closeNav(); } else {
-    nav.classList.add('open');
-    overlay.classList.add('visible');
-  }
+  if (nav.classList.contains('open')) { closeNav(); }
+  else { nav.classList.add('open'); overlay.classList.add('visible'); }
 }
 function closeNav() {
   document.getElementById('sidenav').classList.remove('open');
   document.getElementById('navOverlay').classList.remove('visible');
-}
-
-function syncBnav(id) {
-  document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
-  const btn = document.getElementById('bnav-' + id);
-  if (btn) btn.classList.add('active');
-}
-
-// Override showPage to also sync bottom nav
-const _origShowPage = showPage;
-// Patch showPage to sync bnav
-function showPage(id, el) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  if(el) el.classList.add('active');
-  syncBnav(id);
-  renderPage(id);
 }
 
 // ── INIT ──
