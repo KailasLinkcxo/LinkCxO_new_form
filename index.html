@@ -101,6 +101,9 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
 .nav-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:140; }
 .nav-overlay.visible { display:block; }
 
+/* top bar row1 — logo+controls row */
+.top-bar-row1 { display:flex; align-items:center; gap:14px; flex:1; min-width:0; }
+
 /* ═══ MAIN ═══ */
 .main { flex:1; overflow-y:auto; padding:28px 28px calc(28px + var(--bnav-h)); }
 
@@ -189,6 +192,34 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
 .search-wrap input:focus { border-color:var(--le-green); box-shadow:0 0 0 3px rgba(29,138,104,0.10); }
 .search-wrap input::placeholder { color:var(--text-dim); }
 .search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-dim); font-size:14px; }
+
+/* ── MOBILE TOP BAR TITLE STACK ── */
+@media (max-width: 860px) {
+  .top-bar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 10px 16px 8px;
+    gap: 0;
+    row-gap: 2px;
+  }
+  .top-bar-row1 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+  .top-bar-title {
+    width: 100%;
+    font-size: 11px;
+    color: var(--text-dim);
+    padding-left: 36px; /* indent under hamburger */
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    line-height: 1.3;
+    padding-bottom: 4px;
+  }
+}
 
 /* ── FILTER BUTTON — strong interactive states ── */
 .filt-btn {
@@ -392,7 +423,8 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
   .sidenav {
     position: fixed;
     left: -260px;
-    top: var(--header-h);
+    top: 0;
+    padding-top: 80px;
     bottom: 0;
     width: 240px;
     transition: left 0.25s cubic-bezier(.4,0,.2,1);
@@ -440,14 +472,16 @@ body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif;
 
 <!-- TOP BAR -->
 <div class="top-bar">
-  <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
-  <div class="logo-mark">Leaders'<span>Edge</span></div>
-  <div class="top-bar-divider"></div>
+  <div class="top-bar-row1">
+    <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="logo-mark">Leaders'<span>Edge</span></div>
+    <div class="top-bar-divider"></div>
+    <div class="top-bar-badge">CONFIDENTIAL</div>
+    <div class="top-bar-date" id="topDate"></div>
+  </div>
   <div class="top-bar-title">Head of Total Rewards — Talent Mapping</div>
-  <div class="top-bar-badge">CONFIDENTIAL</div>
-  <div class="top-bar-date" id="topDate"></div>
 </div>
 
 <div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
