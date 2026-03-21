@@ -1,1 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talent Mapping — Head of Total Rewards</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #f7f6f2;
+  --surface:  #ffffff;
+  --surface2: #f0ede6;
+  --ink:      #1a1a18;
+  --ink-mid:  #4a4a44;
+  --ink-dim:  #9a9a90;
+  --rule:     rgba(26,26,24,0.12);
+  --rule2:    rgba(26,26,24,0.06);
+  --green:    #1d7a58;
+  --green-d:  #0f4f38;
+  --green-dim:rgba(29,122,88,0.10);
+  --gold:     #b8963c;
+  --gold-dim: rgba(184,150,60,0.10);
+  --blue:     #1a4a8a;
+  --blue-dim: rgba(26,74,138,0.09);
+}
 
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);}
+
+/* ── TOP BAR ── */
+.topbar{
+  background:var(--surface);
+  border-bottom:2px solid var(--green);
+  padding:0 32px;
+  height:60px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 1px 8px rgba(0,0,0,0.06);
+}
+.topbar-left{display:flex;align-items:center;gap:16px;}
+.logo{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink);}
+.logo span{color:var(--green);}
+.divider{width:1px;height:22px;background:var(--rule);}
+.topbar-title{font-size:12px;font-weight:500;color:var(--ink-mid);}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.topbar-badge{font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;background:var(--green-dim);border:1px solid rgba(29,122,88,0.2);border-radius:20px;color:var(--green-d);letter-spacing:0.06em;}
+.view-toggle{display:flex;background:var(--bg);border:1px solid var(--rule);border-radius:8px;overflow:hidden;}
+.vtb{padding:6px 14px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--ink-dim);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:6px;}
+.vtb:hover{color:var(--ink);background:rgba(0,0,0,0.04);}
+.vtb.active{background:var(--green);color:#fff;}
+.vtb svg{width:14px;height:14px;stroke:currentColor;fill:none;}
+
+/* ── FILTER BAR ── */
+.filterbar{
+  padding:14px 32px;
+  background:var(--surface);
+  border-bottom:1px solid var(--rule2);
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.search-wrap{position:relative;min-width:220px;flex:1;max-width:340px;}
+.search-wrap input{
+  width:100%;background:var(--bg);border:1px solid var(--rule);border-radius:8px;
+  padding:8px 12px 8px 34px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);
+  outline:none;transition:border-color 0.2s;
+}
+.search-wrap input:focus{border-color:var(--green);background:var(--surface);}
+.search-wrap input::placeholder{color:var(--ink-dim);}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink-dim);font-size:14px;pointer-events:none;}
+.filt{
+  background:var(--surface);border:1px solid var(--rule);border-radius:8px;
+  padding:7px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
+  color:var(--ink-mid);cursor:pointer;transition:all 0.15s;white-space:nowrap;
+}
+.filt:hover{border-color:var(--green);color:var(--green);background:var(--green-dim);}
+.filt.active{background:var(--green);border-color:var(--green);color:#fff;}
+.sort-wrap{display:flex;align-items:center;gap:6px;margin-left:auto;}
+.sort-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-dim);letter-spacing:0.08em;text-transform:uppercase;}
+.sort-select{
+  background:var(--surface);border:1px solid var(--rule);border-radius:8px;
+  padding:7px 28px 7px 12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--ink);
+  outline:none;cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239a9a90' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+}
+.result-count{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink-dim);white-space:nowrap;}
+.result-count strong{color:var(--green);}
+
+/* ── MAIN AREA ── */
+.main{padding:28px 32px 60px;}
+
+/* ══ CARD VIEW ══ */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px;}
+
+.cand-card{
+  background:var(--surface);border:1px solid var(--rule2);border-radius:14px;
+  padding:22px;position:relative;overflow:hidden;
+  transition:box-shadow 0.2s,transform 0.15s,border-color 0.15s;
+  cursor:default;
+  animation:fadeUp 0.35s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.cand-card:hover{box-shadow:0 8px 28px rgba(0,0,0,0.09);transform:translateY(-2px);border-color:rgba(29,122,88,0.22);}
+.cand-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green);opacity:0.6;}
+
+.card-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;}
+.avatar{
+  width:42px;height:42px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:15px;font-weight:700;
+  flex-shrink:0;
+}
+.card-meta .name{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--ink);line-height:1.2;}
+.card-meta .company{font-size:12px;font-weight:500;color:var(--green);margin-top:3px;}
+.card-meta .title{font-size:11px;color:var(--ink-mid);margin-top:2px;line-height:1.4;font-style:italic;}
+.linkedin-btn{
+  margin-left:auto;flex-shrink:0;
+  width:30px;height:30px;border-radius:7px;
+  background:rgba(26,74,138,0.08);border:1px solid rgba(26,74,138,0.18);
+  color:#1a6cc0;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;text-decoration:none;transition:background 0.15s;
+}
+.linkedin-btn:hover{background:rgba(26,74,138,0.18);}
+
+.card-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.chip{
+  font-size:10px;font-family:'DM Mono',monospace;font-weight:500;
+  padding:3px 8px;border-radius:20px;white-space:nowrap;
+}
+.chip.city{background:var(--green-dim);color:var(--green-d);border:1px solid rgba(29,122,88,0.15);}
+.chip.yoe{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(26,74,138,0.18);}
+
+.card-divider{height:1px;background:var(--rule2);margin-bottom:12px;}
+
+.criteria-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;}
+.criterion{
+  display:flex;align-items:center;gap:6px;
+  font-size:10.5px;color:var(--ink-mid);
+  background:var(--bg);border-radius:6px;padding:5px 8px;
+}
+.criterion .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.criterion.yes .dot{background:var(--green);}
+.criterion-label{font-size:10px;line-height:1.3;flex:1;}
+.criterion-val{font-family:'DM Mono',monospace;font-size:9px;color:var(--green);font-weight:600;white-space:nowrap;}
+
+.card-edu{font-size:11px;color:var(--ink-dim);display:flex;align-items:flex-start;gap:5px;margin-bottom:10px;line-height:1.4;}
+.prev-companies{display:flex;flex-wrap:wrap;gap:4px;}
+.prev-tag{
+  font-size:10px;padding:2px 7px;border-radius:4px;
+  background:var(--surface2);border:1px solid var(--rule2);color:var(--ink-mid);
+}
+
+/* ══ TABLE VIEW ══ */
+.tbl-scroll{overflow-x:auto;border-radius:14px;border:1px solid var(--rule2);box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+table.ctbl{width:100%;border-collapse:collapse;background:var(--surface);}
+.ctbl thead tr{border-bottom:2px solid var(--rule);}
+.ctbl th{
+  padding:12px 16px;text-align:left;
+  font-family:'DM Mono',monospace;font-size:9px;font-weight:600;
+  letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-dim);
+  background:var(--surface);white-space:nowrap;
+}
+.ctbl th:first-child{width:36px;padding-left:20px;}
+.ctbl tbody tr{border-bottom:1px solid var(--rule2);transition:background 0.15s;animation:fadeUp 0.3s ease both;}
+.ctbl tbody tr:last-child{border-bottom:none;}
+.ctbl tbody tr:hover td{background:var(--green-dim);}
+.ctbl td{padding:13px 16px;vertical-align:top;font-size:13px;}
+.ctbl td:first-child{padding-left:20px;color:var(--ink-dim);font-family:'DM Mono',monospace;font-size:11px;font-weight:500;}
+.tbl-name{font-family:'Playfair Display',serif;font-size:14px;font-weight:600;color:var(--ink);line-height:1.2;}
+.tbl-company{font-size:11px;font-weight:500;color:var(--green);margin-top:2px;}
+.tbl-title{font-size:10.5px;color:var(--ink-dim);margin-top:2px;font-style:italic;line-height:1.3;max-width:200px;}
+.tbl-city{font-size:12px;color:var(--ink-mid);}
+.tbl-yoe{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);line-height:1;}
+.tbl-yoe-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--ink-dim);margin-top:1px;}
+.tbl-criteria{display:flex;flex-direction:column;gap:3px;}
+.crit-row{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--ink-mid);}
+.crit-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;}
+.crit-yrs{font-family:'DM Mono',monospace;font-size:9px;color:var(--green);font-weight:600;margin-left:2px;}
+.tbl-edu{font-size:11px;color:var(--ink-mid);line-height:1.4;max-width:160px;}
+.tbl-prev{display:flex;flex-wrap:wrap;gap:3px;max-width:180px;}
+.tbl-tag{font-size:10px;padding:2px 6px;border-radius:3px;background:var(--surface2);border:1px solid var(--rule2);color:var(--ink-mid);}
+.tbl-link{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:6px;background:var(--blue-dim);border:1px solid rgba(26,74,138,0.18);color:var(--blue);font-size:11px;font-weight:700;text-decoration:none;}
+.tbl-link:hover{background:rgba(26,74,138,0.18);}
+
+/* ── HIDDEN ── */
+.hidden{display:none!important;}
+.no-results{text-align:center;padding:60px 20px;color:var(--ink-dim);font-family:'DM Mono',monospace;font-size:12px;}
+
+/* ── FOOTER ── */
+.doc-footer{
+  padding:16px 32px;border-top:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-dim);
+  background:var(--surface);
+}
+.footer-logo{font-weight:500;color:var(--ink-mid);text-transform:uppercase;letter-spacing:0.12em;}
+.footer-logo span{color:var(--green);}
+
+/* ── MOBILE ── */
+@media(max-width:700px){
+  .topbar,.filterbar,.main,.doc-footer{padding-left:16px;padding-right:16px;}
+  .topbar-title,.divider,.topbar-badge{display:none;}
+  .card-grid{grid-template-columns:1fr;}
+  .criteria-grid{grid-template-columns:1fr;}
+  .sort-wrap{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">Leaders'<span>Edge</span></div>
+    <div class="divider"></div>
+    <div class="topbar-title">Head of Total Rewards — Talent Mapping</div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-badge">CONFIDENTIAL</div>
+    <div class="view-toggle">
+      <button class="vtb active" id="btn-card" onclick="setView('card')">
+        <svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Cards
+      </button>
+      <button class="vtb" id="btn-table" onclick="setView('table')">
+        <svg viewBox="0 0 24 24" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Table
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filterbar">
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="search" placeholder="Search name, company, city…">
+  </div>
+  <button class="filt active" onclick="filterCity('all',this)">All Cities</button>
+  <button class="filt" onclick="filterCity('Mumbai',this)">Mumbai</button>
+  <button class="filt" onclick="filterCity('Bangalore',this)">Bangalore</button>
+  <button class="filt" onclick="filterCity('New Delhi',this)">Delhi</button>
+  <button class="filt" onclick="filterCity('Other',this)">Other</button>
+  <div class="sort-wrap">
+    <span class="sort-label">Sort</span>
+    <select class="sort-select" id="sort" onchange="render()">
+      <option value="default">Default</option>
+      <option value="yoe-desc">Experience ↓</option>
+      <option value="yoe-asc">Experience ↑</option>
+      <option value="name">Name A–Z</option>
+    </select>
+  </div>
+  <div class="result-count"><strong id="rcount">16</strong> of 16 candidates</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="card-grid" id="card-view"></div>
+  <div class="tbl-scroll hidden" id="table-view">
+    <table class="ctbl">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Candidate</th>
+          <th>Exp.</th>
+          <th>Location</th>
+          <th>Criteria Met</th>
+          <th>Education</th>
+          <th>Previous Companies</th>
+          <th>LinkedIn</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+    <div class="no-results hidden" id="no-results-tbl">No candidates match your filter.</div>
+  </div>
+  <div class="no-results hidden" id="no-results-card">No candidates match your filter.</div>
+</div>
+
+<!-- FOOTER -->
+<footer class="doc-footer">
+  <div class="footer-logo">Leaders'<span>Edge</span></div>
+  <div>Strictly Confidential · For Internal Use Only</div>
+  <div id="footer-date"></div>
+</footer>
+
+<script>
+const CANDIDATES = [
+  {id:1,name:"Sanjay Gawde",company:"Mahindra Logistics",title:"CHRO",yoe:22,city:"Mumbai",edu:"MMS · University of Mumbai (2002)",prev:["Lupin","John Deere"],criteria:[{label:"Reward Strategy",val:"15+ yrs"},{label:"HR Technology",val:"Yes"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/sanjay-gawde-1851888/"},
+  {id:2,name:"Mohammad Tasneem",company:"Deutsche Bank",title:"Head of Rewards, India",yoe:27,city:"Mumbai",edu:"PGDM · IILM (1999)",prev:["Goldman Sachs","Novartis","Capgemini","HCL","Artech"],criteria:[{label:"Reward Strategy",val:"18+ yrs"},{label:"HR Technology",val:"Yes"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/mohammad-tasneem-785a343/"},
+  {id:3,name:"Rupam Singh",company:"JSW Steel",title:"Head of Human Resources",yoe:17,city:"Mumbai",edu:"MBA · Delhi School of Economics (2010)",prev:["Schindler","Cipla","IBM"],criteria:[{label:"Reward Strategy",val:"15+ yrs"},{label:"HR Technology",val:"Yes"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/rupam-singh-73a811b/"},
+  {id:4,name:"Sanjay Singh",company:"Aditya Birla Capital",title:"EVP and Head - Compensation & Benefits",yoe:29,city:"Mumbai",edu:"PGDM · Institute of Engineering & Rural Technology (1996)",prev:["Aditya Birla Group","L'Oréal"],criteria:[{label:"Reward Strategy",val:"20+ yrs"},{label:"HR Technology",val:"Yes"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/sanjay-singh-8047837/"},
+  {id:5,name:"Blesson Jacob",company:"Barclays",title:"APAC Head of Reward",yoe:26,city:"Mumbai",edu:"MBA · Symbiosis Center for Management & HRD (2003)",prev:["Citi Bank","GE Capital"],criteria:[{label:"Reward Strategy",val:"23+ yrs"},{label:"HR Technology",val:"Yes"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/blessonjacob/"},
+  {id:6,name:"Radhika Singh Banerjee",company:"Tata Steel",title:"Chief - Talent Mgmt & Employee Experience",yoe:27,city:"Jamshedpur",edu:"MS · London School of Economics (2000)",prev:["GE","EXL","Hewitt Associates"],criteria:[{label:"Reward Strategy",val:"25+ yrs"},{label:"HR Technology",val:"Yes"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/radhikasinghbanerjee/"},
+  {id:7,name:"Suresh Babu",company:"Hero MotoCorp",title:"Head - Total Rewards & HR Automation",yoe:28,city:"New Delhi",edu:"MBA HR · Institute of Management Technology, Ghaziabad",prev:["BASF","General Motors"],criteria:[{label:"Reward Strategy",val:"20+ yrs"},{label:"HR Technology",val:"Yes"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/suresh-babu-70072017/"},
+  {id:8,name:"Ritu Dubey",company:"Mahindra Group",title:"Head - Total Rewards",yoe:19,city:"Mumbai",edu:"MBA HR · International School of Business & Media (2005)",prev:["Glenmark Pharma","Citi Bank","ICICI","Accenture"],criteria:[{label:"Reward Strategy",val:"10+ yrs"},{label:"HR Technology",val:"Yes"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/ritu-dubey-910080a/"},
+  {id:9,name:"Ankita Subba",company:"Vedanta",title:"Group Head - Performance & Total Rewards",yoe:23,city:"Gurugram",edu:"MBA HR · Faculty of Management Studies, CMM, Jabalpur (2003)",prev:["IBM Daksh","Max Healthcare"],criteria:[{label:"Reward Strategy",val:"15+ yrs"},{label:"HR Technology",val:"SAP, Darwin Box, Oracle"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/ankita-subba-b2b44012/"},
+  {id:10,name:"Prasanna Kumar Reddy C",company:"HP",title:"Head of Total Rewards, India",yoe:26,city:"Bangalore",edu:"PGCHRM · XLRI Jamshedpur (2015)",prev:["Tata Technologies","Perot Systems","Accenture","Hewitt"],criteria:[{label:"Reward Strategy",val:"20+ yrs"},{label:"HR Technology",val:"SAP"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/prasanna-kumar-reddy-c-236b678/"},
+  {id:11,name:"Gaurav Mahajan",company:"L'Oréal",title:"Head - Total Rewards",yoe:17,city:"Mumbai",edu:"MBA HR · Delhi School of Economics (2008)",prev:["Kotak","ICICI"],criteria:[{label:"Reward Strategy",val:"8 yrs"},{label:"HR Technology",val:"HRIS"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/gaurav-mahajan-5248b511/"},
+  {id:12,name:"Rajiv Purohit",company:"IKEA",title:"Country Head - Total Rewards, Payroll & Mobility",yoe:17,city:"Bangalore",edu:"PGDM · XLRI Jamshedpur (2012)",prev:["JSW","Britannia","Reliance"],criteria:[{label:"Reward Strategy",val:"7 yrs"},{label:"HR Technology",val:"Yes"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/rajiv-purohit-a8722134/"},
+  {id:13,name:"Deepika Maskara",company:"Piramal Pharma",title:"Global Head - Total Rewards & Corporate HR",yoe:19,city:"Mumbai",edu:"MBA · Symbiosis",prev:["IDFC Bank","Mercer","Genpact","TCS"],criteria:[{label:"Reward Strategy",val:"15 yrs"},{label:"HR Technology",val:"Yes"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/deepika-maskara/"},
+  {id:14,name:"Praveen Gandhi",company:"Tata Technologies",title:"Global Head & VP – Performance & Rewards, Mobility",yoe:21,city:"Pune",edu:"MBA · Singapore Management University (2011)",prev:["Kalyani Group","RPG Group","Zensar","Birlasoft","Mercer"],criteria:[{label:"Reward Strategy",val:"21 yrs"},{label:"HR Technology",val:"Yes"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/praveengandhi-tr-boardcomp-genai-gphr/"},
+  {id:15,name:"Balaji Subbaraman",company:"Bosch",title:"Head - Total Rewards, HR Analytics & Digitalisation",yoe:26,city:"Bangalore",edu:"MMS · University of Mumbai (2000)",prev:["Coffe Day Beverages","Phillips","ICICI","TCS"],criteria:[{label:"Reward Strategy",val:"20+ yrs"},{label:"HR Technology",val:"Yes"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/balajisubbaraman/"},
+  {id:16,name:"Sumit Katyal",company:"Biocon",title:"AVP HR - Global Head (Total Rewards)",yoe:27,city:"Bangalore",edu:"MBA · Symbiosis (2004)",prev:["GE","Ingersoll Rand","PwC","Hewitt Associates","Vedanta"],criteria:[{label:"Reward Strategy",val:"20+ yrs"},{label:"HR Technology",val:"Yes"},{label:"Global Mobility",val:"Yes"},{label:"Cross-Functional Mgmt",val:"Yes"}],linkedin:"https://www.linkedin.com/in/sumit-katyal-29baa32/"},
+];
+
+const AV_BG = ['#d4ece2','#dce8f8','#f8e8dc','#ede0f5','#d4ece2','#f5e0e8','#dce8f8','#d4ece2','#f8f0dc','#dce8f8','#e8f0d4','#f5e0e8','#f8e8dc','#d4ece2','#dce8f8','#f8f0dc'];
+const AV_TX = ['#0f4f38','#1a4a8a','#8a4000','#5a1a8a','#0f4f38','#8a0030','#1a4a8a','#0f4f38','#7a5a00','#1a4a8a','#3a6a00','#8a0030','#8a4000','#0f4f38','#1a4a8a','#7a5a00'];
+
+function initials(n){return n.split(' ').slice(0,2).map(w=>w[0]).join('');}
+
+let currentCity='all', currentSearch='', currentView='card';
+
+function getFiltered(){
+  let data=[...CANDIDATES];
+  if(currentCity!=='all'){
+    if(currentCity==='Other') data=data.filter(c=>!['Mumbai','Bangalore','New Delhi','Gurugram','Pune','Jamshedpur'].slice(0,4).includes(c.city)&&c.city!=='Mumbai'&&c.city!=='Bangalore'&&c.city!=='New Delhi');
+    else data=data.filter(c=>c.city===currentCity);
+  }
+  const q=currentSearch.toLowerCase();
+  if(q) data=data.filter(c=>c.name.toLowerCase().includes(q)||c.company.toLowerCase().includes(q)||c.city.toLowerCase().includes(q)||c.prev.some(p=>p.toLowerCase().includes(q)));
+  const s=document.getElementById('sort').value;
+  if(s==='yoe-desc') data.sort((a,b)=>b.yoe-a.yoe);
+  else if(s==='yoe-asc') data.sort((a,b)=>a.yoe-b.yoe);
+  else if(s==='name') data.sort((a,b)=>a.name.localeCompare(b.name));
+  return data;
+}
+
+function render(){
+  const data=getFiltered();
+  document.getElementById('rcount').textContent=data.length;
+
+  // CARDS
+  const cg=document.getElementById('card-view');
+  const nc=document.getElementById('no-results-card');
+  if(!data.length){cg.innerHTML='';nc.classList.remove('hidden');}
+  else{
+    nc.classList.add('hidden');
+    cg.innerHTML=data.map((c,i)=>{
+      const bg=AV_BG[c.id-1], tx=AV_TX[c.id-1];
+      const criteriaHtml=c.criteria.map(cr=>`
+        <div class="criterion yes">
+          <div class="dot"></div>
+          <div class="criterion-label">${cr.label}</div>
+          <div class="criterion-val">${cr.val}</div>
+        </div>`).join('');
+      const prevHtml=c.prev.slice(0,4).map(p=>`<span class="prev-tag">${p}</span>`).join('');
+      const extra=c.prev.length>4?`<span class="prev-tag">+${c.prev.length-4}</span>`:'';
+      return `<div class="cand-card" style="animation-delay:${i*30}ms">
+        <div class="card-header">
+          <div class="avatar" style="background:${bg};color:${tx}">${initials(c.name)}</div>
+          <div class="card-meta">
+            <div class="name">${c.name}</div>
+            <div class="company">${c.company}</div>
+            <div class="title">${c.title}</div>
+          </div>
+          <a class="linkedin-btn" href="${c.linkedin}" target="_blank" rel="noopener">in</a>
+        </div>
+        <div class="card-chips">
+          <span class="chip city">📍 ${c.city}</span>
+          <span class="chip yoe">${c.yoe} yrs exp.</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="criteria-grid">${criteriaHtml}</div>
+        <div class="card-edu">🎓 ${c.edu}</div>
+        <div class="card-divider" style="margin-top:10px"></div>
+        <div class="prev-companies">${prevHtml}${extra}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // TABLE
+  const tb=document.getElementById('table-body');
+  const nt=document.getElementById('no-results-tbl');
+  if(!data.length){tb.innerHTML='';nt.classList.remove('hidden');}
+  else{
+    nt.classList.add('hidden');
+    tb.innerHTML=data.map((c,i)=>{
+      const criteriaHtml=c.criteria.map(cr=>`<div class="crit-row"><div class="crit-dot"></div>${cr.label}<span class="crit-yrs">${cr.val}</span></div>`).join('');
+      const prevHtml=c.prev.map(p=>`<span class="tbl-tag">${p}</span>`).join('');
+      return `<tr style="animation-delay:${i*20}ms">
+        <td>${String(c.id).padStart(2,'0')}</td>
+        <td>
+          <div class="tbl-name">${c.name}</div>
+          <div class="tbl-company">${c.company}</div>
+          <div class="tbl-title">${c.title}</div>
+        </td>
+        <td>
+          <div class="tbl-yoe">${c.yoe}</div>
+          <div class="tbl-yoe-sub">years</div>
+        </td>
+        <td><div class="tbl-city">📍 ${c.city}</div></td>
+        <td><div class="tbl-criteria">${criteriaHtml}</div></td>
+        <td><div class="tbl-edu">${c.edu}</div></td>
+        <td><div class="tbl-prev">${prevHtml}</div></td>
+        <td><a class="tbl-link" href="${c.linkedin}" target="_blank" rel="noopener">in</a></td>
+      </tr>`;
+    }).join('');
+  }
+}
+
+function filterCity(city,el){
+  currentCity=city;
+  document.querySelectorAll('.filt').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function setView(v){
+  currentView=v;
+  document.getElementById('card-view').classList.toggle('hidden',v!=='card');
+  document.getElementById('no-results-card').classList.add('hidden');
+  document.getElementById('table-view').classList.toggle('hidden',v!=='table');
+  document.getElementById('no-results-tbl').classList.add('hidden');
+  document.getElementById('btn-card').classList.toggle('active',v==='card');
+  document.getElementById('btn-table').classList.toggle('active',v==='table');
+}
+
+document.getElementById('search').addEventListener('input',e=>{currentSearch=e.target.value;render();});
+document.getElementById('footer-date').textContent=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+
+render();
+</script>
+</body>
+</html>
