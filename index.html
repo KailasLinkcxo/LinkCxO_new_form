@@ -202,6 +202,10 @@ select{border:1px solid var(--border);border-radius:var(--radius);padding:8px 12
   <div id="targetSection" style="display:none">
     <label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px">Selected companies</label>
     <div class="chip-input" id="chipBox" onclick="document.getElementById('compInput').focus()"><input type="text" id="compInput" placeholder="Type + Enter..." onkeydown="chipKey(event)" /></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;margin-bottom:4px">
+      <span style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3)">AI Suggestions</span>
+      <button class="btn btn-s btn-sm" onclick="aiCos=null;genCompanySugs()">Re-suggest</button>
+    </div>
     <div id="aiSugs"></div>
   </div>
   </div>
@@ -237,6 +241,8 @@ select{border:1px solid var(--border);border-radius:var(--radius);padding:8px 12
 <script>
 let geminiKey='',serpKey='',queries=null,params=null,searchResults={},collapsed={};
 let searchScope='same_industry',targetCompanies=[],aiCos=null;
+let editingIdx=-1,shortlistAbort=false;
+let searchAllAbort=false;
 
 window.addEventListener('DOMContentLoaded',()=>{
   geminiKey=localStorage.getItem('nx_gk')||'';serpKey=localStorage.getItem('nx_sk')||'';
@@ -290,7 +296,7 @@ async function testGemini(){
     box.style.background='var(--danger-bg)';box.style.color='var(--danger)';box.style.borderColor='#f5c6c6';
   }
 }
-function loadSample(){document.getElementById('jdInput').value=`Job Title: Director of Solutions Engineering - AI/ML\nLocation: Hyderabad, Mumbai, Delhi, Bangalore, India\nExperience: 15-22 years\n\nWe are seeking a Director of Solutions Engineering to lead our AI/ML practice.\n\nResponsibilities:\n- Lead AI solution architecture for enterprise clients\n- Design agentic AI systems, MLOps pipelines, LLMOps frameworks\n- Drive deal structuring and technical pre-sales\n\nRequirements:\n- 15+ years in enterprise solutions engineering\n- Expertise in Agentic AI, Enterprise Architecture, MLOps, LLMOps\n- Background in IT Services, AI Platforms, Product Engineering\n\nTarget Companies: TCS, Infosys, HCLTech, Wipro, Tech Mahindra, Fractal Analytics, Tiger Analytics`}
+function loadSample(){document.getElementById('jdInput').value=`Job Title: Director of Solutions Engineering - AI/ML\nLocation: Hyderabad, Mumbai, Delhi, Bangalore, India\nExperience: 15-22 years\n\nWe are seeking a Director of Solutions Engineering to lead our AI/ML practice.\n\nResponsibilities:\n- Lead AI solution architecture for enterprise clients\n- Design agentic AI systems, MLOps pipelines, LLMOps frameworks\n- Drive deal structuring and technical pre-sales\n\nRequirements:\n- 15+ years in enterprise solutions engineering\n- Expertise in Agentic AI, Enterprise Architecture, MLOps, LLMOps\n- Background in IT Services, AI Platforms, Product Engineering\n\nTarget Companies: TCS, Infosys, HCLTech, Wipro, Tech Mahindra, Fractal Analytics, Tiger Analytics`;}
 
 function resetAll(){
   // Clear JD
@@ -319,7 +325,7 @@ function resetAll(){
   btn.disabled=false;btn.textContent='Generate queries';
 }
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
-function getNum(){return parseInt(document.getElementById('numResults').value)||100}
+
 
 function setScope(s){
   searchScope=s;document.querySelectorAll('.scope-card').forEach(c=>c.classList.remove('active'));
@@ -357,7 +363,7 @@ function removeCo(i){targetCompanies.splice(i,1);renderChips();renderSugs()}
 function chipKey(e){if(e.key==='Enter'&&e.target.value.trim()){e.preventDefault();addCo(e.target.value);e.target.value=''}if(e.key==='Backspace'&&!e.target.value&&targetCompanies.length)removeCo(targetCompanies.length-1)}
 function renderChips(){const box=document.getElementById('chipBox');const inp=document.getElementById('compInput');box.innerHTML='';targetCompanies.forEach((c,i)=>{const ch=document.createElement('span');ch.className='chip';ch.innerHTML=`${esc(c)} <span class="x" onclick="event.stopPropagation();removeCo(${i})">&times;</span>`;box.appendChild(ch)});box.appendChild(inp);inp.value=''}
 
-const SC={S1:{bg:"#e8f0fe",bd:"#4285f4",tx:"#1a56db",nm:"Exact match"},S2:{bg:"#e6f4ea",bd:"#34a853",tx:"#1a7431",nm:"Synonym expansion"},S3:{bg:"#fef7e0",bd:"#f9ab00",tx:"#945a00",nm:"Skills-led"},S4:{bg:"#fce8e6",bd:"#ea4335",tx:"#b3261e",nm:"Company-reverse"},S5:{bg:"#f3e8fd",bd:"#9334e6",tx:"#6b21a8",nm:"Platform diversified"},S6:{bg:"#fde8d8",bd:"#e8710a",tx:"#9a3412",nm:"Adjacent-role"}};
+const SC={S1:{bg:"#e8f0fe",bd:"#4285f4",tx:"#1a56db",nm:"Exact match"},S2:{bg:"#e6f4ea",bd:"#34a853",tx:"#1a7431",nm:"Synonym expansion"},S3:{bg:"#fef7e0",bd:"#f9ab00",tx:"#945a00",nm:"Skills-led"},S4:{bg:"#fce8e6",bd:"#ea4335",tx:"#b3261e",nm:"Company-reverse"},S5:{bg:"#f3e8fd",bd:"#9334e6",tx:"#6b21a8",nm:"Platform diversified"},S6:{bg:"#fde8d8",bd:"#e8710a",tx:"#9a3412",nm:"Adjacent-role"},S7:{bg:"#e8faf0",bd:"#059669",tx:"#065f46",nm:"Commercial/GTM"},S8:{bg:"#fef3c7",bd:"#d97706",tx:"#92400e",nm:"Builder/CoE"}};
 
 function buildSys(){
   let scope='';
@@ -611,6 +617,8 @@ async function generate(){
     queries=parsed.queries;params=parsed.extracted_params||{};
     queries.forEach((_,i)=>{collapsed[i]=true});
     renderResults();
+    // Run structural diagnostic immediately (A-section checks don't need search results)
+    runDiagnostic();
   }catch(e){
     if(err)err.innerHTML=`<div class="err"><strong>Generation failed:</strong> ${esc(e.message)}</div>`;
     console.error('generate() error:',e);
@@ -657,7 +665,11 @@ async function runSearch(idx){
     console.log('Search complete:',allItems.length,'results across',page,'page(s)');
   }catch(e){
     console.error('Search failed:',e);
-    searchResults[idx]={items:[{title:'Error',link:'',snippet:e.message+' — If "Failed to fetch", run: python3 -m http.server 8080 and open localhost:8080',position:0}],total:0,fetched:0};
+    const isCors=e.message==='Failed to fetch'||e.message.includes('NetworkError')||e.message.includes('CORS');
+    const corsHint=isCors?' ⚠ CORS blocked — open this file via a local server: run <code>python3 -m http.server 8080</code> in the same folder, then open http://localhost:8080':'';
+    searchResults[idx]={items:[{title:'Error',link:'',snippet:e.message+(isCors?' — CORS blocked: run python3 -m http.server 8080 in this folder, then open http://localhost:8080':''),position:0}],total:0,fetched:0};
+    const statusDiv=document.getElementById('sstatus-'+idx);
+    if(statusDiv&&isCors)statusDiv.innerHTML=`<span style="color:var(--danger)">⚠ CORS blocked — run <code style="background:#f0efeb;padding:1px 5px;border-radius:3px">python3 -m http.server 8080</code> in this folder and open <a href="http://localhost:8080" style="color:var(--info)">localhost:8080</a></span>`;
   }
   if(btn){btn.disabled=false;btn.textContent='Re-search';}
   if(statusEl)statusEl.textContent='';
@@ -667,7 +679,21 @@ async function runSearch(idx){
 async function searchAll(){
   if(!serpKey){alert('Enter Serper.dev API key first.');return}
   if(!confirm(`${queries.length} queries will be searched. Each query uses 1 credit per page fetched (10 results/page) until all results are exhausted. Proceed?`))return;
-  for(let i=0;i<queries.length;i++){await runSearch(i);await new Promise(r=>setTimeout(r,400))}
+  searchAllAbort=false;
+  let totalCreditsUsed=0;
+  // Show cancel button in status area
+  const statusDiv=document.getElementById('searchAllStatus');
+  if(statusDiv){statusDiv.style.display='block';statusDiv.innerHTML=`<span>Searching… </span><span id="searchAllCredits" style="font-weight:600">0 credits used</span> &nbsp;<button class="btn btn-s btn-sm" onclick="searchAllAbort=true;this.textContent='Cancelling…'">Cancel</button>`;}
+  for(let i=0;i<queries.length;i++){
+    if(searchAllAbort)break;
+    const credsBefore=Object.values(searchResults).reduce((s,r)=>s+(r?.fetched?Math.ceil(r.fetched/10):0),0);
+    await runSearch(i);
+    totalCreditsUsed+=Math.ceil((searchResults[i]?.fetched||0)/10);
+    const credEl=document.getElementById('searchAllCredits');if(credEl)credEl.textContent=totalCreditsUsed+' credits used';
+    await new Promise(r=>setTimeout(r,400));
+  }
+  if(statusDiv)statusDiv.style.display='none';
+  searchAllAbort=false;
   // All searches done — switch to summary and show shortlist prompt
   switchTab('summary');
   const slArea=document.getElementById('shortlistArea');
@@ -783,8 +809,9 @@ function runDiagnostic(){
     b6:{label:'LinkedIn profile rate',score:sc(liPct,90,75),detail:liPct+'% are confirmed LinkedIn profile URLs (not job boards or company pages)'},
   };
 
+  const maxScore=Object.keys(checks).length*2;
   const total=Object.values(checks).reduce((s,c)=>s+c.score,0);
-  const pct=Math.round(total/24*100);
+  const pct=Math.round(total/maxScore*100);
   const grade=pct>=83?'Excellent':pct>=58?'Good':pct>=33?'Fair':'Poor';
   const gradeColor=pct>=83?'var(--accent)':pct>=58?'#945a00':'var(--danger)';
 
@@ -803,7 +830,7 @@ function runDiagnostic(){
   const html=`<div class="summary-card fade" style="margin-top:16px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
       <h2 style="margin:0">Search diagnostic</h2>
-      <div style="text-align:right"><div style="font-size:30px;font-weight:700;color:${gradeColor};line-height:1">${total}/24</div><div style="font-size:13px;color:${gradeColor};font-weight:600">${grade}</div></div>
+      <div style="text-align:right"><div style="font-size:30px;font-weight:700;color:${gradeColor};line-height:1">${total}/${maxScore}</div><div style="font-size:13px;color:${gradeColor};font-weight:600">${grade}</div></div>
     </div>
     <div style="background:#f0efeb;border-radius:8px;height:8px;margin-bottom:20px;overflow:hidden"><div style="background:${gradeColor};height:100%;width:${pct}%;border-radius:8px"></div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
@@ -825,9 +852,10 @@ let shortlistRunning=false;
 async function runShortlist(){
   if(shortlistRunning)return;
   if(!geminiKey){alert('Gemini API key required for shortlisting.');return}
-  const profiles=getUnique().filter(x=>isLI(x.link));
+  const profiles=getUnique().filter(x=>x.link&&x.title!=='Error');
   if(!profiles.length){alert('Run searches first to get profiles.');return}
   shortlistRunning=true;
+  shortlistAbort=false;
   shortlistData=[];
   const jd=document.getElementById('jdInput').value.trim();
   const area=document.getElementById('shortlistArea');
@@ -836,6 +864,7 @@ async function runShortlist(){
     <div style="font-size:13px;color:var(--text3);margin-bottom:20px">This uses Gemini to evaluate each profile. Takes ~30–60 seconds.</div>
     <div id="sl-progress-bar" style="background:#f0efeb;border-radius:8px;height:8px;max-width:400px;margin:0 auto;overflow:hidden"><div id="sl-progress-fill" style="background:var(--accent);height:100%;width:0%;border-radius:8px;transition:width .3s"></div></div>
     <div id="sl-progress-label" style="font-size:12px;color:var(--text3);margin-top:8px">0 / ${profiles.length}</div>
+    <button class="btn btn-s btn-sm" style="margin-top:16px" onclick="shortlistAbort=true;this.textContent='Cancelling...'">Cancel</button>
   </div>`;
 
   // Batch profiles — Gemini can score ~20 at a time
@@ -843,15 +872,19 @@ async function runShortlist(){
   const batches=[];
   for(let i=0;i<profiles.length;i+=BATCH)batches.push(profiles.slice(i,i+BATCH));
 
+  try{
   for(let b=0;b<batches.length;b++){
+    if(shortlistAbort)break;
     const batch=batches[b];
     const done=b*BATCH;
-    document.getElementById('sl-progress-fill').style.width=Math.round(done/profiles.length*100)+'%';
-    document.getElementById('sl-progress-label').textContent=`${done} / ${profiles.length} scored`;
+    const fillEl=document.getElementById('sl-progress-fill');
+    const labelEl=document.getElementById('sl-progress-label');
+    if(fillEl)fillEl.style.width=Math.round(done/profiles.length*100)+'%';
+    if(labelEl)labelEl.textContent=`${done} / ${profiles.length} scored`;
 
     const profileList=batch.map((p,i)=>{
       const nm=(p.title||'').replace(/\s*[-\u2013|].*linkedin.*/i,'').replace(/\s*[-\u2013|].*$/,'').trim();
-      return `Profile ${done+i+1}:\nName: ${nm}\nHeadline/Snippet: ${(p.snippet||p.title||'').slice(0,300)}\nStrategy: ${p.strategy||''}`;
+      return `Profile ${done+i+1}:\nName: ${nm}\nHeadline/Snippet: ${(p.snippet||p.title||'').slice(0,300)}\nStrategy: ${p.strategy||''}\nSource: ${isLI(p.link)?'LinkedIn':'Web'}`;
     }).join('\n\n---\n\n');
 
     const prompt=`You are a senior recruiter scoring candidate profiles against a job description.
@@ -889,27 +922,81 @@ Be strict. Most profiles will be Weak or Potential. Only mark Strong if they gen
           const prof=batch[si];
           if(!prof)return;
           const nm=(prof.title||'').replace(/\s*[-\u2013|].*linkedin.*/i,'').replace(/\s*[-\u2013|].*$/,'').trim();
-          shortlistData.push({...s,name:nm||s.name,link:prof.link,strategy:prof.strategy,queryLabel:prof.queryLabel,snippet:prof.snippet});
+          shortlistData.push({...s,name:nm||s.name,link:prof.link,strategy:prof.strategy,queryLabel:prof.queryLabel,snippet:prof.snippet,isLI:isLI(prof.link)});
         });
       }
     }catch(e){console.error('Shortlist batch error:',e)}
     await new Promise(r=>setTimeout(r,500));
   }
-
-  // Sort by score descending
-  shortlistData.sort((a,b)=>b.score-a.score);
-  document.getElementById('badge-shortlist').textContent=shortlistData.filter(x=>x.tier==='Strong').length;
-  document.getElementById('badge-shortlist').style.display='inline-flex';
-  renderShortlist();
-  shortlistRunning=false;
+  }finally{
+    // Sort by score descending
+    shortlistData.sort((a,b)=>b.score-a.score);
+    const bdg=document.getElementById('badge-shortlist');
+    if(bdg){bdg.textContent=shortlistData.filter(x=>x.tier==='Strong').length;bdg.style.display='inline-flex';}
+    renderShortlist();
+    shortlistRunning=false;
+    shortlistAbort=false;
+  }
 }
 
-let slFilters={tier:'all',strategy:'all',score:0};
+let slPage=0;
+const SL_PAGE_SIZE=50;
+
+function renderShortlistCards(data,page){
+  page=page||0;
+  const start=page*SL_PAGE_SIZE;
+  const slice=data.slice(start,start+SL_PAGE_SIZE);
+  if(!slice.length)return'<div class="sl-empty">No profiles match this filter.</div>';
+  let h='';
+  slice.forEach((p,i)=>{
+    const rank=start+i+1;
+    const isTop=rank<=3;
+    const tierColor=p.tier==='Strong'?'var(--green)':p.tier==='Potential'?'#945a00':'var(--danger)';
+    const tierBg=p.tier==='Strong'?'var(--green-bg)':p.tier==='Potential'?'var(--amber-bg)':'var(--danger-bg)';
+    const tierBorder=p.tier==='Strong'?'var(--green-border)':p.tier==='Potential'?'var(--amber-border)':'var(--danger-border)';
+    const scoreColor=p.score>=80?'var(--green)':p.score>=50?'#945a00':'var(--danger)';
+    const c=SC[p.strategy]||SC.S1;
+    h+=`<div class="sl-card">
+      <div class="sl-rank ${isTop?'top':''}">${rank}</div>
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+          <span class="sl-name">${p.link?`<a href="${esc(p.link)}" target="_blank" style="color:var(--info);text-decoration:none">${esc(p.name||'Unknown')}</a>`:esc(p.name||'Unknown')}</span>
+          <span style="font-size:11px;padding:2px 9px;border-radius:20px;font-weight:600;background:${tierBg};color:${tierColor};border:1px solid ${tierBorder}">${p.tier||'—'}</span>
+          ${p.strategy?`<span class="tag" style="background:${c.bg};color:${c.tx};border-color:${c.bd};font-size:9px">${p.strategy}</span>`:''}
+          ${p.isLI===false?'<span class="bdg bdg-x" style="font-size:9px">Web</span>':'<span class="bdg bdg-b" style="font-size:9px">LinkedIn</span>'}
+        </div>
+        <div class="sl-why">${esc(p.one_line||'')}</div>
+        <div class="sl-tags">
+          ${(p.match_signals||[]).map(s=>`<span class="sl-tag match">✓ ${esc(s)}</span>`).join('')}
+          ${(p.gaps||[]).map(s=>`<span class="sl-tag gap">✗ ${esc(s)}</span>`).join('')}
+        </div>
+      </div>
+      <div class="sl-score-ring">
+        <div class="sl-score-num" style="color:${scoreColor}">${p.score||0}</div>
+        <div class="sl-score-label">/ 100</div>
+      </div>
+    </div>`;
+  });
+  // Pagination controls
+  const totalPages=Math.ceil(data.length/SL_PAGE_SIZE);
+  if(totalPages>1){
+    h+=`<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:16px 0;border-top:1px solid var(--border);margin-top:8px">`;
+    if(page>0)h+=`<button class="btn btn-s btn-sm" onclick="slPage=${page-1};document.getElementById('sl-list').innerHTML=renderShortlistCards(currentSlData,${page-1})">← Prev</button>`;
+    h+=`<span style="font-size:13px;color:var(--text3)">Page ${page+1} of ${totalPages} · ${data.length} profiles</span>`;
+    if(page<totalPages-1)h+=`<button class="btn btn-s btn-sm" onclick="slPage=${page+1};document.getElementById('sl-list').innerHTML=renderShortlistCards(currentSlData,${page+1})">Next →</button>`;
+    h+=`</div>`;
+  }
+  return h;
+}
+
+let currentSlData=[];
 
 function renderShortlist(){
   const area=document.getElementById('shortlistArea');
   if(!shortlistData.length){area.innerHTML='<div class="sl-empty">No profiles scored yet. Click Run Shortlist after searching.</div>';return}
   slFilters={tier:'all',strategy:'all',score:0};
+  slPage=0;
+  currentSlData=shortlistData;
   const strong=shortlistData.filter(x=>x.tier==='Strong');
   const potential=shortlistData.filter(x=>x.tier==='Potential');
   const weak=shortlistData.filter(x=>x.tier==='Weak');
@@ -957,9 +1044,10 @@ function renderShortlist(){
   </div>
   <div id="sl-list">`;
 
-  h+=renderShortlistCards(shortlistData);
+  h+=renderShortlistCards(shortlistData,0);
   h+=`</div>`;
   area.innerHTML=h;
+  currentSlData=shortlistData;
 }
 
 function applySlFilters(btn){
@@ -971,8 +1059,9 @@ function applySlFilters(btn){
   if(slFilters.tier!=='all')data=data.filter(x=>x.tier===slFilters.tier);
   if(slFilters.strategy!=='all')data=data.filter(x=>x.strategy===slFilters.strategy);
   if(slFilters.score>0)data=data.filter(x=>(x.score||0)>=slFilters.score);
+  currentSlData=data;slPage=0;
   const list=document.getElementById('sl-list');
-  if(list)list.innerHTML=renderShortlistCards(data);
+  if(list)list.innerHTML=renderShortlistCards(data,0);
   const summary=document.getElementById('sl-filter-summary');
   if(summary){
     const parts=[];
@@ -1038,27 +1127,18 @@ function renderResults(){
   let h=`<div class="fade"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
     <div><h2>${queries.length} queries generated</h2><span class="bdg bdg-b" style="margin-top:4px">${sl}</span></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-s btn-sm" onclick="location.reload()">New JD</button>
+      <button class="btn btn-s btn-sm" onclick="resetAll()">New JD</button>
       <button class="btn btn-s btn-sm" onclick="copyAll()">Copy all</button>
       <button class="btn btn-s btn-sm" onclick="dlCSV()">CSV</button>
       <button class="btn btn-s btn-sm" onclick="dlJSON()">JSON</button>
+      <button class="btn btn-s btn-sm" onclick="addCustomQuery()">+ Add query</button>
       ${serpKey?`<button class="btn btn-p btn-sm" onclick="searchAll()">Search all (${queries.length} credits)</button>`:''}
     </div></div>`;
+  // searchAll status/cancel bar
+  h+=`<div id="searchAllStatus" style="display:none;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius);padding:10px 15px;font-size:13px;color:var(--amber);margin-bottom:10px;display:flex;align-items:center;gap:10px"></div>`;
   if(p?.titles){
-    const archetypeLabels={'TECH_AI_ENGINEERING':'Tech / AI / Engineering','CUSTOMER_SERVICE_CX':'Customer Service / CX','SALES_GTM_BD':'Sales / GTM / Business Dev','HR_PEOPLE':'HR / People','FINANCE_RISK_COMPLIANCE':'Finance / Risk / Compliance','OPERATIONS_SUPPLY_CHAIN':'Operations / Supply Chain','MARKETING_BRAND_GROWTH':'Marketing / Brand / Growth','LEGAL_COMPLIANCE_SECRETARIAL':'Legal / Compliance','GENERAL_MANAGEMENT_LEADERSHIP':'General Management'};
-    const archetypeColors={'TECH_AI_ENGINEERING':'#185FA5','CUSTOMER_SERVICE_CX':'#0F6E56','SALES_GTM_BD':'#854F0B','HR_PEOPLE':'#6b21a8','FINANCE_RISK_COMPLIANCE':'#A32D2D','OPERATIONS_SUPPLY_CHAIN':'#3B6D11','MARKETING_BRAND_GROWTH':'#993C1D','LEGAL_COMPLIANCE_SECRETARIAL':'#5F5E5A','GENERAL_MANAGEMENT_LEADERSHIP':'#185FA5'};
-    const at=p.role_archetype||'';
-    const atLabel=archetypeLabels[at]||at||'Detecting...';
-    const atColor=archetypeColors[at]||'var(--info)';
-    h+=`<div class="card" style="padding:16px 20px">
-      ${at?`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
-        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Role archetype detected</div>
-        <span style="font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px;background:${atColor}18;color:${atColor};border:1px solid ${atColor}40">${esc(atLabel)}</span>
-        <span style="font-size:11px;color:var(--text3)">Query rules applied automatically for this function type</span>
-      </div>`:''}
-      <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:8px">Extracted parameters</div>
-      <div class="pg">${[['Titles',(p.titles||[]).join(', ')],['Location',p.location],['Industry',p.industry],['Function',p.function],['Seniority',p.seniority_level],['Experience',p.experience_range],['Skills',(p.skills||[]).join(', ')],['Peer companies',(p.peer_companies||[]).join(', ')],['Archetype',p.role_archetype||'']].map(([k,v])=>`<div><span class="pg-l">${k}:</span> ${esc(v)}</div>`).join('')}</div>
-    </div>`}
+    h+=`<div id="paramsCard"></div>`;
+  }
   // S4 missing warning
   const hasS4=queries.some(q=>q.strategy==='S4');
   const isRegulated=params?.is_regulated_industry;
@@ -1068,7 +1148,262 @@ function renderResults(){
   if(isRegulated)h+=`<div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius);padding:12px 18px;font-size:13px;color:var(--amber);margin-bottom:14px;display:flex;align-items:center;gap:8px">Regulated industry detected — S5 open-web queries have been suppressed to avoid policy/compliance page noise.</div>`;
   h+=`<div class="metrics"><div class="met"><div class="met-l">Old system</div><div class="met-v r">60</div></div><div class="met"><div class="met-l">New system</div><div class="met-v g">${queries.length}</div></div><div class="met"><div class="met-l">Strategies</div><div class="met-v">${Object.keys(counts).length}</div></div><div class="met"><div class="met-l">Calls saved</div><div class="met-v g">${60-queries.length}</div></div></div>`;
   h+=`<div class="pills">${Object.entries(counts).sort().map(([s,n])=>{const c=SC[s]||SC.S1;return`<span class="pill" style="background:${c.bg};color:${c.tx};border-color:${c.bd}">${s}: ${c.nm} (${n})</span>`}).join('')}</div>`;
-  queries.forEach((_,i)=>{h+=`<div id="qcard-${i}"></div>`});h+=`</div>`;area.innerHTML=h;queries.forEach((_,i)=>renderCard(i));
+  queries.forEach((_,i)=>{h+=`<div id="qcard-${i}"></div>`});h+=`</div>`;area.innerHTML=h;
+  if(params?.titles)renderParamsCard();
+  queries.forEach((_,i)=>renderCard(i));
+}
+
+// ── Params card (editable) ──────────────────────────────────────────────
+let paramsEditing=false;
+
+const archetypeLabels={'TECH_AI_ENGINEERING':'Tech / AI / Engineering','CUSTOMER_SERVICE_CX':'Customer Service / CX','SALES_GTM_BD':'Sales / GTM / Business Dev','HR_PEOPLE':'HR / People','FINANCE_RISK_COMPLIANCE':'Finance / Risk / Compliance','OPERATIONS_SUPPLY_CHAIN':'Operations / Supply Chain','MARKETING_BRAND_GROWTH':'Marketing / Brand / Growth','LEGAL_COMPLIANCE_SECRETARIAL':'Legal / Compliance','GENERAL_MANAGEMENT_LEADERSHIP':'General Management'};
+const archetypeColors={'TECH_AI_ENGINEERING':'#185FA5','CUSTOMER_SERVICE_CX':'#0F6E56','SALES_GTM_BD':'#854F0B','HR_PEOPLE':'#6b21a8','FINANCE_RISK_COMPLIANCE':'#A32D2D','OPERATIONS_SUPPLY_CHAIN':'#3B6D11','MARKETING_BRAND_GROWTH':'#993C1D','LEGAL_COMPLIANCE_SECRETARIAL':'#5F5E5A','GENERAL_MANAGEMENT_LEADERSHIP':'#185FA5'};
+
+function renderParamsCard(){
+  const el=document.getElementById('paramsCard');
+  if(!el||!params)return;
+  const p=params;
+  const at=p.role_archetype||'';
+  const atLabel=archetypeLabels[at]||at||'';
+  const atColor=archetypeColors[at]||'var(--info)';
+
+  if(!paramsEditing){
+    // ── Read-only view ──
+    el.innerHTML=`<div class="card" style="padding:16px 20px" id="paramsCardInner">
+      ${at?`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);flex-wrap:wrap">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Role archetype detected</div>
+        <span style="font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px;background:${atColor}18;color:${atColor};border:1px solid ${atColor}40">${esc(atLabel)}</span>
+        <span style="font-size:11px;color:var(--text3)">Query rules applied automatically</span>
+      </div>`:''}
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Extracted parameters</div>
+        <button class="btn btn-s btn-sm" onclick="paramsEditing=true;renderParamsCard()">Edit parameters</button>
+      </div>
+      <div class="pg">
+        ${[['Titles',(p.titles||[]).join(', ')],['Location',p.location||''],['Industry',p.industry||''],['Function',p.function||''],['Seniority',p.seniority_level||''],['Skills',(p.skills||[]).join(', ')],['Peer companies',(p.peer_companies||[]).join(', ')],['Archetype',at],['Regulated',p.is_regulated_industry?'Yes':'No'],['Builder role',p.is_builder_role?'Yes':'No'],['Commercial angle',p.has_commercial_angle?'Yes':'No']].map(([k,v])=>`<div><span class="pg-l">${esc(k)}:</span> ${esc(v||'—')}</div>`).join('')}
+      </div>
+    </div>`;
+  } else {
+    // ── Edit view ──
+    // Build chip sets from current params (user may have already edited once)
+    const titlesArr=params.titles||[];
+    const skillsArr=params.skills||[];
+    const peersArr=params.peer_companies||[];
+
+    el.innerHTML=`<div class="card" style="padding:16px 20px;border-color:var(--accent);border-width:1.5px" id="paramsCardInner">
+      ${at?`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);flex-wrap:wrap">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Role archetype detected</div>
+        <span style="font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px;background:${atColor}18;color:${atColor};border:1px solid ${atColor}40">${esc(atLabel)}</span>
+      </div>`:''}
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Editing parameters — changes feed into query regeneration</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px;">
+
+        <div style="grid-column:1/-1">
+          <div class="section-label" style="margin-bottom:6px">Titles <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">(used in S1 — what candidates write on LinkedIn)</span></div>
+          <div class="chip-input" id="pe-titles-box" onclick="document.getElementById('pe-titles-input').focus()">
+            ${titlesArr.map((t,i)=>`<span class="chip">${esc(t)} <span class="x" onclick="event.stopPropagation();peRemoveChip('titles',${i})">&times;</span></span>`).join('')}
+            <input type="text" id="pe-titles-input" placeholder="Add title + Enter" onkeydown="peChipKey(event,'titles')" style="border:none;outline:none;font-family:var(--sans);font-size:13px;flex:1;min-width:140px;background:transparent;color:var(--text)"/>
+          </div>
+        </div>
+
+        <div style="grid-column:1/-1">
+          <div class="section-label" style="margin-bottom:6px">Skills <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">(used in S3 — function-specific differentiators)</span></div>
+          <div class="chip-input" id="pe-skills-box" onclick="document.getElementById('pe-skills-input').focus()">
+            ${skillsArr.map((s,i)=>`<span class="chip">${esc(s)} <span class="x" onclick="event.stopPropagation();peRemoveChip('skills',${i})">&times;</span></span>`).join('')}
+            <input type="text" id="pe-skills-input" placeholder="Add skill + Enter" onkeydown="peChipKey(event,'skills')" style="border:none;outline:none;font-family:var(--sans);font-size:13px;flex:1;min-width:140px;background:transparent;color:var(--text)"/>
+          </div>
+        </div>
+
+        <div style="grid-column:1/-1">
+          <div class="section-label" style="margin-bottom:6px">Peer companies <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">(used in S4 — never include hiring company)</span></div>
+          <div class="chip-input" id="pe-peers-box" onclick="document.getElementById('pe-peers-input').focus()">
+            ${peersArr.map((c,i)=>`<span class="chip">${esc(c)} <span class="x" onclick="event.stopPropagation();peRemoveChip('peers',${i})">&times;</span></span>`).join('')}
+            <input type="text" id="pe-peers-input" placeholder="Add company + Enter" onkeydown="peChipKey(event,'peers')" style="border:none;outline:none;font-family:var(--sans);font-size:13px;flex:1;min-width:160px;background:transparent;color:var(--text)"/>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-label" style="margin-bottom:6px">Location</div>
+          <input type="text" id="pe-location" value="${esc(p.location||'')}" placeholder="e.g. Mumbai, Bangalore, India" />
+        </div>
+
+        <div>
+          <div class="section-label" style="margin-bottom:6px">Industry</div>
+          <input type="text" id="pe-industry" value="${esc(p.industry||'')}" placeholder="e.g. IT Services / AI" />
+        </div>
+
+        <div>
+          <div class="section-label" style="margin-bottom:6px">Function</div>
+          <input type="text" id="pe-function" value="${esc(p.function||'')}" placeholder="e.g. Solutions Engineering" />
+        </div>
+
+        <div>
+          <div class="section-label" style="margin-bottom:6px">Seniority level</div>
+          <input type="text" id="pe-seniority" value="${esc(p.seniority_level||'')}" placeholder="e.g. Director / VP" />
+        </div>
+
+        <div style="grid-column:1/-1">
+          <div class="section-label" style="margin-bottom:8px">Flags <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">(control which strategies are generated)</span></div>
+          <div style="display:flex;gap:20px;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer">
+              <input type="checkbox" id="pe-regulated" ${p.is_regulated_industry?'checked':''} style="width:14px;height:14px;cursor:pointer"/>
+              <span>Regulated industry <span style="color:var(--text3);font-size:12px">(suppresses S5)</span></span>
+            </label>
+            <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer">
+              <input type="checkbox" id="pe-builder" ${p.is_builder_role?'checked':''} style="width:14px;height:14px;cursor:pointer"/>
+              <span>Builder / 0-to-1 role <span style="color:var(--text3);font-size:12px">(triggers S8)</span></span>
+            </label>
+            <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer">
+              <input type="checkbox" id="pe-commercial" ${p.has_commercial_angle?'checked':''} style="width:14px;height:14px;cursor:pointer"/>
+              <span>Commercial / GTM angle <span style="color:var(--text3);font-size:12px">(triggers S7)</span></span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border);align-items:center;flex-wrap:wrap">
+        <button class="btn btn-p" id="regenParamsBtn" onclick="regenFromParams()">Regenerate queries from these params</button>
+        <button class="btn btn-s" onclick="peCancelEdit()">Cancel</button>
+        <span style="font-size:12px;color:var(--text3)">Only the queries are regenerated — JD is not re-processed</span>
+      </div>
+      <div id="regenParamsError" style="margin-top:10px"></div>
+    </div>`;
+  }
+}
+
+// chip helpers for params editor
+function peReadChips(field){
+  const fieldMap={titles:'titles',skills:'skills',peers:'peer_companies'};
+  return params[fieldMap[field]]||[];
+}
+function peRemoveChip(field,idx){
+  const fieldMap={titles:'titles',skills:'skills',peers:'peer_companies'};
+  const key=fieldMap[field];
+  params[key].splice(idx,1);
+  renderParamsCard();
+}
+function peChipKey(e,field){
+  if(e.key==='Enter'&&e.target.value.trim()){
+    e.preventDefault();
+    const val=e.target.value.trim();
+    const fieldMap={titles:'titles',skills:'skills',peers:'peer_companies'};
+    const key=fieldMap[field];
+    if(!params[key])params[key]=[];
+    if(!params[key].includes(val))params[key].push(val);
+    e.target.value='';
+    renderParamsCard();
+  }
+  if(e.key==='Backspace'&&!e.target.value){
+    const fieldMap={titles:'titles',skills:'skills',peers:'peer_companies'};
+    const key=fieldMap[field];
+    if(params[key]&&params[key].length)params[key].pop();
+    renderParamsCard();
+  }
+}
+function peSaveEdits(){
+  // Read all text inputs back into params before using
+  const loc=document.getElementById('pe-location');
+  const ind=document.getElementById('pe-industry');
+  const fn=document.getElementById('pe-function');
+  const sen=document.getElementById('pe-seniority');
+  const reg=document.getElementById('pe-regulated');
+  const bld=document.getElementById('pe-builder');
+  const com=document.getElementById('pe-commercial');
+  if(loc)params.location=loc.value.trim();
+  if(ind)params.industry=ind.value.trim();
+  if(fn)params.function=fn.value.trim();
+  if(sen)params.seniority_level=sen.value.trim();
+  if(reg)params.is_regulated_industry=reg.checked;
+  if(bld)params.is_builder_role=bld.checked;
+  if(com)params.has_commercial_angle=com.checked;
+}
+function peCancelEdit(){
+  paramsEditing=false;
+  renderParamsCard();
+}
+
+async function regenFromParams(){
+  if(!geminiKey){alert('Gemini API key required.');return}
+  peSaveEdits();
+  const btn=document.getElementById('regenParamsBtn');
+  const errEl=document.getElementById('regenParamsError');
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="sp"></span> Regenerating…';}
+  if(errEl)errEl.innerHTML='';
+
+  const p=params;
+  const jdText=document.getElementById('jdInput').value;
+  const coMatch=jdText.match(/(?:at|for|join)\s+([A-Z][\w\s&.,-]{1,40}?)(?:\s+is|\s+seeks|\.|,|\n)/);
+  const hiringCo=p.hiring_company||(coMatch?coMatch[1].trim():'the hiring company');
+
+  // Scope block — same logic as buildSys
+  let scope='';
+  if(searchScope==='same_industry') scope='\n\nSCOPE: SAME INDUSTRY — all queries must stay within: '+p.industry+'. S4 uses only same-industry peer companies.';
+  else if(searchScope==='cross_industry') scope='\n\nSCOPE: CROSS-INDUSTRY — intentionally span 2-3 industries. S4 must target companies across different sectors.';
+  else scope='\n\nSCOPE: TARGET COMPANIES ONLY. S4 MUST use ONLY: '+targetCompanies.join(', ')+'. NEVER include '+hiringCo+'.';
+
+  const prompt=`You are NetraX Query Architect. Generate LinkedIn talent search queries using the ALREADY-EXTRACTED parameters below. Do NOT re-extract from a JD — trust these parameters exactly as given.
+
+EXTRACTED PARAMETERS (do not override these):
+Titles (S1 basis): ${(p.titles||[]).join(', ')||'(none)'}
+Skills (S3 basis): ${(p.skills||[]).join(', ')||'(none)'}
+Peer companies (S4 basis): ${(p.peer_companies||[]).join(', ')||'(none)'}
+Location: ${p.location||'India'}
+Industry: ${p.industry||''}
+Sub-industry: ${p.sub_industry||''}
+Function: ${p.function||''}
+Seniority level: ${p.seniority_level||''}
+Role archetype: ${p.role_archetype||''}
+Hiring company (NEVER include in any query): ${hiringCo}
+is_regulated_industry: ${p.is_regulated_industry}
+is_builder_role: ${p.is_builder_role}
+has_commercial_angle: ${p.has_commercial_angle}
+
+INSTRUCTIONS — apply all standard NetraX rules using ONLY the parameters above:
+
+RULE H — site:linkedin.com/in/ is MANDATORY in every query except S5.
+RULE I — Under 280 chars. Max 3 OR-blocks. Max 5 values per OR-block. No experience strings.
+RULE A — Apply seniority gate based on seniority_level: if Director/VP/Head level, gate S1/S2/S6/S7/S8 with ("VP" OR "Director" OR "Head of"). If IC/Specialist, no seniority gates.
+RULE D — S4 is mandatory. Use peer companies list above. NEVER include ${hiringCo}.
+RULE C — S3 uses skills list above. Must have seniority AND-block.
+S5 — include ONLY if is_regulated_industry is false AND role type has open-web presence.
+S7 — include ONLY if has_commercial_angle is true.
+S8 — include ONLY if is_builder_role is true.
+Every query must include city/geo terms from location field above.${scope}
+
+Return ONLY valid JSON. No markdown, no preamble.
+Schema: {"queries":[{"strategy":"S1","strategy_name":"...","query_string":"...","rationale":"..."}]}
+Generate 10-14 queries. Return ONLY the JSON.`;
+
+  try{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.5,maxOutputTokens:5000,responseMimeType:'application/json'}})
+    });
+    if(!r.ok){const eb=await r.json().catch(()=>({}));throw new Error('Gemini error '+r.status+': '+(eb?.error?.message||'Unknown'));}
+    const d=await r.json();
+    if(!d.candidates?.length)throw new Error('Gemini returned no candidates');
+    let raw=(d.candidates[0]?.content?.parts||[]).map(x=>x.text||'').join('');
+    raw=raw.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
+    const i1=raw.indexOf('{'),i2=raw.lastIndexOf('}');
+    if(i1===-1)throw new Error('No JSON in response');
+    const parsed=JSON.parse(raw.slice(i1,i2+1));
+    if(!parsed.queries?.length)throw new Error('No queries in response');
+    // Replace queries, clear old search results
+    queries=parsed.queries;
+    searchResults={};collapsed={};
+    queries.forEach((_,i)=>{collapsed[i]=true});
+    paramsEditing=false;
+    renderResults();
+    runDiagnostic();
+  }catch(e){
+    console.error('regenFromParams error:',e);
+    if(errEl)errEl.innerHTML=`<div class="err"><strong>Regeneration failed:</strong> ${esc(e.message)}</div>`;
+    if(btn){btn.disabled=false;btn.textContent='Regenerate queries from these params';}
+  }
 }
 
 function validateQuery(q){
@@ -1118,7 +1453,8 @@ function renderCard(i){
   const q=queries[i],c=SC[q.strategy]||SC.S1;
   const geo=/mumbai|delhi|bangalore|bengaluru|hyderabad|pune|chennai|kolkata|india|noida|gurgaon|gurugram/i.test(q.query_string);
   const res=searchResults[i];const hasRes=res?.items?.length&&res.items[0].title!=='Error';const isColl=collapsed[i]!==false;
-  let h=`<div class="qc">
+  const isEditing=editingIdx===i;
+  let h=`<div class="qc" id="qcard-inner-${i}">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <span class="tag" style="background:${c.bg};color:${c.tx};border-color:${c.bd}">${q.strategy}: ${q.strategy_name||c.nm}</span>
@@ -1131,12 +1467,23 @@ function renderCard(i){
       </div>
     </div>
     <div style="font-size:13px;color:var(--text2);margin-bottom:8px;line-height:1.5">${esc(q.rationale)}</div>
-    ${(()=>{const ws=validateQuery(q);if(!ws.length)return'';return'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">'+ws.map(w=>`<span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:${w.type==='error'?'var(--danger-bg)':'#fffce6'};color:${w.type==='error'?'var(--danger)':'#7a6a00'};border:1px solid ${w.type==='error'?'#f5c6c6':'#f0e68c'}">${w.type==='error'?'⚠ ':'! '}${esc(w.msg)}</span>`).join('')+'</div>';})()}
-    <div class="qs">${esc(q.query_string)}</div>
-    <div class="acts">
+    ${(()=>{const ws=validateQuery(q);if(!ws.length)return'';return'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">'+ws.map(w=>`<span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:${w.type==='error'?'var(--danger-bg)':'#fffce6'};color:${w.type==='error'?'var(--danger)':'#7a6a00'};border:1px solid ${w.type==='error'?'#f5c6c6':'#f0e68c'}">${w.type==='error'?'⚠ ':'! '}${esc(w.msg)}</span>`).join('')+'</div>';})()}`;
+  if(isEditing){
+    h+=`<textarea id="qedit-${i}" style="font-family:var(--mono);font-size:11.5px;margin:10px 0 8px;line-height:1.75;min-height:80px">${esc(q.query_string)}</textarea>
+    <div style="display:flex;gap:6px;margin-bottom:8px">
+      <button class="btn btn-p btn-sm" onclick="saveEdit(${i})">Save</button>
+      <button class="btn btn-s btn-sm" onclick="cancelEdit()">Cancel</button>
+    </div>`;
+  }else{
+    h+=`<div class="qs">${esc(q.query_string)}</div>`;
+  }
+  h+=`<div class="acts">
       <button class="btn btn-p btn-sm" id="sbtn-${i}" onclick="runSearch(${i})">${hasRes?'Re-search':'Search'}</button>
       <span class="lnk" onclick="navigator.clipboard.writeText(queries[${i}].query_string);this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</span>
       <a href="https://www.google.com/search?q=${encodeURIComponent(q.query_string)}" target="_blank">Google</a>
+      <span class="lnk" onclick="startEdit(${i})">Edit</span>
+      <span class="lnk" onclick="regenQuery(${i})">Regenerate</span>
+      <span class="lnk" style="color:var(--danger)" onclick="deleteQuery(${i})">Delete</span>
     </div>
     <div id="sstatus-${i}" style="font-size:12px;color:var(--text3);margin-top:6px"></div>`;
   if(hasRes){
@@ -1155,9 +1502,79 @@ function switchTab(name){
   document.getElementById('pane-'+name).classList.add('active');
 }
 
+function startEdit(i){editingIdx=i;renderCard(i);const el=document.getElementById('qedit-'+i);if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length)}}
+function cancelEdit(){const prev=editingIdx;editingIdx=-1;if(prev>=0)renderCard(prev)}
+function saveEdit(i){const el=document.getElementById('qedit-'+i);if(!el)return;const val=el.value.trim();if(val){queries[i].query_string=val;}editingIdx=-1;renderCard(i);}
+function deleteQuery(i){if(!confirm('Delete this query?'))return;queries.splice(i,1);delete searchResults[i];const newSR={};Object.entries(searchResults).forEach(([k,v])=>{const ki=parseInt(k);if(ki<i)newSR[ki]=v;else if(ki>i)newSR[ki-1]=v;});searchResults=newSR;const newColl={};Object.entries(collapsed).forEach(([k,v])=>{const ki=parseInt(k);if(ki<i)newColl[ki]=v;else if(ki>i)newColl[ki-1]=v;});collapsed=newColl;renderResults();}
+
+async function regenQuery(i){
+  if(!geminiKey){alert('Gemini API key required.');return}
+  const q=queries[i];
+  const jd=document.getElementById('jdInput').value.trim();
+  const cardEl=document.getElementById('qcard-'+i);
+  if(cardEl)cardEl.innerHTML=`<div class="qc" style="padding:18px 22px;text-align:center;color:var(--text3);font-size:13px"><span class="sp-dark" style="margin-right:8px"></span>Regenerating ${q.strategy} query…</div>`;
+  const p=params||{};
+  const prompt=`You are NetraX Query Architect. Regenerate ONLY the ${q.strategy} query for this role.
+
+ALREADY EXTRACTED CONTEXT (use this, do not re-extract):
+Titles: ${(p.titles||[]).join(', ')}
+Skills: ${(p.skills||[]).join(', ')}
+Location: ${p.location||''}
+Industry: ${p.industry||''}
+Function: ${p.function||''}
+Seniority: ${p.seniority_level||''}
+Peer companies: ${(p.peer_companies||[]).join(', ')}
+Role archetype: ${p.role_archetype||''}
+Hiring company (NEVER include in queries): ${p.hiring_company||'the hiring company'}
+
+CURRENT QUERY (this is what you must IMPROVE upon):
+Strategy: ${q.strategy}
+Strategy name: ${q.strategy_name||''}
+Current query string: ${q.query_string}
+Current rationale: ${q.rationale}
+
+ISSUE TO FIX: Generate a better version of this ${q.strategy} query. Fix any warnings, improve signal quality, ensure site:linkedin.com/in/ is present (unless S5), ensure geo terms are present, stay under 280 chars.
+
+Return ONLY a JSON object — no markdown, no preamble:
+{"strategy":"${q.strategy}","strategy_name":"...","query_string":"...","rationale":"..."}`;
+
+  try{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.6,maxOutputTokens:800,responseMimeType:'application/json'}})
+    });
+    if(!r.ok)throw new Error('Gemini '+r.status);
+    const d=await r.json();
+    let raw=(d.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+    raw=raw.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
+    const i1=raw.indexOf('{'),i2=raw.lastIndexOf('}');
+    if(i1===-1)throw new Error('No JSON returned');
+    const updated=JSON.parse(raw.slice(i1,i2+1));
+    if(!updated.query_string)throw new Error('No query_string in response');
+    queries[i]={...queries[i],...updated};
+  }catch(e){
+    console.error('regenQuery error:',e);
+    alert('Regeneration failed: '+e.message);
+  }
+  renderCard(i);
+}
+
+function addCustomQuery(){
+  const strategy=prompt('Strategy code (e.g. S1, S4, S7):','S4');if(!strategy)return;
+  const qs=prompt('Enter query string:');if(!qs)return;
+  const rationale=prompt('Rationale (optional):','Custom query');
+  if(!queries)queries=[];
+  queries.push({strategy:strategy.toUpperCase(),strategy_name:'Custom',query_string:qs,rationale:rationale||'Custom query'});
+  const ni=queries.length-1;collapsed[ni]=true;
+  const area=document.getElementById('resultsArea');
+  const existing=area.querySelector('.fade');
+  if(existing){const ph=document.createElement('div');ph.id='qcard-'+ni;existing.appendChild(ph);}
+  renderCard(ni);
+}
+
 function copyAll(){const t=queries.map((q,i)=>{const r=searchResults[i];let s=`[${q.strategy}] ${q.query_string}`;if(r?.total)s+=` | ~${Number(r.total).toLocaleString()}`;return s}).join('\n\n');navigator.clipboard.writeText(t);alert('Copied!')}
 function dlCSV(){const l=['Strategy,Name,Query,Rationale,Google Total,Fetched'];queries.forEach((q,i)=>{const r=searchResults[i];l.push([q.strategy,'"'+(q.strategy_name||'')+'"','"'+(q.query_string||'').replace(/"/g,'""')+'"','"'+(q.rationale||'').replace(/"/g,'""')+'"',r?.total||'',r?.fetched||''].join(','))});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([l.join('\n')],{type:'text/csv'}));a.download='netrax_queries.csv';a.click()}
-function dlJSON(){const u=getUnique();const out={params,scope:searchScope,target_companies:targetCompanies,summary:{queries:queries.length,fetched:Object.values(searchResults).reduce((s,r)=>s+(r?.fetched||0),0),unique:u.length,linkedin:u.filter(p=>isLI(p.link)).length},queries:queries.map((q,i)=>({...q,total:searchResults[i]?.total||null,fetched:searchResults[i]?.fetched||null,results:searchResults[i]?.items||null})),unique_profiles:u};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));a.download='netrax_full.json';a.click()}
+function dlJSON(){const u=getUnique();const out={params,scope:searchScope,target_companies:targetCompanies,summary:{queries:queries.length,fetched:Object.values(searchResults).reduce((s,r)=>s+(r?.fetched||0),0),unique:u.length,linkedin:u.filter(p=>isLI(p.link)).length},queries:queries.map((q,i)=>({...q,total:searchResults[i]?.total||null,fetched:searchResults[i]?.fetched||null,results:searchResults[i]?.items||null})),unique_profiles:u,shortlist:shortlistData.length?shortlistData:undefined};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));a.download='netrax_full.json';a.click()}
 </script>
 </body>
 </html>
