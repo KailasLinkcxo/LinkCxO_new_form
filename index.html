@@ -1,1 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetraX Global Search</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f4f5f7;--card:#ffffff;--text:#0d1117;--text2:#4a5568;--text3:#8896a8;
+  --border:#dde1e9;--border2:#c8cdd8;
+  --accent:#1a3a6b;--accent2:#edf2ff;--accent3:#c3d3f5;
+  --green:#166534;--green-bg:#f0fdf4;--green-border:#bbf7d0;
+  --danger:#991b1b;--danger-bg:#fff1f2;--danger-border:#fecdd3;
+  --amber:#92400e;--amber-bg:#fffbeb;--amber-border:#fde68a;
+  --info:#1e40af;--info-bg:#eff6ff;--info-border:#bfdbfe;
+  --sans:'Instrument Sans',sans-serif;--mono:'IBM Plex Mono',monospace;
+  --radius:6px;--radius-lg:10px;
+  --shadow:0 1px 2px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.04);
+  --shadow-md:0 2px 8px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.05);
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;font-size:14px}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px 40px}
 
+/* ── Header ── */
+.hdr{background:var(--accent);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px;margin-bottom:28px}
+.hdr-left{display:flex;align-items:center;gap:14px}
+.logo{width:28px;height:28px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:5px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:11px;letter-spacing:.5px}
+.hdr h1{font-size:15px;font-weight:600;color:white;letter-spacing:.01em}
+.hdr-divider{width:1px;height:20px;background:rgba(255,255,255,.2)}
+.hdr-sub{font-size:12px;color:rgba(255,255,255,.5);letter-spacing:.03em;text-transform:uppercase;font-weight:500}
+
+/* ── Section labels ── */
+.section-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+
+/* ── Cards ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px 26px;box-shadow:var(--shadow);margin-bottom:14px}
+.card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+
+h2{font-size:15px;font-weight:600;color:var(--text)}
+
+/* ── Form elements ── */
+textarea{width:100%;border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;font-family:var(--sans);font-size:13.5px;line-height:1.75;resize:vertical;background:var(--card);color:var(--text);transition:border-color .15s}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,58,107,.08)}
+input[type=text],input[type=password]{border:1px solid var(--border);border-radius:var(--radius);padding:9px 13px;font-family:var(--sans);font-size:13.5px;background:var(--card);width:100%;color:var(--text);transition:border-color .15s}
+select{border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-family:var(--sans);font-size:13px;background:var(--card);color:var(--text)}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:none;border-radius:var(--radius);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;letter-spacing:.01em}
+.btn-p{background:var(--accent);color:white;box-shadow:0 1px 2px rgba(26,58,107,.3)}
+.btn-p:hover{background:#142d57;box-shadow:0 2px 6px rgba(26,58,107,.35)}
+.btn-p:disabled{background:#8ba4c9;cursor:not-allowed;box-shadow:none}
+.btn-s{background:var(--card);color:var(--text2);border:1px solid var(--border2)}.btn-s:hover{background:var(--bg);color:var(--text);border-color:#b0b8c8}
+.btn-sm{padding:6px 13px;font-size:12px}
+
+/* ── API key rows ── */
+.key-row{display:grid;grid-template-columns:140px 1fr auto;gap:10px;align-items:center;margin-bottom:10px}
+.key-row label{font-size:13px;font-weight:500;color:var(--text2)}
+.key-ok{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.key-no{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;background:var(--bg);color:var(--text3);border:1px solid var(--border)}
+
+/* ── Scope cards ── */
+.scope-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.scope-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:13px 15px;cursor:pointer;transition:all .15s;background:var(--card)}
+.scope-card:hover{border-color:var(--accent3);background:var(--accent2)}
+.scope-card.active{border-color:var(--accent);background:var(--accent2)}
+.scope-card h3{font-size:13px;font-weight:600;margin-bottom:3px;color:var(--text)}
+.scope-card.active h3{color:var(--accent)}
+.scope-card p{font-size:12px;color:var(--text3);line-height:1.45;margin:0}
+
+/* ── Chips ── */
+.chip-input{display:flex;flex-wrap:wrap;gap:6px;padding:9px 13px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);min-height:42px;align-items:center;cursor:text;transition:border-color .15s}.chip-input:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,58,107,.08)}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:4px;background:var(--accent2);color:var(--accent);font-size:12px;font-weight:500;border:1px solid var(--accent3)}
+.chip .x{cursor:pointer;font-size:13px;line-height:1;opacity:.6}.chip .x:hover{opacity:1}
+.chip-input input{border:none;outline:none;font-family:var(--sans);font-size:13px;flex:1;min-width:120px;background:transparent;color:var(--text)}
+
+/* ── Suggestion chips ── */
+.sug-section{margin-top:10px;padding:13px 15px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)}
+.sug-section h4{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.sug-chips{display:flex;flex-wrap:wrap;gap:5px}
+.sug-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border-radius:4px;background:var(--card);border:1px solid var(--border2);color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s}.sug-chip:hover{border-color:var(--accent);background:var(--accent2);color:var(--accent)}
+
+/* ── Metrics ── */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.met{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+.met-l{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.met-v{font-size:24px;font-weight:700;letter-spacing:-1px;color:var(--text)}
+.met-v.g{color:var(--green)}.met-v.r{color:var(--danger)}.met-v.b{color:var(--info)}
+
+/* ── Pills ── */
+.pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
+.pill{font-size:11px;padding:3px 10px;border-radius:4px;font-weight:500;border:1px solid}
+
+/* ── Query cards ── */
+.qc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;box-shadow:var(--shadow);margin-bottom:10px;transition:border-color .15s,box-shadow .15s}
+.qc:hover{border-color:var(--border2);box-shadow:var(--shadow-md)}
+.tag{font-size:10px;padding:2px 9px;border-radius:4px;font-weight:600;border:1px solid;display:inline-block;letter-spacing:.02em}
+.bdg{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500;display:inline-block}
+.bdg-g{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.bdg-b{background:var(--info-bg);color:var(--info);border:1px solid var(--info-border)}
+.bdg-x{background:var(--bg);color:var(--text3);border:1px solid var(--border)}
+.bdg-r{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border)}
+.count-badge{font-size:12px;font-weight:600;padding:3px 12px;border-radius:4px;background:var(--info-bg);color:var(--info);border:1px solid var(--info-border)}
+
+/* ── Query string display ── */
+.qs{font-family:var(--mono);font-size:11.5px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;line-height:1.75;word-break:break-all;margin:10px 0 12px;color:var(--text)}
+
+/* ── Actions ── */
+.acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.acts a,.acts .lnk{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;font-size:12px;font-weight:500;border:1px solid var(--border2);border-radius:var(--radius);text-decoration:none;color:var(--text2);cursor:pointer;background:var(--card);font-family:var(--sans);transition:all .15s}
+.acts a:hover,.acts .lnk:hover{background:var(--bg);color:var(--text);border-color:#b0b8c8}
+
+/* ── Search results ── */
+.sr{margin-top:14px;border-top:1px solid var(--border)}
+.sr-toggle{display:flex;justify-content:space-between;align-items:center;padding:10px 0;cursor:pointer;user-select:none}
+.sr-toggle:hover h4{color:var(--accent)}
+.sr-toggle h4{font-size:10px;font-weight:700;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin:0}
+.sr-arrow{font-size:13px;color:var(--text3);transition:transform .2s}.sr-arrow.open{transform:rotate(180deg)}
+.sr-body.collapsed{display:none}.sr-body.expanded{display:block}
+.sr-i{padding:9px 0;border-bottom:1px solid var(--bg);display:flex;align-items:flex-start}.sr-i:last-child{border-bottom:none}
+.sr-num{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:22px;border-radius:4px;background:var(--bg);color:var(--text3);font-size:10px;font-weight:600;margin-right:10px;flex-shrink:0;border:1px solid var(--border)}
+.sr-t a{color:var(--info);text-decoration:none;font-weight:500;font-size:13.5px}.sr-t a:hover{text-decoration:underline}
+.sr-u{font-size:11px;color:var(--accent);margin:2px 0;word-break:break-all}
+.sr-s{font-size:12.5px;color:var(--text2);line-height:1.5}
+
+/* ── Error / status ── */
+.err{background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:var(--radius);padding:13px 16px;font-size:13px;color:var(--danger);margin-top:12px;line-height:1.6}
+.status-bar{background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius);padding:10px 15px;font-size:13px;color:var(--amber);margin-top:10px;display:none}
+
+/* ── Tabs ── */
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;margin-top:4px}
+.tab-btn{padding:10px 20px;font-size:13px;font-weight:500;font-family:var(--sans);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;color:var(--text3);transition:all .15s;letter-spacing:.01em}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.tab-btn .tab-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;border-radius:4px;background:var(--accent2);color:var(--accent);font-size:10px;font-weight:700;padding:0 5px;margin-left:5px;border:1px solid var(--accent3)}
+.tab-pane{display:none}.tab-pane.active{display:block}
+
+/* ── Summary card ── */
+.summary-card{background:var(--card);border:1px solid var(--border);border-top:3px solid var(--accent);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow-md);margin-top:16px}
+.summary-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.summary-met{text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)}.summary-met .met-v{font-size:30px}
+
+/* ── Param grid ── */
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:5px 28px;font-size:13px}.pg-l{color:var(--text3);font-weight:500}
+
+/* ── Shortlist cards ── */
+.sl-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;box-shadow:var(--shadow);margin-bottom:8px;display:grid;grid-template-columns:32px 1fr auto;gap:12px;align-items:start;transition:box-shadow .15s}
+.sl-card:hover{box-shadow:var(--shadow-md)}
+.sl-rank{width:30px;height:30px;border-radius:50%;background:var(--accent2);color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--accent3)}
+.sl-rank.top{background:var(--accent);color:white;border-color:var(--accent)}
+.sl-score-ring{text-align:center;min-width:52px}
+.sl-score-num{font-size:22px;font-weight:700;line-height:1}
+.sl-score-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04px}
+.sl-name{font-size:14px;font-weight:600;margin-bottom:2px}
+.sl-meta{font-size:12px;color:var(--text3);margin-bottom:5px}
+.sl-why{font-size:12.5px;color:var(--text2);line-height:1.5;margin-bottom:6px}
+.sl-tags{display:flex;flex-wrap:wrap;gap:4px}
+.sl-tag{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:500}
+.sl-tag.match{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.sl-tag.gap{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border)}
+.sl-tag.strat{background:var(--info-bg);color:var(--info);border:1px solid var(--info-border)}
+.sl-empty{text-align:center;padding:60px 20px;color:var(--text3);font-size:14px}
+.sl-fbtn.active{background:var(--accent);color:white;border-color:var(--accent)}
+
+/* ── Spinner ── */
+@keyframes spin{to{transform:rotate(360deg)}}
+.sp{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
+.sp-dark{border-color:rgba(0,0,0,.1);border-top-color:var(--accent)}
+.fade{animation:fadeIn .25s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.free-tag{display:none}
+
+@media(max-width:640px){.metrics,.summary-metrics{grid-template-columns:repeat(2,1fr)}.pg,.scope-cards{grid-template-columns:1fr}.key-row{grid-template-columns:1fr;gap:6px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hdr"><div class="hdr-left"><div class="logo">NX</div><div class="hdr-divider"></div><h1>NetraX Global Search</h1></div><span class="hdr-sub">Talent Intelligence Platform</span></div>
+
+<div class="card">
+  <div class="card-title">API Configuration</div>
+  <p style="font-size:13px;color:var(--text3);margin-bottom:16px">Keys are stored locally in your browser and never transmitted to any server.</p>
+  <div class="key-row"><label>Gemini AI</label><input type="password" id="geminiKey" placeholder="aistudio.google.com → Get API Key" /><span id="geminiStatus" class="key-no">Not set</span></div>
+  <div class="key-row"><label>Serper Dev</label><input type="password" id="serpKey" placeholder="serper.dev → API Key" /><span id="serpStatus" class="key-no">Not set</span></div>
+  <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap">
+    <button class="btn btn-p btn-sm" onclick="saveKeys()">Save keys</button>
+    <button class="btn btn-s btn-sm" onclick="testGemini()">Test Gemini connection</button>
+    <button class="btn btn-s btn-sm" onclick="testSerper()">Test Serper connection</button>
+  </div>
+  <div id="testResult" class="status-bar"></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Job Description</div>
+  <textarea id="jdInput" rows="12" placeholder="Paste the complete job description here..."></textarea>
+  <div style="margin:18px 0 0"><div class="section-label">Search Scope</div>
+  <div class="scope-cards">
+    <div class="scope-card active" id="scope-same" onclick="setScope('same_industry')"><h3>Same industry</h3><p>All queries strictly limited to the JD's exact industry. S4 targets only same-industry competitors.</p></div>
+    <div class="scope-card" id="scope-cross" onclick="setScope('cross_industry')"><h3>Cross-industry</h3><p>Intentionally pulls talent from 2–3 different industries. S4 targets companies across sectors, not just one vertical.</p></div>
+    <div class="scope-card" id="scope-target" onclick="setScope('target_companies')"><h3>Target companies</h3><p>S4 uses only your specified companies. AI suggests candidates from those firms.</p></div>
+  </div>
+  <div id="targetSection" style="display:none">
+    <label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px">Selected companies</label>
+    <div class="chip-input" id="chipBox" onclick="document.getElementById('compInput').focus()"><input type="text" id="compInput" placeholder="Type + Enter..." onkeydown="chipKey(event)" /></div>
+    <div id="aiSugs"></div>
+  </div>
+  </div>
+  <div style="display:flex;gap:10px;margin-top:16px;align-items:center;flex-wrap:wrap">
+    <button class="btn btn-p" id="genBtn" onclick="generate()">Generate queries</button>
+    <button class="btn btn-s" onclick="resetAll()">Reset</button>
+    <span id="genStatus" style="font-size:13px;color:var(--text3);display:none"></span>
+  </div>
+  <div id="genError"></div>
+</div>
+<div id="tabSystem" style="display:none">
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('queries')" id="tab-queries">Queries</button>
+    <button class="tab-btn" onclick="switchTab('summary')" id="tab-summary">Results <span class="tab-badge" id="badge-summary" style="display:none">0</span></button>
+    <button class="tab-btn" onclick="switchTab('diagnostic')" id="tab-diagnostic">Diagnostic <span class="tab-badge" id="badge-diag" style="display:none">—</span></button>
+    <button class="tab-btn" onclick="switchTab('shortlist')" id="tab-shortlist">Shortlist <span class="tab-badge" id="badge-shortlist" style="display:none">0</span></button>
+  </div>
+  <div class="tab-pane active" id="pane-queries">
+    <div id="resultsArea"></div>
+  </div>
+  <div class="tab-pane" id="pane-summary">
+    <div id="summaryArea"></div>
+  </div>
+  <div class="tab-pane" id="pane-diagnostic">
+    <div id="diagArea"></div>
+  </div>
+  <div class="tab-pane" id="pane-shortlist">
+    <div id="shortlistArea"></div>
+  </div>
+</div>
+</div>
+
+<script>
+let geminiKey='',serpKey='',queries=null,params=null,searchResults={},collapsed={};
+let searchScope='same_industry',targetCompanies=[],aiCos=null;
+
+window.addEventListener('DOMContentLoaded',()=>{
+  geminiKey=localStorage.getItem('nx_gk')||'';serpKey=localStorage.getItem('nx_sk')||'';
+  document.getElementById('geminiKey').value=geminiKey;document.getElementById('serpKey').value=serpKey;updateKeys();
+});
+
+function saveKeys(){
+  geminiKey=document.getElementById('geminiKey').value.trim();
+  serpKey=document.getElementById('serpKey').value.trim();
+  localStorage.setItem('nx_gk',geminiKey);localStorage.setItem('nx_sk',serpKey);updateKeys();
+}
+
+function updateKeys(){
+  document.getElementById('geminiStatus').className=geminiKey?'key-ok':'key-no';
+  document.getElementById('geminiStatus').textContent=geminiKey?'Saved':'Not set';
+  document.getElementById('serpStatus').className=serpKey?'key-ok':'key-no';
+  document.getElementById('serpStatus').textContent=serpKey?'Saved':'Not set';
+}
+
+async function testSerper(){
+  const box=document.getElementById('testResult');
+  box.style.display='block';
+  if(!serpKey){box.textContent='No Serper Dev key entered. Save your key first.';box.style.background='var(--danger-bg)';box.style.color='var(--danger)';box.style.borderColor='var(--danger-border)';return}
+  box.textContent='Testing Serper Dev connection...';box.style.background='var(--amber-bg)';box.style.color='var(--amber)';box.style.borderColor='var(--amber-border)';
+  try{
+    const r=await fetch('https://google.serper.dev/search',{method:'POST',headers:{'X-API-KEY':serpKey,'Content-Type':'application/json'},body:JSON.stringify({q:'test',num:1})});
+    const d=await r.json();
+    if(r.ok&&d.organic){
+      const credits=d.credits!=null?d.credits:'unknown';
+      box.textContent='Serper Dev connected successfully! Credits remaining: '+credits;
+      box.style.background='var(--green-bg)';box.style.color='var(--green)';box.style.borderColor='var(--green-border)';
+    }else{box.textContent='Serper Dev returned error: '+(d.message||d.error||JSON.stringify(d).slice(0,200));box.style.background='var(--danger-bg)';box.style.color='var(--danger)';box.style.borderColor='var(--danger-border)'}
+  }catch(e){
+    box.innerHTML='Connection failed: '+e.message+'<br><br><strong>If you see "Failed to fetch":</strong> This means CORS is blocked. Run from a local server: <code style="background:#f0efeb;padding:2px 6px;border-radius:4px">python3 -m http.server 8080</code> then open <a href="http://localhost:8080" style="color:var(--info)">http://localhost:8080</a>';
+    box.style.background='var(--danger-bg)';box.style.color='var(--danger)';box.style.borderColor='var(--danger-border)';
+  }
+}
+
+async function testGemini(){
+  const box=document.getElementById('testResult');
+  box.style.display='block';
+  if(!geminiKey){box.textContent='No Gemini key entered. Save your key first.';box.style.background='var(--danger-bg)';box.style.color='var(--danger)';box.style.borderColor='#f5c6c6';return}
+  box.textContent='Testing Gemini connection...';box.style.background='#fffce6';box.style.color='#7a6a00';box.style.borderColor='#f0e68c';
+  try{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Say OK'}]}],generationConfig:{maxOutputTokens:5}})});
+    const d=await r.json();
+    if(r.ok&&d.candidates?.[0]){box.textContent='Gemini connected successfully!';box.style.background='var(--accent2)';box.style.color='var(--accent)';box.style.borderColor='#a8d5ba'}
+    else{box.textContent='Gemini returned error: '+(d.error?.message||JSON.stringify(d).slice(0,200));box.style.background='var(--danger-bg)';box.style.color='var(--danger)';box.style.borderColor='#f5c6c6'}
+  }catch(e){
+    box.innerHTML='Connection failed: '+e.message+'<br><br><strong>If you see "Failed to fetch":</strong> This means CORS is blocked. Run: <code style="background:#f0efeb;padding:2px 6px;border-radius:4px">python3 -m http.server 8080</code> then open <a href="http://localhost:8080" style="color:var(--info)">http://localhost:8080</a>';
+    box.style.background='var(--danger-bg)';box.style.color='var(--danger)';box.style.borderColor='#f5c6c6';
+  }
+}
+function loadSample(){document.getElementById('jdInput').value=`Job Title: Director of Solutions Engineering - AI/ML\nLocation: Hyderabad, Mumbai, Delhi, Bangalore, India\nExperience: 15-22 years\n\nWe are seeking a Director of Solutions Engineering to lead our AI/ML practice.\n\nResponsibilities:\n- Lead AI solution architecture for enterprise clients\n- Design agentic AI systems, MLOps pipelines, LLMOps frameworks\n- Drive deal structuring and technical pre-sales\n\nRequirements:\n- 15+ years in enterprise solutions engineering\n- Expertise in Agentic AI, Enterprise Architecture, MLOps, LLMOps\n- Background in IT Services, AI Platforms, Product Engineering\n\nTarget Companies: TCS, Infosys, HCLTech, Wipro, Tech Mahindra, Fractal Analytics, Tiger Analytics`}
+
+function resetAll(){
+  // Clear JD
+  document.getElementById('jdInput').value='';
+  // Clear all state
+  queries=null;params=null;searchResults={};collapsed={};
+  shortlistData=[];shortlistRunning=false;slFilters={tier:'all',strategy:'all',score:0};
+  targetCompanies=[];aiCos=null;
+  // Reset scope to default
+  setScope('same_industry');
+  // Clear all output areas
+  document.getElementById('resultsArea').innerHTML='';
+  document.getElementById('summaryArea').innerHTML='';
+  document.getElementById('diagArea').innerHTML='';
+  document.getElementById('shortlistArea').innerHTML='';
+  document.getElementById('genError').innerHTML='';
+  document.getElementById('genStatus').style.display='none';
+  // Hide tab system
+  document.getElementById('tabSystem').style.display='none';
+  // Reset tab badges
+  ['badge-summary','badge-diag','badge-shortlist'].forEach(id=>{
+    const el=document.getElementById(id);if(el){el.style.display='none';el.textContent=''}
+  });
+  // Reset generate button
+  const btn=document.getElementById('genBtn');
+  btn.disabled=false;btn.textContent='Generate queries';
+}
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+function getNum(){return parseInt(document.getElementById('numResults').value)||100}
+
+function setScope(s){
+  searchScope=s;document.querySelectorAll('.scope-card').forEach(c=>c.classList.remove('active'));
+  const map={same_industry:'same',cross_industry:'cross',target_companies:'target'};
+  document.getElementById('scope-'+map[s]).classList.add('active');
+  document.getElementById('targetSection').style.display=s==='target_companies'?'block':'none';
+  if(s==='target_companies'){aiCos=null;genCompanySugs()}
+}
+
+async function genCompanySugs(){
+  const jd=document.getElementById('jdInput').value.trim();
+  if(!jd||!geminiKey){document.getElementById('aiSugs').innerHTML='<p style="font-size:13px;color:var(--text3);margin-top:10px">Paste JD and save Gemini key for AI suggestions.</p>';return}
+  document.getElementById('aiSugs').innerHTML='<div style="margin-top:10px;font-size:13px;color:var(--text2)"><span class="sp-dark" style="width:12px;height:12px;margin-right:6px"></span>AI analyzing JD for company suggestions...</div>';
+  try{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({system_instruction:{parts:[{text:`Suggest companies where talent from this JD sits. Return ONLY JSON:{"same_industry":[{"name":"Co","reason":"5 words"}],"adjacent":[{"name":"Co","reason":"5 words"}],"startups":[{"name":"Co","reason":"5 words"}]} same_industry: 15-20, adjacent: 10-15, startups: 5-10. India-focused. Real names only.`}]},contents:[{parts:[{text:jd}]}],generationConfig:{temperature:0.7,maxOutputTokens:2000,responseMimeType:"application/json"}})});
+    if(!r.ok)throw new Error('API error');
+    const d=await r.json();let raw='';if(d.candidates?.[0]?.content?.parts)raw=d.candidates[0].content.parts.map(p=>p.text||'').join('');
+    raw=raw.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
+    const i1=raw.indexOf('{'),i2=raw.lastIndexOf('}');if(i1===-1)throw new Error('No JSON returned');aiCos=JSON.parse(raw.slice(i1,i2+1));renderSugs();
+  }catch(e){document.getElementById('aiSugs').innerHTML=`<p style="font-size:13px;color:var(--danger);margin-top:10px">Suggestion failed: ${esc(e.message)}. Type companies manually.</p>`}
+}
+
+function renderSugs(){
+  if(!aiCos)return;const box=document.getElementById('aiSugs');
+  const secs=[{k:'same_industry',t:'Same industry'},{k:'adjacent',t:'Adjacent industries'},{k:'startups',t:'Startups & scaleups'}];
+  let h='';secs.forEach(s=>{const items=aiCos[s.k]||[];if(!items.length)return;
+    h+=`<div class="sug-section fade"><h4>${s.t}</h4><div class="sug-chips">${items.filter(c=>!targetCompanies.includes(c.name)).map(c=>`<span class="sug-chip" onclick="addCo('${c.name.replace(/'/g,"\\'")}')"><span>${esc(c.name)}</span><span style="font-size:10px;color:var(--text3);margin-left:4px">${esc(c.reason||'')}</span></span>`).join('')}</div></div>`});
+  box.innerHTML=h||'<p style="font-size:13px;color:var(--text3);margin-top:10px">All suggested companies added.</p>';
+}
+
+function addCo(n){n=n.trim();if(!n||targetCompanies.includes(n))return;targetCompanies.push(n);renderChips();renderSugs()}
+function removeCo(i){targetCompanies.splice(i,1);renderChips();renderSugs()}
+function chipKey(e){if(e.key==='Enter'&&e.target.value.trim()){e.preventDefault();addCo(e.target.value);e.target.value=''}if(e.key==='Backspace'&&!e.target.value&&targetCompanies.length)removeCo(targetCompanies.length-1)}
+function renderChips(){const box=document.getElementById('chipBox');const inp=document.getElementById('compInput');box.innerHTML='';targetCompanies.forEach((c,i)=>{const ch=document.createElement('span');ch.className='chip';ch.innerHTML=`${esc(c)} <span class="x" onclick="event.stopPropagation();removeCo(${i})">&times;</span>`;box.appendChild(ch)});box.appendChild(inp);inp.value=''}
+
+const SC={S1:{bg:"#e8f0fe",bd:"#4285f4",tx:"#1a56db",nm:"Exact match"},S2:{bg:"#e6f4ea",bd:"#34a853",tx:"#1a7431",nm:"Synonym expansion"},S3:{bg:"#fef7e0",bd:"#f9ab00",tx:"#945a00",nm:"Skills-led"},S4:{bg:"#fce8e6",bd:"#ea4335",tx:"#b3261e",nm:"Company-reverse"},S5:{bg:"#f3e8fd",bd:"#9334e6",tx:"#6b21a8",nm:"Platform diversified"},S6:{bg:"#fde8d8",bd:"#e8710a",tx:"#9a3412",nm:"Adjacent-role"}};
+
+function buildSys(){
+  let scope='';
+  if(searchScope==='same_industry'){
+    scope='\n\nSCOPE RULES — SAME INDUSTRY (strict):\n- ALL queries must be constrained to the EXACT industry extracted from the JD.\n- S4 must use ONLY peer companies from the same industry. NEVER include the hiring company.\n- Do NOT mix adjacent industries even if skills overlap.';}
+  else if(searchScope==='cross_industry'){
+    scope='\n\nSCOPE RULES — CROSS-INDUSTRY (intentional expansion):\n- S1/S2/S6: use primary industry context.\n- S3: include transferable skills across industries — do not restrict to one sector.\n- S4 MUST include companies from AT LEAST 2-3 DIFFERENT industries. Pull talent from adjacent sectors that run the same function.\n- S7/S8 if applicable: span multiple sectors.\n- NEVER include the hiring company in any query.';}
+  else scope='\nSCOPE: TARGET COMPANIES ONLY. S4 MUST use ONLY: '+targetCompanies.join(', ')+'. NEVER include the hiring company.';
+
+  const jdText=document.getElementById('jdInput').value;
+  const coMatch=jdText.match(/(?:at|for|join)\s+([A-Z][\w\s&.,-]{1,40}?)(?:\s+is|\s+seeks|\.|,|\n)/);
+  const hiringCo=coMatch?coMatch[1].trim():'the hiring company';
+
+  return `You are NetraX Query Architect. You generate precise, high-signal LinkedIn talent search queries for ANY role in ANY industry.
+
+Return ONLY valid JSON. No markdown, no preamble.
+
+JSON schema:
+{"extracted_params":{"titles":[],"skills":[],"location":"","industry":"","sub_industry":"","function":"","seniority_level":"","hiring_company":"","role_archetype":"","is_regulated_industry":false,"is_builder_role":false,"has_commercial_angle":false,"peer_companies":[]},"queries":[{"strategy":"S1","strategy_name":"...","query_string":"...","rationale":"..."}]}
+
+══════════════════════════════════════════════
+STEP 1 — ANALYSE THE ROLE (no fixed list, reason from scratch)
+══════════════════════════════════════════════
+Do NOT pick from a predefined list. Read the JD and reason from first principles.
+
+1a — DERIVE THE ARCHETYPE LABEL
+Write a free-text role_archetype that precisely describes this role's function and industry.
+Examples of how to think: "Healthcare Revenue Cycle / Medical Coding", "Submarine Systems Engineering", "Islamic Finance / Sharia Compliance", "D2C E-commerce Growth Marketing", "Semiconductor Process Engineering".
+Be specific. "HR" is wrong if the role is actually "Clinical Documentation Auditing". "Tech" is wrong if the role is "ERP Implementation Consulting". Name the actual function.
+
+1b — DERIVE S1 TITLES (what do real people write on LinkedIn?)
+Ask: what exact phrases would someone in this role write in their LinkedIn headline?
+Test every title: search it mentally — does it return this type of person, or does it return adjacent/irrelevant people?
+NEVER use the JD's internal job title directly if it is proprietary, branded, or invented. Decompose to the real underlying function.
+Extract 3-5 real, searchable LinkedIn headline phrases for this specific role.
+CRITICAL: titles[] must NEVER be empty. If you cannot find branded equivalents, use the JD title as-is plus 2-3 functional synonyms.
+Examples by function:
+  Medical coder/auditor: "Medical Coder", "Certified Professional Coder", "CPC", "Coding Specialist", "Clinical Documentation Specialist", "Medical Coding Auditor"
+  RCM specialist: "Revenue Cycle Specialist", "Revenue Cycle Analyst", "RCM Specialist", "Billing Specialist", "Claims Specialist"
+  Software engineer: "Software Engineer", "Backend Engineer", "Full Stack Developer", "SWE"
+  Data scientist: "Data Scientist", "ML Engineer", "Applied Scientist", "Research Scientist"
+  HR business partner: "HRBP", "HR Business Partner", "People Business Partner"
+The titles array is the foundation of S1. Empty titles = zero results from the best query.
+
+1c — DERIVE S3 SKILLS (what certifications, tools, methodologies are unique to this function?)
+Ask: what skills, credentials, or domain terms would ONLY appear on profiles of people who do this specific job?
+NEVER use generic skills (Leadership, Communication, Stakeholder Management, Budget Management, Team Management).
+CRITICAL: skills[] must NEVER be empty. Even if the JD is sparse, extract what makes this role identifiable.
+Function-specific skill examples (use as a guide, not a fixed list):
+  Medical coding/auditing: CPC, CCS, CPMA, ICD-10, CPT, HCPCS, EM coding, medical auditing, chart review, anesthesia coding, radiology coding, emergency medicine coding, Revenue Cycle Management, medical documentation review
+  RCM/billing: denial management, AR follow-up, claims processing, EOB, payer contracts, EPIC, Meditech, Athenahealth
+  Software engineering: specific languages/frameworks from JD (Python, React, Kubernetes, AWS etc.)
+  Data science: PyTorch, TensorFlow, XGBoost, A/B testing, statistical modelling, NLP
+  Finance: specific instruments/regs from JD (IFRS, Basel III, DCF, options Greeks, ISDA)
+  Legal: specific practice areas from JD (M&A, SEBI, litigation, IP, contracts)
+  HR: HRBP, Workday, SuccessFactors, compensation benchmarking, org design
+  Marketing: specific channels from JD (Google Ads, Meta, Salesforce Marketing Cloud, HubSpot)
+Extract 4-6 skills that are genuinely differentiating. A generic person cannot fake having these.
+
+1d — DERIVE PEER COMPANIES (who employs this type of person at scale?)
+Ask: which companies in the same industry and adjacent industries have significant teams doing this function?
+Think: direct competitors, adjacent service providers, companies that run this function at scale internally.
+Extract 8-12 real company names. NEVER include the hiring company.
+CRITICAL PEER COMPANY RULES:
+  Match peers to the FUNCTION, not just the industry. A medical coder at an RCM company is NOT equivalent to a software engineer at an IT services firm.
+  WRONG for a medical coding role: Accenture, TCS, Wipro, Infosys — these are IT firms, not RCM employers.
+  RIGHT for a medical coding role: R1 RCM, Omega Healthcare, Firstsource Solutions, GeBBS Healthcare, nThrive, Maximus, Conduent Health, Precyse, Parallon, Ciox Health, Episource, MedQuist.
+  WRONG for a finance role: any tech company not in finance.
+  RIGHT for a finance role: banks, NBFCs, insurance companies, investment firms in that geography.
+  WRONG for an HR role: random companies from the JD's industry — HR professionals move across industries.
+  RIGHT for an HR role: companies known as strong HR talent exporters in that geography and size band.
+  The peer company list must be companies where the EXACT SAME FUNCTION is performed at scale. Generic IT services / consulting firms are only correct if the JD is itself for an IT services or consulting role.
+
+1e — DETERMINE S5 ELIGIBILITY (does this type of person have an open web presence?)
+S5 searches beyond LinkedIn — personal sites, conference talks, GitHub, industry forums, association pages.
+ALLOW S5 if: the role type typically writes publicly (tech, marketing, research, academia, consulting).
+SUPPRESS S5 if: the role type rarely has personal sites and the open web returns institutional noise instead of profiles (legal databases, regulatory filings, hospital policy pages, job boards, HR portals).
+Reason from the specific role — do not apply a blanket rule.
+
+1f — DETERMINE SENIORITY LEVEL AND HIRE TYPE
+Extract from JD context: reporting line, team size, budget ownership, titles mentioned.
+If not explicit, infer: IC/Specialist, Manager, Senior Manager, Director, VP, C-suite.
+This drives WHERE seniority gates are applied across strategies.
+
+CRITICAL — Classify the hire type. Three possible types:
+
+LEADERSHIP HIRE (VP / Director / Head / C-suite level):
+  The JD seeks someone who leads a function, builds teams, owns P&L or delivery org.
+  Signals: "build and scale", "lead a team", "reporting to VP/C-suite", "manage global org", "0-to-1 org", "practice head", "team of N+".
+  Seniority gate rule: INJECT ("VP" OR "Director" OR "Head of" OR "Principal" OR "Managing Director") as a mandatory AND-block into S1, S2, S6, S7, S8.
+  Rationale: without this gate, S1 and S6 flood with IC practitioners — architects, engineers, specialists — who match the skill keywords but cannot do a leadership job.
+  Example S1 for a leadership hire: site:linkedin.com/in/ ("AI Solution Architect" OR "Applied AI Lead") AND ("Director" OR "VP" OR "Head of") AND ("Mumbai" OR "Bangalore" OR "India")
+
+SENIOR IC HIRE (Staff / Principal / Lead / Senior Specialist — deep expert, minimal management):
+  The JD wants hands-on expertise. May manage 1-2 people but is not a people manager by primary function.
+  Signals: "hands-on", "individual contributor", "technical lead", "staff engineer", "senior specialist", "deep expertise in X".
+  Seniority gate rule: INJECT seniority gate ONLY into S6 and S8 (adjacent and builder pools are large and noisy without it).
+  Do NOT gate S1 and S2 — the title itself already implies the level.
+
+IC / SPECIALIST HIRE (Analyst / Engineer / Specialist / Coder / Associate — practitioner role):
+  The JD is for a doer, not a manager. No team ownership, no org-building, no P&L.
+  Signals: no "lead a team", no "build org", no "manage N reports", no P&L/budget ownership.
+  Seniority gate rule: DO NOT inject seniority gates into ANY strategy. Adding VP/Director/Head to these queries eliminates 95%+ of valid candidates.
+  S1, S2, S3 use role-specific title and skill terms only.
+
+1g — IS THIS A REGULATED INDUSTRY OR FUNCTION?
+Regulated = financial services, healthcare, pharma, legal, government, nuclear, aviation.
+If yes: S5 suppressed (returns compliance docs, not profiles). Flag is_regulated_industry: true.
+
+1h — HAS COMMERCIAL / GTM ANGLE? (triggers S7)
+True if JD mentions: pre-sales, quota, revenue targets, deal structuring, GTM, pricing, account management.
+
+1i — IS THIS A BUILDER / 0-TO-1 ROLE? (triggers S8)
+True if JD mentions: build from scratch, establish, 0-to-1, new practice, CoE setup, greenfield.
+
+══════════════════════════════════════════════
+STEP 2 — UNIVERSAL RULES (apply to every query)
+══════════════════════════════════════════════
+
+RULE A — SENIORITY GATE: APPLY BASED ON HIRE TYPE FROM STEP 1f
+
+LEADERSHIP HIRE → Gate S1, S2, S6, S7, S8 with seniority AND-block:
+  ("VP" OR "Director" OR "Head of" OR "Principal" OR "Managing Director" OR role-appropriate senior term)
+  WRONG S1: site:linkedin.com/in/ ("AI Architect" OR "AI Lead") AND (geo)          ← floods with ICs
+  RIGHT S1: site:linkedin.com/in/ ("AI Architect" OR "AI Lead") AND ("Director" OR "VP" OR "Head of") AND (geo)
+
+SENIOR IC HIRE → Gate only S6 and S8. Leave S1 and S2 ungated.
+  WRONG: adding "Director" OR "VP" to S1 for a Staff Engineer search
+  RIGHT: S6 gated with ("Senior" OR "Staff" OR "Principal" OR "Lead"), S1 uses title terms only
+
+IC / SPECIALIST HIRE → No seniority gate in any strategy.
+  WRONG: adding "VP" OR "Director" to a Medical Coder or Software Engineer search
+  RIGHT: S1 uses exact role titles, S3 uses role-specific skills, no seniority keywords anywhere
+
+SENIORITY + FUNCTION PAIRING (always, regardless of hire type):
+Every seniority keyword MUST be paired with the function in the same query.
+WRONG: "VP" AND "Pune" | RIGHT: "VP" AND "Customer Service" AND "Pune"
+WRONG: "Director" AND "Bangalore" | RIGHT: "Director" AND ("Engineering" OR "AI") AND "Bangalore"
+
+MULTI-DIMENSION CHECK: Does the JD require all 3 simultaneously?
+  (1) Seniority + (2) Technical/functional depth + (3) Delivery mode (client-facing/operations/P&L)
+  If yes: every query must include all 3 as AND blocks, not just 1 or 2.
+
+RULE B — S1 uses real LinkedIn headline phrases only (derived in Step 1b).
+BRANDED TITLE WARNING: If the JD title is proprietary or invented, decompose to the real underlying function.
+
+RULE C — S3 uses function-specific differentiating skills only (derived in Step 1c).
+NEVER use: Budget Management, Stakeholder Management, Communication, Leadership, Team Management.
+ALWAYS add seniority AND-block to S3: ("VP" OR "Director" OR "Head" OR "Principal" OR role-appropriate seniority term).
+
+RULE D — S4 is mandatory, always present, never skip:
+1. NEVER include "${hiringCo}" — returns current employees.
+2. Use 6-8 peer companies from Step 1d.
+3. Function in S4 must be SPECIFIC to this role — not a generic department name.
+4. Seniority + specific function + competitor companies = all 3 required.
+
+RULE E — S5 follows the eligibility decision from Step 1e.
+
+RULE F — S6 pipeline spans adjacent roles or industries. Only strategy where seniority mixing is allowed.
+Same industry scope: S6 can include adjacent sectors. Cross-industry scope: S6 spans multiple sectors.
+
+RULE G — Seniority ladder (use the level derived in Step 1f):
+C-suite: "Chief" OR "Global Head" OR "MD" OR "President" OR "SVP" OR "EVP"
+VP/Director: "VP" OR "Director" OR "Head of" — ALWAYS + function
+Senior Manager: "Senior Manager" OR "Principal" — + function
+Specialist/IC: use role-specific title terms from Step 1b, not seniority keywords
+
+RULE H — site:linkedin.com/in/ is MANDATORY in EVERY query except S5:
+CRITICAL: Every single query for strategies S1, S2, S3, S4, S6, S7, S8 MUST begin with site:linkedin.com/in/
+WITHOUT site:linkedin.com/in/ Google returns job boards, news articles, Instagram posts, Vimeo videos, PDFs — NOT candidate profiles.
+WRONG (returns job boards): ("VP Engineering" OR "Director AI") AND "Bangalore"
+RIGHT (returns profiles): site:linkedin.com/in/ ("VP Engineering" OR "Director AI") AND "Bangalore"
+S5 is the ONLY exception — it intentionally searches beyond LinkedIn.
+site:linkedin.com/in/ alone does NOT filter by country. City names are ALSO required.
+Extract from JD. India default: ("Mumbai" OR "Delhi" OR "Bangalore" OR "Hyderabad" OR "Pune" OR "India")
+Max 5 cities per OR group.
+
+RULE I — Query length:
+Max 3 OR-blocks. Max 5 values per OR block. Under 280 chars total including site:linkedin.com/in/. No experience strings.
+
+══════════════════════════════════════════════
+STEP 3 — CONDITIONAL STRATEGIES
+══════════════════════════════════════════════
+S7 COMMERCIAL/GTM: Add if JD has: pre-sales, deal structuring, pricing, GTM, P&L, quota, revenue targets.
+S8 BUILDER/COE: Add if JD has: 0-to-1, build from scratch, establish practice, CoE, playbooks, new function.
+  Use CoE/Practice pattern NOT "Founded"/"Built" keywords (attracts startup founders not enterprise builders).
+
+══════════════════════════════════════════════
+STEP 4 — SELF-CHECK each query before finalising
+══════════════════════════════════════════════
+- Does this query start with site:linkedin.com/in/ ? (MANDATORY for S1-S4, S6-S8. If not, REWRITE IT.)
+- Hire type classified in Step 1f? (LEADERSHIP / SENIOR IC / IC)
+- Seniority gate applied to the RIGHT strategies for this hire type? (Rule A)
+  → LEADERSHIP: does S1 have a seniority AND-block? If not, REWRITE IT.
+  → LEADERSHIP: do S6, S7, S8 have a seniority AND-block? If not, REWRITE THEM.
+  → IC/SPECIALIST: does ANY query have VP/Director/Head keywords? If yes, REMOVE THEM.
+- S1 titles real LinkedIn phrases from Step 1b? Not the JD's internal title?
+- S3 skills function-specific from Step 1c? No generic skills?
+- S4 present, excludes ${hiringCo}, uses peer companies from Step 1d? (Rule D)
+- S5 eligibility matches Step 1e decision?
+- Every query has city/location terms? (Rule H)
+- Under 280 chars including site:linkedin.com/in/? (Rule I)
+
+FINAL VALIDATION: Count queries missing site:linkedin.com/in/ (except S5). If count > 0, fix before returning JSON.
+FINAL VALIDATION 2: For LEADERSHIP hires — count S1/S6/S7/S8 queries missing seniority gate. If count > 0, fix before returning JSON.
+FINAL VALIDATION 3: For IC hires — count queries containing VP/Director/Head/C-suite keywords. If count > 0, remove them before returning JSON.
+
+Generate 10-14 queries. Return ONLY the JSON.
+${scope}`;
+}
+async function generate(){
+  const jd=document.getElementById('jdInput').value.trim();
+  if(!jd){alert('Paste a JD first.');return}
+  if(!geminiKey){alert('Enter Gemini API key (free: aistudio.google.com)');return}
+  if(searchScope==='target_companies'&&!targetCompanies.length){alert('Add target companies first.');return}
+  const btn=document.getElementById('genBtn');
+  const st=document.getElementById('genStatus');
+  const err=document.getElementById('genError');
+  // BUG 2 fix: null-check btn before touching it
+  if(!btn){console.error('genBtn not found — DOM may be broken');return}
+  // BUG 3 fix: hide tab system immediately on new run
+  const tabSys=document.getElementById('tabSystem');
+  if(tabSys)tabSys.style.display='none';
+  btn.disabled=true;btn.innerHTML='<span class="sp"></span> Generating...';
+  if(st){st.style.display='inline';st.textContent='~10-15 seconds...';}
+  if(err)err.innerHTML='';
+  queries=null;params=null;searchResults={};collapsed={};
+  const rArea=document.getElementById('resultsArea');if(rArea)rArea.innerHTML='';
+  const sArea=document.getElementById('summaryArea');if(sArea)sArea.innerHTML='';
+  const dArea=document.getElementById('diagArea');if(dArea)dArea.innerHTML='';
+  const slArea=document.getElementById('shortlistArea');if(slArea)slArea.innerHTML='';
+  shortlistData=[];
+  try{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({system_instruction:{parts:[{text:buildSys()}]},contents:[{parts:[{text:jd}]}],generationConfig:{temperature:0.5,maxOutputTokens:6000,responseMimeType:"application/json"}})});
+    if(!r.ok){
+      const errBody=await r.json().catch(()=>({}));
+      throw new Error('Gemini error '+r.status+': '+(errBody?.error?.message||'Unknown error'));
+    }
+    const d=await r.json();
+    // BUG 4 fix: detect empty/blocked response clearly
+    if(!d.candidates?.length){
+      const reason=d.promptFeedback?.blockReason||'No candidates returned';
+      throw new Error('Gemini returned no response. Reason: '+reason+'. Try shortening the JD or rephrasing it.');
+    }
+    let raw=(d.candidates[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+    raw=raw.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
+    const i1=raw.indexOf('{'),i2=raw.lastIndexOf('}');
+    if(i1===-1)throw new Error('Gemini returned text but no JSON was found. Response: '+raw.slice(0,200));
+    const parsed=JSON.parse(raw.slice(i1,i2+1));
+    if(!parsed.queries?.length)throw new Error('JSON parsed but no queries array found. Keys returned: '+Object.keys(parsed).join(', '));
+    queries=parsed.queries;params=parsed.extracted_params||{};
+    queries.forEach((_,i)=>{collapsed[i]=true});
+    renderResults();
+  }catch(e){
+    if(err)err.innerHTML=`<div class="err"><strong>Generation failed:</strong> ${esc(e.message)}</div>`;
+    console.error('generate() error:',e);
+  }finally{
+    // BUG 2 fix: always reset button in finally, even if btn access threw
+    if(btn){btn.disabled=false;btn.textContent='Generate queries';}
+    if(st)st.style.display='none';
+  }
+}
+
+async function runSearch(idx){
+  if(!serpKey){alert('Enter Serper.dev API key and click Save Keys first.');return}
+  console.log('Starting search for query',idx,queries[idx].query_string);
+  const btn=document.getElementById('sbtn-'+idx);
+  const statusEl=document.getElementById('sstatus-'+idx);
+  if(!btn){console.error('Button not found: sbtn-'+idx);return}
+  btn.disabled=true;btn.innerHTML='<span class="sp"></span> Searching...';
+  if(statusEl)statusEl.textContent='Calling Serper API...';
+
+  try{
+    // Auto-quote hyphenated terms (e.g. ICD-10 → "ICD-10") so Serper doesn't split them
+    const qs=queries[idx].query_string.replace(/(?<!")(\w+-\w+)(?!")/g,'"$1"');
+    const MAX_PAGES=100;
+    let allItems=[],totalResults=0,page=1;
+    while(page<=MAX_PAGES){
+      if(statusEl)statusEl.textContent='Fetching page '+page+' ('+allItems.length+' results so far)...';
+      const r=await fetch('https://google.serper.dev/search',{
+        method:'POST',
+        headers:{'X-API-KEY':serpKey,'Content-Type':'application/json'},
+        body:JSON.stringify({q:qs,num:10,page:page})
+      });
+      const d=await r.json();
+      if(!r.ok){throw new Error('Serper API error '+r.status+': '+(d.message||d.error||'Unknown error'))}
+      if(d.statusCode&&d.statusCode!==200){throw new Error('Serper error: '+(d.message||'Status '+d.statusCode))}
+      const pageItems=d.organic||[];
+      if(page===1)totalResults=parseInt(d.searchInformation?.totalResults||0)||pageItems.length;
+      pageItems.forEach(o=>allItems.push({title:o.title||'',link:o.link||'',snippet:o.snippet||'',position:allItems.length+1}));
+      if(pageItems.length<10)break;
+      page++;
+      await new Promise(r=>setTimeout(r,200));
+    }
+    searchResults[idx]={items:allItems,total:totalResults,fetched:allItems.length};
+    collapsed[idx]=true;
+    console.log('Search complete:',allItems.length,'results across',page,'page(s)');
+  }catch(e){
+    console.error('Search failed:',e);
+    searchResults[idx]={items:[{title:'Error',link:'',snippet:e.message+' — If "Failed to fetch", run: python3 -m http.server 8080 and open localhost:8080',position:0}],total:0,fetched:0};
+  }
+  if(btn){btn.disabled=false;btn.textContent='Re-search';}
+  if(statusEl)statusEl.textContent='';
+  renderCard(idx);renderSummary();runDiagnostic();
+}
+
+async function searchAll(){
+  if(!serpKey){alert('Enter Serper.dev API key first.');return}
+  if(!confirm(`${queries.length} queries will be searched. Each query uses 1 credit per page fetched (10 results/page) until all results are exhausted. Proceed?`))return;
+  for(let i=0;i<queries.length;i++){await runSearch(i);await new Promise(r=>setTimeout(r,400))}
+  // All searches done — switch to summary and show shortlist prompt
+  switchTab('summary');
+  const slArea=document.getElementById('shortlistArea');
+  if(slArea&&!shortlistData.length){
+    const total=getUnique().filter(x=>isLI(x.link)).length;
+    slArea.innerHTML=`<div class="sl-empty" style="padding:60px 20px">
+      <div style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:8px">${total} LinkedIn profiles ready to shortlist</div>
+      <div style="font-size:13px;color:var(--text3);margin-bottom:20px">Gemini will score every profile against your JD and rank them by fit — Strong, Potential, or Weak.</div>
+      <button class="btn btn-p" onclick="runShortlist();switchTab('shortlist')">Run AI Shortlist</button>
+    </div>`;
+  }
+}
+
+function getUnique(){
+  const seen=new Map();
+  Object.entries(searchResults).forEach(([idx,r])=>{
+    if(!r?.items)return;
+    const q=queries?.[idx];
+    const qLabel=q?`${q.strategy} — ${q.strategy_name||q.strategy}`:'Unknown';
+    const qStr=q?.query_string||'';
+    r.items.forEach(i=>{
+      if(!i.link||i.title==='Error')return;
+      const u=i.link.toLowerCase().replace(/\/$/,'').replace(/\?.*$/,'');
+      if(!seen.has(u))seen.set(u,{title:i.title,link:i.link,snippet:i.snippet,queryIdx:parseInt(idx),queryLabel:qLabel,queryString:qStr,strategy:q?.strategy||''});
+    });
+  });
+  return[...seen.values()];
+}
+function isLI(u){return/linkedin\.com\/in\//i.test(u)}
+function toggleResults(i){collapsed[i]=!collapsed[i];document.getElementById('srbody-'+i).className='sr-body '+(collapsed[i]?'collapsed':'expanded');document.getElementById('srarrow-'+i).className='sr-arrow '+(collapsed[i]?'':'open')}
+
+function renderSummary(){
+  const area=document.getElementById('summaryArea');let tf=0;Object.values(searchResults).forEach(r=>{if(r?.items)tf+=r.items.filter(i=>i.title!=='Error').length});
+  if(!tf){area.innerHTML='';return}
+  const bdg=document.getElementById('badge-summary');if(bdg){bdg.textContent=tf;bdg.style.display='inline-flex';}
+  const u=getUnique();const li=u.filter(p=>isLI(p.link));
+  let h=`<div class="summary-card fade"><h2 style="margin-bottom:16px;text-align:center">Search results summary</h2>
+  <div class="summary-metrics">
+    <div class="summary-met"><div class="met-l">Total fetched</div><div class="met-v">${tf.toLocaleString()}</div></div>
+    <div class="summary-met"><div class="met-l">Unique profiles</div><div class="met-v b">${u.length.toLocaleString()}</div><div style="font-size:11px;color:var(--text3);margin-top:4px">Deduped</div></div>
+    <div class="summary-met"><div class="met-l">LinkedIn profiles</div><div class="met-v g">${li.length.toLocaleString()}</div><div style="font-size:11px;color:var(--text3);margin-top:4px">${u.length-li.length} other</div></div>
+  </div>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+    <button class="btn btn-p" onclick="dlProfiles('all')">Download all ${u.length} unique profiles (CSV)</button>
+    ${li.length?`<button class="btn btn-s" onclick="dlProfiles('linkedin')">Download ${li.length} LinkedIn only</button>`:''}
+    <button class="btn btn-s" onclick="runShortlist();switchTab('shortlist')">AI Shortlist →</button>
+  </div>
+  <div style="border-top:1px solid var(--border);padding-top:16px">
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <tr style="border-bottom:1px solid var(--border)"><th style="text-align:left;padding:8px 0;color:var(--text3);font-size:12px">Strategy</th><th style="text-align:right;padding:8px 0;color:var(--text3);font-size:12px">Google total</th><th style="text-align:right;padding:8px 0;color:var(--text3);font-size:12px">Fetched</th></tr>`;
+  queries.forEach((q,i)=>{const r=searchResults[i];const c=SC[q.strategy]||SC.S1;if(r)h+=`<tr style="border-bottom:1px solid #f0efeb"><td style="padding:8px 0"><span class="tag" style="background:${c.bg};color:${c.tx};border-color:${c.bd};font-size:10px">${q.strategy}</span> ${esc(q.strategy_name||c.nm)}</td><td style="text-align:right;font-weight:600">${r.total?Number(r.total).toLocaleString():'—'}</td><td style="text-align:right">${r.fetched||0}</td></tr>`});
+  h+=`</table></div></div>`;area.innerHTML=h;
+}
+
+function runDiagnostic(){
+  if(!queries||!Object.keys(searchResults).length)return;
+  const allItems=getUnique();
+  const totalFetched=Object.values(searchResults).reduce((s,r)=>s+(r?.fetched||0),0);
+  if(!totalFetched)return;
+  const p=params||{};
+  const hiringCo=(p.hiring_company||'').toLowerCase();
+
+  const coreSkills=['genai','generative ai','llm','mlops','llmops','agentic','ai transformation','ai strategy','applied ai'];
+  const aiRel=allItems.filter(x=>coreSkills.some(k=>(x.title+x.snippet).toLowerCase().includes(k))).length;
+  const aiPct=Math.round(aiRel/Math.max(totalFetched,1)*100);
+
+  const seniorKw=['vp ','vice president','director','head of','chief','svp','evp','managing director'];
+  const seniorHits=allItems.filter(x=>seniorKw.some(k=>(x.title+x.snippet).toLowerCase().includes(k))).length;
+  const seniorPct=Math.round(seniorHits/Math.max(totalFetched,1)*100);
+
+  const compCounts={};
+  if(hiringCo){allItems.forEach(x=>{if((x.title+x.snippet).toLowerCase().includes(hiringCo))compCounts[hiringCo]=(compCounts[hiringCo]||0)+1})}
+  const maxCoCount=Object.values(compCounts).length?Math.max(...Object.values(compCounts)):0;
+  const maxCoPct=Math.round(maxCoCount/Math.max(totalFetched,1)*100);
+
+  const noiseKw=['talent acquisition','human resources','hr manager','recruiter','undergrad ','fresher','intern ','job seeker'];
+  const noiseCount=allItems.filter(x=>noiseKw.some(k=>(x.title+x.snippet).toLowerCase().includes(k))).length;
+  const noisePct=Math.round(noiseCount/Math.max(totalFetched,1)*100);
+
+  const yields=Object.values(searchResults).map(r=>r?.fetched||0);
+  const maxYield=Math.max(...yields,0);
+  const maxYieldPct=Math.round(maxYield/Math.max(totalFetched,1)*100);
+
+  const liCount=allItems.filter(x=>isLI(x.link)).length;
+  const liPct=Math.round(liCount/Math.max(allItems.length,1)*100);
+
+  const s4q=queries.filter(q=>q.strategy==='S4');
+  const s4HasHiringCo=hiringCo&&s4q.some(q=>q.query_string.toLowerCase().includes(hiringCo));
+  const s1q=queries.filter(q=>q.strategy==='S1');
+  const genericTitles=['forward deployment','ai champion','ai evangelist'];
+  const s1HasGeneric=s1q.some(q=>genericTitles.some(t=>q.query_string.toLowerCase().includes(t)));
+  const seniorStrats=queries.filter(q=>['S1','S2','S3','S4'].includes(q.strategy));
+  const seniorHasManager=seniorStrats.some(q=>/"manager"/i.test(q.query_string)&&!/"senior manager"/i.test(q.query_string));
+  const hasCommercial=queries.some(q=>q.strategy==='S7'||/pre-sales|solutions engineer|gtm/i.test(q.query_string));
+  const hasBuilder=queries.some(q=>q.strategy==='S8'||/coe|center of excellence|ai practice/i.test(q.query_string));
+  const allHaveGeo=queries.every(q=>/mumbai|delhi|bangalore|hyderabad|pune|india|london|new york|singapore|dubai|chennai|kolkata/i.test(q.query_string));
+
+  function sc(val,good,ok){return val>=good?2:val>=ok?1:0}
+
+  const checks={
+    a1:{label:'S4 avoids hiring company',score:s4HasHiringCo?0:2,detail:s4HasHiringCo?'Hiring company found in S4 — returns current employees':'S4 correctly targets competitor companies'},
+    a2:{label:'S1 uses real LinkedIn titles',score:s1HasGeneric?0:2,detail:s1HasGeneric?'Internal/branded titles found in S1 — near-zero results expected':'S1 titles match real LinkedIn headline language'},
+    a3:{label:'Seniority consistency',score:seniorHasManager?0:2,detail:seniorHasManager?'"Manager" found in senior queries (S1–S4) — mixing seniority levels':'Seniority keywords correctly matched to role level'},
+    a4:{label:'Commercial/GTM coverage',score:p.has_commercial_angle===false?2:hasCommercial?2:1,detail:hasCommercial?'Commercial/GTM query present':p.has_commercial_angle?'JD has commercial angle but no GTM query generated':'Not required for this role'},
+    a4b:{label:'S5 regulated industry check',score:p.is_regulated_industry&&queries.some(q=>q.strategy==='S5')?0:2,detail:p.is_regulated_industry&&queries.some(q=>q.strategy==='S5')?'S5 open-web query present for regulated industry — returns policy pages, not profiles':'S5 handling correct for this industry type'},
+    a5:{label:'Builder/CoE coverage',score:p.is_builder_role===false?2:hasBuilder?2:1,detail:hasBuilder?'Builder/CoE query present':p.is_builder_role?'Builder role detected but no CoE query generated':'Not required for this role'},
+    a6:{label:'Geo in all queries',score:allHaveGeo?2:1,detail:allHaveGeo?'All queries contain explicit city names':'Some queries rely on site: alone for location — add city names'},
+    b1:{label:'AI/skill relevance rate',score:sc(aiPct,40,20),detail:aiPct+'% of results have core skill signals (GenAI/LLM/MLOps etc.)'},
+    b2:{label:'Target seniority hit rate',score:sc(seniorPct,35,20),detail:seniorPct+'% of results mention VP/Director/Head-level titles'},
+    b3:{label:'Company diversity',score:sc(100-maxCoPct,80,60),detail:maxCoPct>0?'Dominant employer cluster: '+maxCoPct+'% of results from one company':'Company spread looks healthy across results'},
+    b4:{label:'Noise rate',score:sc(100-noisePct,97,92),detail:noisePct+'% irrelevant profiles detected (HR/students/job-seekers)'},
+    b5:{label:'Query yield balance',score:sc(100-maxYieldPct,65,50),detail:'Single largest query contributes '+maxYieldPct+'% of total results'},
+    b6:{label:'LinkedIn profile rate',score:sc(liPct,90,75),detail:liPct+'% are confirmed LinkedIn profile URLs (not job boards or company pages)'},
+  };
+
+  const total=Object.values(checks).reduce((s,c)=>s+c.score,0);
+  const pct=Math.round(total/24*100);
+  const grade=pct>=83?'Excellent':pct>=58?'Good':pct>=33?'Fair':'Poor';
+  const gradeColor=pct>=83?'var(--accent)':pct>=58?'#945a00':'var(--danger)';
+
+  function row([k,ch]){
+    const dot=ch.score===2?'var(--accent)':ch.score===1?'#945a00':'var(--danger)';
+    const lbl=ch.score===2?'Pass':ch.score===1?'Partial':'Fail';
+    return`<div style="display:grid;grid-template-columns:14px 1fr 56px;gap:8px;align-items:start;padding:8px 0;border-bottom:1px solid #f0efeb">
+      <span style="width:8px;height:8px;border-radius:50%;background:${dot};display:inline-block;margin-top:4px;flex-shrink:0"></span>
+      <div><div style="font-size:13px;font-weight:500">${esc(ch.label)}</div><div style="font-size:12px;color:var(--text2);margin-top:1px">${esc(ch.detail)}</div></div>
+      <span style="font-size:11px;font-weight:600;color:${dot};text-align:right">${lbl} (${ch.score}/2)</span>
+    </div>`}
+
+  const aRows=Object.entries(checks).filter(([k])=>k.startsWith('a')).map(row).join('');
+  const bRows=Object.entries(checks).filter(([k])=>k.startsWith('b')).map(row).join('');
+
+  const html=`<div class="summary-card fade" style="margin-top:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+      <h2 style="margin:0">Search diagnostic</h2>
+      <div style="text-align:right"><div style="font-size:30px;font-weight:700;color:${gradeColor};line-height:1">${total}/24</div><div style="font-size:13px;color:${gradeColor};font-weight:600">${grade}</div></div>
+    </div>
+    <div style="background:#f0efeb;border-radius:8px;height:8px;margin-bottom:20px;overflow:hidden"><div style="background:${gradeColor};height:100%;width:${pct}%;border-radius:8px"></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div><div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">A — Query structure</div>${aRows}</div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">B — Result quality</div>${bRows}</div>
+    </div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--text3)">Scored against ${totalFetched} fetched results · ${allItems.length} unique profiles · ${queries.length} queries</div>
+  </div>`;
+
+  const da=document.getElementById('diagArea');
+  if(da)da.innerHTML=html;
+  const db=document.getElementById('badge-diag');if(db){db.textContent=grade;db.style.display='inline-flex';}
+}
+
+
+let shortlistData=[];
+let shortlistRunning=false;
+
+async function runShortlist(){
+  if(shortlistRunning)return;
+  if(!geminiKey){alert('Gemini API key required for shortlisting.');return}
+  const profiles=getUnique().filter(x=>isLI(x.link));
+  if(!profiles.length){alert('Run searches first to get profiles.');return}
+  shortlistRunning=true;
+  shortlistData=[];
+  const jd=document.getElementById('jdInput').value.trim();
+  const area=document.getElementById('shortlistArea');
+  area.innerHTML=`<div style="text-align:center;padding:40px 20px">
+    <div style="font-size:15px;font-weight:500;margin-bottom:8px">Scoring ${profiles.length} profiles against the JD...</div>
+    <div style="font-size:13px;color:var(--text3);margin-bottom:20px">This uses Gemini to evaluate each profile. Takes ~30–60 seconds.</div>
+    <div id="sl-progress-bar" style="background:#f0efeb;border-radius:8px;height:8px;max-width:400px;margin:0 auto;overflow:hidden"><div id="sl-progress-fill" style="background:var(--accent);height:100%;width:0%;border-radius:8px;transition:width .3s"></div></div>
+    <div id="sl-progress-label" style="font-size:12px;color:var(--text3);margin-top:8px">0 / ${profiles.length}</div>
+  </div>`;
+
+  // Batch profiles — Gemini can score ~20 at a time
+  const BATCH=20;
+  const batches=[];
+  for(let i=0;i<profiles.length;i+=BATCH)batches.push(profiles.slice(i,i+BATCH));
+
+  for(let b=0;b<batches.length;b++){
+    const batch=batches[b];
+    const done=b*BATCH;
+    document.getElementById('sl-progress-fill').style.width=Math.round(done/profiles.length*100)+'%';
+    document.getElementById('sl-progress-label').textContent=`${done} / ${profiles.length} scored`;
+
+    const profileList=batch.map((p,i)=>{
+      const nm=(p.title||'').replace(/\s*[-\u2013|].*linkedin.*/i,'').replace(/\s*[-\u2013|].*$/,'').trim();
+      return `Profile ${done+i+1}:\nName: ${nm}\nHeadline/Snippet: ${(p.snippet||p.title||'').slice(0,300)}\nStrategy: ${p.strategy||''}`;
+    }).join('\n\n---\n\n');
+
+    const prompt=`You are a senior recruiter scoring candidate profiles against a job description.
+
+JOB DESCRIPTION:
+${jd.slice(0,1500)}
+
+PROFILES TO SCORE:
+${profileList}
+
+For each profile, return a JSON array of objects. Score each profile 0-100 for fit with the JD.
+Return ONLY a JSON array — no markdown, no explanation.
+Schema: [{"profile_num":1,"name":"...","score":85,"tier":"Strong"|"Potential"|"Weak","match_signals":["signal1","signal2"],"gaps":["gap1"],"one_line":"One sentence why they fit or don't"}]
+
+Scoring guide:
+80-100 = Strong: seniority matches, core skills present, relevant industry/function
+50-79 = Potential: some fit but missing 1-2 key dimensions
+0-49 = Weak: missing seniority or core function or irrelevant background
+
+Be strict. Most profiles will be Weak or Potential. Only mark Strong if they genuinely match.`;
+
+    try{
+      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.2,maxOutputTokens:4000}})
+      });
+      if(!r.ok)throw new Error('Gemini '+r.status);
+      const d=await r.json();
+      let raw=(d.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+      raw=raw.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
+      const i1=raw.indexOf('['),i2=raw.lastIndexOf(']');
+      if(i1!==-1){
+        const scored=JSON.parse(raw.slice(i1,i2+1));
+        scored.forEach((s,si)=>{
+          const prof=batch[si];
+          if(!prof)return;
+          const nm=(prof.title||'').replace(/\s*[-\u2013|].*linkedin.*/i,'').replace(/\s*[-\u2013|].*$/,'').trim();
+          shortlistData.push({...s,name:nm||s.name,link:prof.link,strategy:prof.strategy,queryLabel:prof.queryLabel,snippet:prof.snippet});
+        });
+      }
+    }catch(e){console.error('Shortlist batch error:',e)}
+    await new Promise(r=>setTimeout(r,500));
+  }
+
+  // Sort by score descending
+  shortlistData.sort((a,b)=>b.score-a.score);
+  document.getElementById('badge-shortlist').textContent=shortlistData.filter(x=>x.tier==='Strong').length;
+  document.getElementById('badge-shortlist').style.display='inline-flex';
+  renderShortlist();
+  shortlistRunning=false;
+}
+
+let slFilters={tier:'all',strategy:'all',score:0};
+
+function renderShortlist(){
+  const area=document.getElementById('shortlistArea');
+  if(!shortlistData.length){area.innerHTML='<div class="sl-empty">No profiles scored yet. Click Run Shortlist after searching.</div>';return}
+  slFilters={tier:'all',strategy:'all',score:0};
+  const strong=shortlistData.filter(x=>x.tier==='Strong');
+  const potential=shortlistData.filter(x=>x.tier==='Potential');
+  const weak=shortlistData.filter(x=>x.tier==='Weak');
+  const strategies=[...new Set(shortlistData.map(x=>x.strategy).filter(Boolean))].sort();
+
+  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+    <div>
+      <h2 style="margin:0">AI Shortlist</h2>
+      <div style="font-size:13px;color:var(--text3);margin-top:3px">${shortlistData.length} profiles scored · <span style="color:var(--green);font-weight:600">${strong.length} Strong</span> · ${potential.length} Potential · ${weak.length} Weak</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-s btn-sm" onclick="dlShortlist()">Export CSV</button>
+      <button class="btn btn-s btn-sm" onclick="runShortlist()">Re-run</button>
+    </div>
+  </div>
+  <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px">
+    <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end">
+      <div>
+        <div class="section-label" style="margin-bottom:6px">Tier</div>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-s btn-sm sl-fbtn active" data-ft="tier" data-fv="all" onclick="applySlFilters(this)">All (${shortlistData.length})</button>
+          <button class="btn btn-sm sl-fbtn" data-ft="tier" data-fv="Strong" onclick="applySlFilters(this)" style="background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)">Strong (${strong.length})</button>
+          <button class="btn btn-s btn-sm sl-fbtn" data-ft="tier" data-fv="Potential" onclick="applySlFilters(this)">Potential (${potential.length})</button>
+          <button class="btn btn-s btn-sm sl-fbtn" data-ft="tier" data-fv="Weak" onclick="applySlFilters(this)">Weak (${weak.length})</button>
+        </div>
+      </div>
+      ${strategies.length>1?`<div>
+        <div class="section-label" style="margin-bottom:6px">Strategy</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <button class="btn btn-s btn-sm sl-fbtn active" data-ft="strategy" data-fv="all" onclick="applySlFilters(this)">All</button>
+          ${strategies.map(s=>`<button class="btn btn-s btn-sm sl-fbtn" data-ft="strategy" data-fv="${s}" onclick="applySlFilters(this)">${s}</button>`).join('')}
+        </div>
+      </div>`:''}
+      <div>
+        <div class="section-label" style="margin-bottom:6px">Min Score</div>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-s btn-sm sl-fbtn active" data-ft="score" data-fv="0" onclick="applySlFilters(this)">Any</button>
+          <button class="btn btn-s btn-sm sl-fbtn" data-ft="score" data-fv="50" onclick="applySlFilters(this)">50+</button>
+          <button class="btn btn-s btn-sm sl-fbtn" data-ft="score" data-fv="65" onclick="applySlFilters(this)">65+</button>
+          <button class="btn btn-s btn-sm sl-fbtn" data-ft="score" data-fv="80" onclick="applySlFilters(this)">80+</button>
+        </div>
+      </div>
+    </div>
+    <div id="sl-filter-summary" style="font-size:12px;color:var(--text3);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">Showing all ${shortlistData.length} profiles</div>
+  </div>
+  <div id="sl-list">`;
+
+  h+=renderShortlistCards(shortlistData);
+  h+=`</div>`;
+  area.innerHTML=h;
+}
+
+function applySlFilters(btn){
+  const ft=btn.dataset.ft,fv=btn.dataset.fv;
+  slFilters[ft]=ft==='score'?parseInt(fv):fv;
+  document.querySelectorAll(`.sl-fbtn[data-ft="${ft}"]`).forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  let data=shortlistData;
+  if(slFilters.tier!=='all')data=data.filter(x=>x.tier===slFilters.tier);
+  if(slFilters.strategy!=='all')data=data.filter(x=>x.strategy===slFilters.strategy);
+  if(slFilters.score>0)data=data.filter(x=>(x.score||0)>=slFilters.score);
+  const list=document.getElementById('sl-list');
+  if(list)list.innerHTML=renderShortlistCards(data);
+  const summary=document.getElementById('sl-filter-summary');
+  if(summary){
+    const parts=[];
+    if(slFilters.tier!=='all')parts.push('Tier: '+slFilters.tier);
+    if(slFilters.strategy!=='all')parts.push('Strategy: '+slFilters.strategy);
+    if(slFilters.score>0)parts.push('Score ≥ '+slFilters.score);
+    summary.textContent=parts.length?`Showing ${data.length} of ${shortlistData.length} profiles · Filters: ${parts.join(' · ')}`:`Showing all ${shortlistData.length} profiles`;
+  }
+}
+
+
+function dlShortlist(){
+  if(!shortlistData.length)return;
+  const l=['Rank,Score,Tier,Name,Profile URL,Strategy,Query,One Line Summary,Match Signals,Gaps'];
+  shortlistData.forEach((p,i)=>{
+    l.push([
+      i+1,p.score||0,p.tier||'',
+      '"'+(p.name||'').replace(/"/g,'""')+'"',
+      '"'+(p.link||'')+'"',
+      '"'+(p.strategy||'').replace(/"/g,'""')+'"',
+      '"'+(p.queryLabel||'').replace(/"/g,'""')+'"',
+      '"'+(p.one_line||'').replace(/"/g,'""')+'"',
+      '"'+((p.match_signals||[]).join('; ')).replace(/"/g,'""')+'"',
+      '"'+((p.gaps||[]).join('; ')).replace(/"/g,'""')+'"'
+    ].join(','));
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([l.join('\n')],{type:'text/csv'}));
+  a.download=`netrax_shortlist_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+
+function dlProfiles(type){
+  const u=getUnique();
+  const p=type==='linkedin'?u.filter(x=>isLI(x.link)):u;
+  const l=['#,Name,Profile URL,Description,Source,Strategy,Query Name,Query String'];
+  p.forEach((x,i)=>{
+    const nm=(x.title||'').replace(/\s*[-\u2013|].*linkedin.*/i,'').replace(/\s*[-\u2013|].*$/,'').trim();
+    l.push([
+      i+1,
+      '"'+nm.replace(/"/g,'""')+'"',
+      '"'+(x.link||'')+'"',
+      '"'+(x.snippet||'').replace(/"/g,'""')+'"',
+      isLI(x.link)?'LinkedIn':'Other',
+      '"'+(x.strategy||'').replace(/"/g,'""')+'"',
+      '"'+(x.queryLabel||'').replace(/"/g,'""')+'"',
+      '"'+(x.queryString||'').replace(/"/g,'""')+'"'
+    ].join(','));
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([l.join('\n')],{type:'text/csv'}));
+  a.download=`netrax_${type}_profiles_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function renderResults(){
+  document.getElementById('tabSystem').style.display='block';
+  switchTab('queries');
+  const area=document.getElementById('resultsArea');
+  const counts=queries.reduce((a,q)=>{a[q.strategy]=(a[q.strategy]||0)+1;return a},{});const p=params;
+  const sl={same_industry:'Same industry',cross_industry:'Cross-industry',target_companies:'Target ('+targetCompanies.length+')'}[searchScope];
+  let h=`<div class="fade"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+    <div><h2>${queries.length} queries generated</h2><span class="bdg bdg-b" style="margin-top:4px">${sl}</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-s btn-sm" onclick="location.reload()">New JD</button>
+      <button class="btn btn-s btn-sm" onclick="copyAll()">Copy all</button>
+      <button class="btn btn-s btn-sm" onclick="dlCSV()">CSV</button>
+      <button class="btn btn-s btn-sm" onclick="dlJSON()">JSON</button>
+      ${serpKey?`<button class="btn btn-p btn-sm" onclick="searchAll()">Search all (${queries.length} credits)</button>`:''}
+    </div></div>`;
+  if(p?.titles){
+    const archetypeLabels={'TECH_AI_ENGINEERING':'Tech / AI / Engineering','CUSTOMER_SERVICE_CX':'Customer Service / CX','SALES_GTM_BD':'Sales / GTM / Business Dev','HR_PEOPLE':'HR / People','FINANCE_RISK_COMPLIANCE':'Finance / Risk / Compliance','OPERATIONS_SUPPLY_CHAIN':'Operations / Supply Chain','MARKETING_BRAND_GROWTH':'Marketing / Brand / Growth','LEGAL_COMPLIANCE_SECRETARIAL':'Legal / Compliance','GENERAL_MANAGEMENT_LEADERSHIP':'General Management'};
+    const archetypeColors={'TECH_AI_ENGINEERING':'#185FA5','CUSTOMER_SERVICE_CX':'#0F6E56','SALES_GTM_BD':'#854F0B','HR_PEOPLE':'#6b21a8','FINANCE_RISK_COMPLIANCE':'#A32D2D','OPERATIONS_SUPPLY_CHAIN':'#3B6D11','MARKETING_BRAND_GROWTH':'#993C1D','LEGAL_COMPLIANCE_SECRETARIAL':'#5F5E5A','GENERAL_MANAGEMENT_LEADERSHIP':'#185FA5'};
+    const at=p.role_archetype||'';
+    const atLabel=archetypeLabels[at]||at||'Detecting...';
+    const atColor=archetypeColors[at]||'var(--info)';
+    h+=`<div class="card" style="padding:16px 20px">
+      ${at?`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Role archetype detected</div>
+        <span style="font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px;background:${atColor}18;color:${atColor};border:1px solid ${atColor}40">${esc(atLabel)}</span>
+        <span style="font-size:11px;color:var(--text3)">Query rules applied automatically for this function type</span>
+      </div>`:''}
+      <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:8px">Extracted parameters</div>
+      <div class="pg">${[['Titles',(p.titles||[]).join(', ')],['Location',p.location],['Industry',p.industry],['Function',p.function],['Seniority',p.seniority_level],['Experience',p.experience_range],['Skills',(p.skills||[]).join(', ')],['Peer companies',(p.peer_companies||[]).join(', ')],['Archetype',p.role_archetype||'']].map(([k,v])=>`<div><span class="pg-l">${k}:</span> ${esc(v)}</div>`).join('')}</div>
+    </div>`}
+  // S4 missing warning
+  const hasS4=queries.some(q=>q.strategy==='S4');
+  const isRegulated=params?.is_regulated_industry;
+  const missingSite=queries.filter(q=>q.strategy!=='S5'&&!/site:linkedin\.com\/in/i.test(q.query_string||''));
+  if(missingSite.length>0)h+=`<div style="background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:var(--radius);padding:12px 18px;font-size:13px;color:var(--danger);margin-bottom:14px;display:flex;align-items:flex-start;gap:8px"><strong>⚠ ${missingSite.length} quer${missingSite.length>1?'ies are':'y is'} missing site:linkedin.com/in/</strong> — ${missingSite.map(q=>q.strategy).join(', ')} will return job boards and noise instead of profiles. Re-generate to fix.</div>`;
+  if(!hasS4)h+=`<div style="background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:var(--radius);padding:12px 18px;font-size:13px;color:var(--danger);margin-bottom:14px;display:flex;align-items:center;gap:8px"><strong>⚠ S4 Company-Reverse query is missing.</strong> This is the highest-signal strategy — it targets candidates at competitor companies. Re-generate to fix.</div>`;
+  if(isRegulated)h+=`<div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius);padding:12px 18px;font-size:13px;color:var(--amber);margin-bottom:14px;display:flex;align-items:center;gap:8px">Regulated industry detected — S5 open-web queries have been suppressed to avoid policy/compliance page noise.</div>`;
+  h+=`<div class="metrics"><div class="met"><div class="met-l">Old system</div><div class="met-v r">60</div></div><div class="met"><div class="met-l">New system</div><div class="met-v g">${queries.length}</div></div><div class="met"><div class="met-l">Strategies</div><div class="met-v">${Object.keys(counts).length}</div></div><div class="met"><div class="met-l">Calls saved</div><div class="met-v g">${60-queries.length}</div></div></div>`;
+  h+=`<div class="pills">${Object.entries(counts).sort().map(([s,n])=>{const c=SC[s]||SC.S1;return`<span class="pill" style="background:${c.bg};color:${c.tx};border-color:${c.bd}">${s}: ${c.nm} (${n})</span>`}).join('')}</div>`;
+  queries.forEach((_,i)=>{h+=`<div id="qcard-${i}"></div>`});h+=`</div>`;area.innerHTML=h;queries.forEach((_,i)=>renderCard(i));
+}
+
+function validateQuery(q){
+  const qs=q.query_string||'';
+  const warnings=[];
+  const strategy=q.strategy||'';
+  const archetype=(params?.role_archetype||'').toUpperCase();
+
+  // CRITICAL: site:linkedin.com/in/ check — mandatory for all non-S5 strategies
+  const hasSiteOp=/site:linkedin\.com\/in/i.test(qs);
+  if(strategy!=='S5'&&!hasSiteOp)
+    warnings.push({type:'error',msg:'Missing site:linkedin.com/in/ — this query will return job boards, news articles and Instagram posts instead of candidate profiles'});
+
+  const hasFunction=/(Customer|CX|Engineer|Sales|Finance|HR|Marketing|Operations|Technology|Legal|Product|Service|Experience|Strategy|Analytics|Risk|Compliance|Growth|Brand|Supply|Procurement|Digital|Data|AI|IT|Cloud|People|Talent|Revenue|GTM|Counsel|Treasury|Audit)/i.test(qs);
+  const hasSeniority=/(VP|Director|Head|Chief|SVP|EVP|Managing Director|Principal)/i.test(qs);
+
+  if((strategy==='S1'||strategy==='S2'||strategy==='S4')&&hasSeniority&&!hasFunction)
+    warnings.push({type:'error',msg:'Seniority without function — returns any title in this field'});
+
+  if(strategy==='S3'&&!hasSeniority)
+    warnings.push({type:'error',msg:'S3 missing seniority gate — will flood with junior profiles. Add (VP OR Director OR Head) as AND block'});
+
+  if(strategy==='S3'){
+    const generic=/(Budget Management|Stakeholder Management|Service Quality|Communication Skills|Leadership|Team Management)/i.test(qs);
+    if(generic)warnings.push({type:'warn',msg:'Generic skills in S3 — use function-specific skills instead'});}
+
+  if(strategy==='S1'&&/CUSTOMER_SERVICE|FINANCE|LEGAL|HR_PEOPLE/.test(archetype)){
+    const hasIndustry=/(NBFC|Banking|Finance|Insurance|Legal|HR|People|Fintech|BFSI)/i.test(qs);
+    if(!hasIndustry)warnings.push({type:'warn',msg:'S1 missing industry anchor — will match this title in any industry'});}
+
+  const suppressS5=/CUSTOMER_SERVICE|FINANCE_RISK|HR_PEOPLE|LEGAL/.test(archetype);
+  if(strategy==='S5'&&(suppressS5||params?.is_regulated_industry))
+    warnings.push({type:'error',msg:'S5 suppressed for this role type — returns policy/compliance pages not profiles'});
+
+  if(qs.length>300)warnings.push({type:'warn',msg:'Query '+qs.length+' chars — may hit Serper 400 error'});
+
+  const hasGeo=/(mumbai|delhi|bangalore|bengaluru|hyderabad|pune|chennai|kolkata|india|london|new york|singapore|dubai|noida|gurgaon)/i.test(qs);
+  if(!hasGeo)warnings.push({type:'error',msg:'No city found — results will not be geographically filtered'});
+
+  if(strategy==='S6'){
+    const hasCsuite=/(SVP|Senior Vice President|Chief|Global Head|EVP)/i.test(qs);
+    if(hasCsuite)warnings.push({type:'warn',msg:'S6 Adjacent should be one level below target'});}
+
+  return warnings;
+}
+function renderCard(i){
+  const q=queries[i],c=SC[q.strategy]||SC.S1;
+  const geo=/mumbai|delhi|bangalore|bengaluru|hyderabad|pune|chennai|kolkata|india|noida|gurgaon|gurugram/i.test(q.query_string);
+  const res=searchResults[i];const hasRes=res?.items?.length&&res.items[0].title!=='Error';const isColl=collapsed[i]!==false;
+  let h=`<div class="qc">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span class="tag" style="background:${c.bg};color:${c.tx};border-color:${c.bd}">${q.strategy}: ${q.strategy_name||c.nm}</span>
+        <span style="font-size:12px;color:var(--text3)">#${i+1}</span>
+        ${geo?'<span class="bdg bdg-g">geo</span>':'<span class="bdg bdg-r">no geo</span>'}
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        ${res?.total?`<span class="count-badge">~${Number(res.total).toLocaleString()}</span>`:''}
+        ${hasRes?`<span class="bdg bdg-g">${res.fetched} fetched</span>`:''}
+      </div>
+    </div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:8px;line-height:1.5">${esc(q.rationale)}</div>
+    ${(()=>{const ws=validateQuery(q);if(!ws.length)return'';return'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">'+ws.map(w=>`<span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:${w.type==='error'?'var(--danger-bg)':'#fffce6'};color:${w.type==='error'?'var(--danger)':'#7a6a00'};border:1px solid ${w.type==='error'?'#f5c6c6':'#f0e68c'}">${w.type==='error'?'⚠ ':'! '}${esc(w.msg)}</span>`).join('')+'</div>';})()}
+    <div class="qs">${esc(q.query_string)}</div>
+    <div class="acts">
+      <button class="btn btn-p btn-sm" id="sbtn-${i}" onclick="runSearch(${i})">${hasRes?'Re-search':'Search'}</button>
+      <span class="lnk" onclick="navigator.clipboard.writeText(queries[${i}].query_string);this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</span>
+      <a href="https://www.google.com/search?q=${encodeURIComponent(q.query_string)}" target="_blank">Google</a>
+    </div>
+    <div id="sstatus-${i}" style="font-size:12px;color:var(--text3);margin-top:6px"></div>`;
+  if(hasRes){
+    h+=`<div class="sr"><div class="sr-toggle" onclick="toggleResults(${i})"><h4>${res.fetched} profiles (${Number(res.total).toLocaleString()} total) &#8212; ${isColl?'expand':'collapse'}</h4><span class="sr-arrow ${isColl?'':'open'}" id="srarrow-${i}">&#9660;</span></div>
+    <div class="sr-body ${isColl?'collapsed':'expanded'}" id="srbody-${i}">`;
+    res.items.forEach(r=>{if(r.title==='Error'){h+=`<div class="sr-i" style="display:block"><div class="err" style="margin:0">${esc(r.snippet)}</div></div>`;return}
+      const li=isLI(r.link);h+=`<div class="sr-i"><span class="sr-num">${r.position||''}</span><div style="flex:1"><div class="sr-t">${r.link?`<a href="${esc(r.link)}" target="_blank">${esc(r.title)}</a>`:esc(r.title)} ${li?'<span class="bdg bdg-b" style="font-size:9px">LinkedIn</span>':''}<span class="bdg bdg-x" style="font-size:9px;margin-left:4px">${queries[i].strategy}</span></div>${r.link?`<div class="sr-u">${esc(r.link)}</div>`:''}<div class="sr-s">${esc(r.snippet)}</div></div></div>`});
+    h+=`</div></div>`}
+  h+=`</div>`;document.getElementById('qcard-'+i).innerHTML=h;
+}
+
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('pane-'+name).classList.add('active');
+}
+
+function copyAll(){const t=queries.map((q,i)=>{const r=searchResults[i];let s=`[${q.strategy}] ${q.query_string}`;if(r?.total)s+=` | ~${Number(r.total).toLocaleString()}`;return s}).join('\n\n');navigator.clipboard.writeText(t);alert('Copied!')}
+function dlCSV(){const l=['Strategy,Name,Query,Rationale,Google Total,Fetched'];queries.forEach((q,i)=>{const r=searchResults[i];l.push([q.strategy,'"'+(q.strategy_name||'')+'"','"'+(q.query_string||'').replace(/"/g,'""')+'"','"'+(q.rationale||'').replace(/"/g,'""')+'"',r?.total||'',r?.fetched||''].join(','))});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([l.join('\n')],{type:'text/csv'}));a.download='netrax_queries.csv';a.click()}
+function dlJSON(){const u=getUnique();const out={params,scope:searchScope,target_companies:targetCompanies,summary:{queries:queries.length,fetched:Object.values(searchResults).reduce((s,r)=>s+(r?.fetched||0),0),unique:u.length,linkedin:u.filter(p=>isLI(p.link)).length},queries:queries.map((q,i)=>({...q,total:searchResults[i]?.total||null,fetched:searchResults[i]?.fetched||null,results:searchResults[i]?.items||null})),unique_profiles:u};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));a.download='netrax_full.json';a.click()}
+</script>
+</body>
+</html>
