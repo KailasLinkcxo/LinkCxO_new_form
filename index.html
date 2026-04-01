@@ -3,1578 +3,1443 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NetraX Global Search</title>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Marketing Dashboard — LinkCxO</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#f4f5f7;--card:#ffffff;--text:#0d1117;--text2:#4a5568;--text3:#8896a8;
-  --border:#dde1e9;--border2:#c8cdd8;
-  --accent:#1a3a6b;--accent2:#edf2ff;--accent3:#c3d3f5;
-  --green:#166534;--green-bg:#f0fdf4;--green-border:#bbf7d0;
-  --danger:#991b1b;--danger-bg:#fff1f2;--danger-border:#fecdd3;
-  --amber:#92400e;--amber-bg:#fffbeb;--amber-border:#fde68a;
-  --info:#1e40af;--info-bg:#eff6ff;--info-border:#bfdbfe;
-  --sans:'Instrument Sans',sans-serif;--mono:'IBM Plex Mono',monospace;
-  --radius:6px;--radius-lg:10px;
-  --shadow:0 1px 2px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.04);
-  --shadow-md:0 2px 8px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.05);
+:root {
+  --gold: #C9A961; --gold-dark: #9d8147; --bg: #f2f5f3; --surface: #ffffff;
+  --surface2: #f9faf9; --border: rgba(157,129,71,0.08); --green: #16a34a;
+  --red: #dc2626; --blue: #2563eb; --purple: #9333ea; --text: #111714; 
+  --text-muted: #4a5a53; --text-dim: #8a9e97; --nav-w: 220px; --header-h: 64px;
 }
-body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;font-size:14px}
-.wrap{max-width:980px;margin:0 auto;padding:0 20px 40px}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; display:flex; flex-direction:column; }
 
-/* ── Header ── */
-.hdr{background:var(--accent);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px;margin-bottom:28px}
-.hdr-left{display:flex;align-items:center;gap:14px}
-.logo{width:28px;height:28px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:5px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:11px;letter-spacing:.5px}
-.hdr h1{font-size:15px;font-weight:600;color:white;letter-spacing:.01em}
-.hdr-divider{width:1px;height:20px;background:rgba(255,255,255,.2)}
-.hdr-sub{font-size:12px;color:rgba(255,255,255,.5);letter-spacing:.03em;text-transform:uppercase;font-weight:500}
+.top-bar { height:var(--header-h); background:var(--surface); border-bottom:2px solid var(--gold); display:flex; align-items:center; padding:0 28px; gap:20px; position:sticky; top:0; z-index:100; box-shadow:0 1px 8px rgba(0,0,0,0.06); }
+.logo-mark { font-size:17px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; }
+.logo-mark span { color:var(--gold); }
+.top-bar-divider { width:1px; height:28px; background:var(--border); }
+.top-bar-title { font-size:13px; font-weight:500; color:var(--text-muted); flex:1; }
+.top-bar-date { font-family:'DM Mono',monospace; font-size:11px; color:var(--text-dim); }
 
-/* ── Section labels ── */
-.section-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.app-body { display:flex; flex:1; overflow:hidden; }
 
-/* ── Cards ── */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px 26px;box-shadow:var(--shadow);margin-bottom:14px}
-.card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.sidenav { width:var(--nav-w); background:var(--gold-dark); display:flex; flex-direction:column; padding:20px 12px; gap:4px; overflow-y:auto; flex-shrink:0; }
+.nav-section-label { font-size:9px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.35); padding:8px 10px 4px; margin-top:8px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:400; color:rgba(255,255,255,0.65); transition:all 0.15s; border:1px solid transparent; user-select:none; }
+.nav-item:hover { background:rgba(255,255,255,0.10); color:rgba(255,255,255,0.9); }
+.nav-item.active { background:var(--gold); color:#ffffff; font-weight:600; border-color:rgba(255,255,255,0.15); }
+.nav-icon { width:18px; height:18px; flex-shrink:0; opacity:0.7; }
+.nav-item.active .nav-icon { opacity:1; }
 
-h2{font-size:15px;font-weight:600;color:var(--text)}
+.main { flex:1; overflow-y:auto; padding:40px; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+.page { animation:fadeIn 0.3s ease; }
 
-/* ── Form elements ── */
-textarea{width:100%;border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;font-family:var(--sans);font-size:13.5px;line-height:1.75;resize:vertical;background:var(--card);color:var(--text);transition:border-color .15s}
-textarea:focus,input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,58,107,.08)}
-input[type=text],input[type=password]{border:1px solid var(--border);border-radius:var(--radius);padding:9px 13px;font-family:var(--sans);font-size:13.5px;background:var(--card);width:100%;color:var(--text);transition:border-color .15s}
-select{border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-family:var(--sans);font-size:13px;background:var(--card);color:var(--text)}
+.page-header { margin-bottom:40px; }
+.page-header h1 { font-size:28px; font-weight:600; color:var(--text); margin-bottom:8px; letter-spacing:-0.5px; }
+.page-header p { font-size:14px; color:var(--text-dim); font-weight:400; }
 
-/* ── Buttons ── */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:none;border-radius:var(--radius);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;letter-spacing:.01em}
-.btn-p{background:var(--accent);color:white;box-shadow:0 1px 2px rgba(26,58,107,.3)}
-.btn-p:hover{background:#142d57;box-shadow:0 2px 6px rgba(26,58,107,.35)}
-.btn-p:disabled{background:#8ba4c9;cursor:not-allowed;box-shadow:none}
-.btn-s{background:var(--card);color:var(--text2);border:1px solid var(--border2)}.btn-s:hover{background:var(--bg);color:var(--text);border-color:#b0b8c8}
-.btn-sm{padding:6px 13px;font-size:12px}
+.section-header { font-size:11px; font-weight:600; color:var(--text-muted); margin:56px 0 20px 0; letter-spacing:0.12em; text-transform:uppercase; }
+.section-header:first-of-type { margin-top:0; }
 
-/* ── API key rows ── */
-.key-row{display:grid;grid-template-columns:140px 1fr auto;gap:10px;align-items:center;margin-bottom:10px}
-.key-row label{font-size:13px;font-weight:500;color:var(--text2)}
-.key-ok{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
-.key-no{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;background:var(--bg);color:var(--text3);border:1px solid var(--border)}
+.row-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:32px; }
+.row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-bottom:32px; }
+.row-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-bottom:32px; }
+.row-5 { display:grid; grid-template-columns:repeat(5,1fr); gap:20px; margin-bottom:32px; }
 
-/* ── Scope cards ── */
-.scope-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
-.scope-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:13px 15px;cursor:pointer;transition:all .15s;background:var(--card)}
-.scope-card:hover{border-color:var(--accent3);background:var(--accent2)}
-.scope-card.active{border-color:var(--accent);background:var(--accent2)}
-.scope-card h3{font-size:13px;font-weight:600;margin-bottom:3px;color:var(--text)}
-.scope-card.active h3{color:var(--accent)}
-.scope-card p{font-size:12px;color:var(--text3);line-height:1.45;margin:0}
+.kpi { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:22px 18px; position:relative; transition:all 0.2s; }
+.kpi:hover { border-color:rgba(201,169,97,0.25); box-shadow:0 2px 12px rgba(0,0,0,0.02); }
+.kpi-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#95a5a6; margin-bottom:10px; }
+.kpi-val { font-size:32px; font-weight:400; color:#2d3436; line-height:1.2; margin-bottom:6px; letter-spacing:-0.2px; font-family:'DM Mono',monospace; font-variant-numeric:tabular-nums; }
+.kpi-sub { font-size:12px; font-weight:400; color:#b2bec3; display:flex; align-items:center; gap:6px; margin-top:4px; }
+.kpi-sub.up { color:var(--green); }
+.kpi-sub.down { color:var(--red); }
 
-/* ── Chips ── */
-.chip-input{display:flex;flex-wrap:wrap;gap:6px;padding:9px 13px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);min-height:42px;align-items:center;cursor:text;transition:border-color .15s}.chip-input:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,58,107,.08)}
-.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:4px;background:var(--accent2);color:var(--accent);font-size:12px;font-weight:500;border:1px solid var(--accent3)}
-.chip .x{cursor:pointer;font-size:13px;line-height:1;opacity:.6}.chip .x:hover{opacity:1}
-.chip-input input{border:none;outline:none;font-family:var(--sans);font-size:13px;flex:1;min-width:120px;background:transparent;color:var(--text)}
+.chart-box { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:20px; }
+.chart-hdr { font-size:13px; font-weight:600; color:var(--text); margin-bottom:18px; letter-spacing:-0.1px; }
+.chart-wrap { position:relative; height:280px; }
 
-/* ── Suggestion chips ── */
-.sug-section{margin-top:10px;padding:13px 15px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)}
-.sug-section h4{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
-.sug-chips{display:flex;flex-wrap:wrap;gap:5px}
-.sug-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border-radius:4px;background:var(--card);border:1px solid var(--border2);color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s}.sug-chip:hover{border-color:var(--accent);background:var(--accent2);color:var(--accent)}
+.smol-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; }
+.smol-card { background:var(--surface); border:1px solid var(--border); padding:16px; border-radius:8px; border-left:3px solid var(--gold); transition:all 0.15s; }
+.smol-card:hover { border-left-color:var(--gold-dark); box-shadow:0 2px 6px rgba(0,0,0,0.02); }
+.smol-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:#95a5a6; margin-bottom:8px; }
+.smol-val { font-size:22px; font-weight:400; color:#2d3436; letter-spacing:-0.2px; font-family:'DM Mono',monospace; font-variant-numeric:tabular-nums; }
 
-/* ── Metrics ── */
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
-.met{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
-.met-l{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
-.met-v{font-size:24px;font-weight:700;letter-spacing:-1px;color:var(--text)}
-.met-v.g{color:var(--green)}.met-v.r{color:var(--danger)}.met-v.b{color:var(--info)}
+table { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; border-collapse:separate; border-spacing:0; margin-bottom:32px; }
+thead { background:var(--surface2); }
+th { padding:12px 18px; text-align:left; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); border-bottom:1px solid var(--border); }
+td { padding:14px 18px; font-size:14px; border-bottom:1px solid rgba(0,0,0,0.02); color:var(--text-muted); font-family:'DM Mono',monospace; font-variant-numeric:tabular-nums; }
+tbody tr { transition:background 0.12s; }
+tbody tr:hover { background:var(--surface2); }
+tbody tr:last-child td { border-bottom:none; }
+td:first-child { font-family:'Outfit',sans-serif; }
+td.text-col { font-family:'Outfit',sans-serif; }
 
-/* ── Pills ── */
-.pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
-.pill{font-size:11px;padding:3px 10px;border-radius:4px;font-weight:500;border:1px solid}
+.expand-btn { background:var(--gold); color:#fff; border:none; padding:10px 20px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:'Outfit',sans-serif; transition:all 0.2s; margin-bottom:20px; }
+.expand-btn:hover { background:var(--gold-dark); transform:translateY(-1px); box-shadow:0 4px 12px rgba(201,169,97,0.3); }
+.expand-btn:active { transform:translateY(0); }
 
-/* ── Query cards ── */
-.qc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;box-shadow:var(--shadow);margin-bottom:10px;transition:border-color .15s,box-shadow .15s}
-.qc:hover{border-color:var(--border2);box-shadow:var(--shadow-md)}
-.tag{font-size:10px;padding:2px 9px;border-radius:4px;font-weight:600;border:1px solid;display:inline-block;letter-spacing:.02em}
-.bdg{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500;display:inline-block}
-.bdg-g{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
-.bdg-b{background:var(--info-bg);color:var(--info);border:1px solid var(--info-border)}
-.bdg-x{background:var(--bg);color:var(--text3);border:1px solid var(--border)}
-.bdg-r{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border)}
-.count-badge{font-size:12px;font-weight:600;padding:3px 12px;border-radius:4px;background:var(--info-bg);color:var(--info);border:1px solid var(--info-border)}
+.expandable { max-height:0; overflow:hidden; transition:max-height 0.3s ease; }
+.expandable.open { max-height:5000px; }
 
-/* ── Query string display ── */
-.qs{font-family:var(--mono);font-size:11.5px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;line-height:1.75;word-break:break-all;margin:10px 0 12px;color:var(--text)}
+.modal { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
+.modal.open { display:flex; }
+.modal-content { background:var(--surface); border-radius:12px; max-width:900px; max-height:80vh; overflow-y:auto; padding:32px; margin:20px; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; padding-bottom:16px; border-bottom:2px solid var(--border); }
+.modal-title { font-size:20px; font-weight:600; }
+.modal-close { background:none; border:none; font-size:28px; cursor:pointer; color:var(--text-dim); line-height:1; padding:0; width:32px; height:32px; border-radius:50%; transition:all 0.2s; }
+.modal-close:hover { background:var(--surface2); color:var(--text); }
 
-/* ── Actions ── */
-.acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.acts a,.acts .lnk{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;font-size:12px;font-weight:500;border:1px solid var(--border2);border-radius:var(--radius);text-decoration:none;color:var(--text2);cursor:pointer;background:var(--card);font-family:var(--sans);transition:all .15s}
-.acts a:hover,.acts .lnk:hover{background:var(--bg);color:var(--text);border-color:#b0b8c8}
+.video-list { margin-bottom:32px; }
+.video-status-label { font-size:14px; font-weight:600; color:var(--text); margin-bottom:16px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+.video-item { padding:12px; border-bottom:1px solid rgba(0,0,0,0.04); }
+.video-item:last-child { border-bottom:none; }
+.video-name { font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px; }
+.video-org { font-size:13px; color:var(--text-muted); margin-bottom:4px; }
+.video-note { font-size:12px; color:var(--text-dim); font-style:italic; }
 
-/* ── Search results ── */
-.sr{margin-top:14px;border-top:1px solid var(--border)}
-.sr-toggle{display:flex;justify-content:space-between;align-items:center;padding:10px 0;cursor:pointer;user-select:none}
-.sr-toggle:hover h4{color:var(--accent)}
-.sr-toggle h4{font-size:10px;font-weight:700;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin:0}
-.sr-arrow{font-size:13px;color:var(--text3);transition:transform .2s}.sr-arrow.open{transform:rotate(180deg)}
-.sr-body.collapsed{display:none}.sr-body.expanded{display:block}
-.sr-i{padding:9px 0;border-bottom:1px solid var(--bg);display:flex;align-items:flex-start}.sr-i:last-child{border-bottom:none}
-.sr-num{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:22px;border-radius:4px;background:var(--bg);color:var(--text3);font-size:10px;font-weight:600;margin-right:10px;flex-shrink:0;border:1px solid var(--border)}
-.sr-t a{color:var(--info);text-decoration:none;font-weight:500;font-size:13.5px}.sr-t a:hover{text-decoration:underline}
-.sr-u{font-size:11px;color:var(--accent);margin:2px 0;word-break:break-all}
-.sr-s{font-size:12.5px;color:var(--text2);line-height:1.5}
+@media (max-width:1400px) { .row-5 { grid-template-columns:repeat(3,1fr); } }
+@media (max-width:1200px) { .row-4 { grid-template-columns:1fr 1fr; } }
+@media (max-width:900px) {
+  .sidenav { position:fixed; left:-240px; top:var(--header-h); height:calc(100% - var(--header-h)); z-index:90; transition:left 0.3s; }
+  .sidenav.mobile-open { left:0; }
+  .main { padding:24px 20px; }
+  .row-2,.row-3,.row-4,.row-5 { grid-template-columns:1fr; }
+  .kpi-val { font-size:28px; }
+}
 
-/* ── Error / status ── */
-.err{background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:var(--radius);padding:13px 16px;font-size:13px;color:var(--danger);margin-top:12px;line-height:1.6}
-.status-bar{background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius);padding:10px 15px;font-size:13px;color:var(--amber);margin-top:10px;display:none}
+.mobile-nav-overlay { display:none; position:fixed; top:var(--header-h); left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:89; opacity:0; transition:opacity 0.3s; }
+.mobile-nav-overlay.visible { display:block; opacity:1; }
 
-/* ── Tabs ── */
-.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;margin-top:4px}
-.tab-btn{padding:10px 20px;font-size:13px;font-weight:500;font-family:var(--sans);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;color:var(--text3);transition:all .15s;letter-spacing:.01em}
-.tab-btn:hover{color:var(--text)}
-.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
-.tab-btn .tab-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;border-radius:4px;background:var(--accent2);color:var(--accent);font-size:10px;font-weight:700;padding:0 5px;margin-left:5px;border:1px solid var(--accent3)}
-.tab-pane{display:none}.tab-pane.active{display:block}
+.hamburger { display:none; width:24px; height:24px; cursor:pointer; flex-direction:column; justify-content:center; gap:5px; }
+.hamburger span { display:block; height:2px; background:var(--text); border-radius:2px; }
+@media (max-width:900px) { .hamburger { display:flex; } }
 
-/* ── Summary card ── */
-.summary-card{background:var(--card);border:1px solid var(--border);border-top:3px solid var(--accent);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow-md);margin-top:16px}
-.summary-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
-.summary-met{text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)}.summary-met .met-v{font-size:30px}
-
-/* ── Param grid ── */
-.pg{display:grid;grid-template-columns:1fr 1fr;gap:5px 28px;font-size:13px}.pg-l{color:var(--text3);font-weight:500}
-
-/* ── Shortlist cards ── */
-.sl-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;box-shadow:var(--shadow);margin-bottom:8px;display:grid;grid-template-columns:32px 1fr auto;gap:12px;align-items:start;transition:box-shadow .15s}
-.sl-card:hover{box-shadow:var(--shadow-md)}
-.sl-rank{width:30px;height:30px;border-radius:50%;background:var(--accent2);color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--accent3)}
-.sl-rank.top{background:var(--accent);color:white;border-color:var(--accent)}
-.sl-score-ring{text-align:center;min-width:52px}
-.sl-score-num{font-size:22px;font-weight:700;line-height:1}
-.sl-score-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04px}
-.sl-name{font-size:14px;font-weight:600;margin-bottom:2px}
-.sl-meta{font-size:12px;color:var(--text3);margin-bottom:5px}
-.sl-why{font-size:12.5px;color:var(--text2);line-height:1.5;margin-bottom:6px}
-.sl-tags{display:flex;flex-wrap:wrap;gap:4px}
-.sl-tag{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:500}
-.sl-tag.match{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
-.sl-tag.gap{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border)}
-.sl-tag.strat{background:var(--info-bg);color:var(--info);border:1px solid var(--info-border)}
-.sl-empty{text-align:center;padding:60px 20px;color:var(--text3);font-size:14px}
-.sl-fbtn.active{background:var(--accent);color:white;border-color:var(--accent)}
-
-/* ── Spinner ── */
-@keyframes spin{to{transform:rotate(360deg)}}
-.sp{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
-.sp-dark{border-color:rgba(0,0,0,.1);border-top-color:var(--accent)}
-.fade{animation:fadeIn .25s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.free-tag{display:none}
-
-@media(max-width:640px){.metrics,.summary-metrics{grid-template-columns:repeat(2,1fr)}.pg,.scope-cards{grid-template-columns:1fr}.key-row{grid-template-columns:1fr;gap:6px}}
+.empty-state { color:var(--text-dim); font-style:italic; }
 </style>
 </head>
 <body>
-<div class="wrap">
-<div class="hdr"><div class="hdr-left"><div class="logo">NX</div><div class="hdr-divider"></div><h1>NetraX Global Search</h1></div><span class="hdr-sub">Talent Intelligence Platform</span></div>
 
-<div class="card">
-  <div class="card-title">API Configuration</div>
-  <p style="font-size:13px;color:var(--text3);margin-bottom:16px">Keys are stored locally in your browser and never transmitted to any server.</p>
-  <div class="key-row"><label>Gemini AI</label><input type="password" id="geminiKey" placeholder="aistudio.google.com → Get API Key" /><span id="geminiStatus" class="key-no">Not set</span></div>
-  <div class="key-row"><label>Serper Dev</label><input type="password" id="serpKey" placeholder="serper.dev → API Key" /><span id="serpStatus" class="key-no">Not set</span></div>
-  <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap">
-    <button class="btn btn-p btn-sm" onclick="saveKeys()">Save keys</button>
-    <button class="btn btn-s btn-sm" onclick="testGemini()">Test Gemini connection</button>
-    <button class="btn btn-s btn-sm" onclick="testSerper()">Test Serper connection</button>
+<div class="top-bar">
+  <div class="hamburger" id="hamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
   </div>
-  <div id="testResult" class="status-bar"></div>
+  <div class="logo-mark">LinkC<span>x</span>O</div>
+  <div class="top-bar-divider"></div>
+  <div class="top-bar-title">Marketing Dashboard</div>
+  <div class="top-bar-date">Updated: Apr 1, 2026</div>
 </div>
 
-<div class="card">
-  <div class="card-title">Job Description</div>
-  <textarea id="jdInput" rows="12" placeholder="Paste the complete job description here..."></textarea>
-  <div style="margin:18px 0 0"><div class="section-label">Search Scope</div>
-  <div class="scope-cards">
-    <div class="scope-card active" id="scope-same" onclick="setScope('same_industry')"><h3>Same industry</h3><p>All queries strictly limited to the JD's exact industry. S4 targets only same-industry competitors.</p></div>
-    <div class="scope-card" id="scope-cross" onclick="setScope('cross_industry')"><h3>Cross-industry</h3><p>Intentionally pulls talent from 2–3 different industries. S4 targets companies across sectors, not just one vertical.</p></div>
-    <div class="scope-card" id="scope-target" onclick="setScope('target_companies')"><h3>Target companies</h3><p>S4 uses only your specified companies. AI suggests candidates from those firms.</p></div>
-  </div>
-  <div id="targetSection" style="display:none">
-    <label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px">Selected companies</label>
-    <div class="chip-input" id="chipBox" onclick="document.getElementById('compInput').focus()"><input type="text" id="compInput" placeholder="Type + Enter..." onkeydown="chipKey(event)" /></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;margin-bottom:4px">
-      <span style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3)">AI Suggestions</span>
-      <button class="btn btn-s btn-sm" onclick="aiCos=null;genCompanySugs()">Re-suggest</button>
+<div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileNav()"></div>
+
+<div class="app-body">
+  <nav class="sidenav">
+    <div class="nav-section-label">Weekly Views</div>
+    <div class="nav-item active" onclick="showPage('week4',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      Week 4
     </div>
-    <div id="aiSugs"></div>
-  </div>
-  </div>
-  <div style="display:flex;gap:10px;margin-top:16px;align-items:center;flex-wrap:wrap">
-    <button class="btn btn-p" id="genBtn" onclick="generate()">Generate queries</button>
-    <button class="btn btn-s" onclick="resetAll()">Reset</button>
-    <span id="genStatus" style="font-size:13px;color:var(--text3);display:none"></span>
-  </div>
-  <div id="genError"></div>
+    <div class="nav-item" onclick="showPage('week3',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      Week 3
+    </div>
+    <div class="nav-section-label">Comparisons</div>
+    <div class="nav-item" onclick="showPage('2week',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+      2-Week Total
+    </div>
+    <div class="nav-item" onclick="showPage('comparison',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+        <line x1="6" y1="20" x2="6" y2="14"/>
+      </svg>
+      WoW Compare
+    </div>
+    <div class="nav-item" onclick="showPage('monthly',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      Monthly
+    </div>
+  </nav>
+
+  <main class="main" id="mainContent"></main>
 </div>
-<div id="tabSystem" style="display:none">
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('queries')" id="tab-queries">Queries</button>
-    <button class="tab-btn" onclick="switchTab('summary')" id="tab-summary">Results <span class="tab-badge" id="badge-summary" style="display:none">0</span></button>
-    <button class="tab-btn" onclick="switchTab('diagnostic')" id="tab-diagnostic">Diagnostic <span class="tab-badge" id="badge-diag" style="display:none">—</span></button>
-    <button class="tab-btn" onclick="switchTab('shortlist')" id="tab-shortlist">Shortlist <span class="tab-badge" id="badge-shortlist" style="display:none">0</span></button>
+
+<div class="modal" id="videoModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Video Pipeline Details</div>
+      <button class="modal-close" onclick="closeVideoModal()">&times;</button>
+    </div>
+    <div id="videoModalContent"></div>
   </div>
-  <div class="tab-pane active" id="pane-queries">
-    <div id="resultsArea"></div>
-  </div>
-  <div class="tab-pane" id="pane-summary">
-    <div id="summaryArea"></div>
-  </div>
-  <div class="tab-pane" id="pane-diagnostic">
-    <div id="diagArea"></div>
-  </div>
-  <div class="tab-pane" id="pane-shortlist">
-    <div id="shortlistArea"></div>
-  </div>
-</div>
 </div>
 
 <script>
-let geminiKey='',serpKey='',queries=null,params=null,searchResults={},collapsed={};
-let searchScope='same_industry',targetCompanies=[],aiCos=null;
-let editingIdx=-1,shortlistAbort=false;
-let searchAllAbort=false;
-
-window.addEventListener('DOMContentLoaded',()=>{
-  geminiKey=localStorage.getItem('nx_gk')||'';serpKey=localStorage.getItem('nx_sk')||'';
-  document.getElementById('geminiKey').value=geminiKey;document.getElementById('serpKey').value=serpKey;updateKeys();
-});
-
-function saveKeys(){
-  geminiKey=document.getElementById('geminiKey').value.trim();
-  serpKey=document.getElementById('serpKey').value.trim();
-  localStorage.setItem('nx_gk',geminiKey);localStorage.setItem('nx_sk',serpKey);updateKeys();
-}
-
-function updateKeys(){
-  document.getElementById('geminiStatus').className=geminiKey?'key-ok':'key-no';
-  document.getElementById('geminiStatus').textContent=geminiKey?'Saved':'Not set';
-  document.getElementById('serpStatus').className=serpKey?'key-ok':'key-no';
-  document.getElementById('serpStatus').textContent=serpKey?'Saved':'Not set';
-}
-
-async function testSerper(){
-  const box=document.getElementById('testResult');
-  box.style.display='block';
-  if(!serpKey){box.textContent='No Serper Dev key entered. Save your key first.';box.style.background='var(--danger-bg)';box.style.color='var(--danger)';box.style.borderColor='var(--danger-border)';return}
-  box.textContent='Testing Serper Dev connection...';box.style.background='var(--amber-bg)';box.style.color='var(--amber)';box.style.borderColor='var(--amber-border)';
-  try{
-    const r=await fetch('https://google.serper.dev/search',{method:'POST',headers:{'X-API-KEY':serpKey,'Content-Type':'application/json'},body:JSON.stringify({q:'test',num:1})});
-    const d=await r.json();
-    if(r.ok&&d.organic){
-      const credits=d.credits!=null?d.credits:'unknown';
-      box.textContent='Serper Dev connected successfully! Credits remaining: '+credits;
-      box.style.background='var(--green-bg)';box.style.color='var(--green)';box.style.borderColor='var(--green-border)';
-    }else{box.textContent='Serper Dev returned error: '+(d.message||d.error||JSON.stringify(d).slice(0,200));box.style.background='var(--danger-bg)';box.style.color='var(--danger)';box.style.borderColor='var(--danger-border)'}
-  }catch(e){
-    box.innerHTML='Connection failed: '+e.message+'<br><br><strong>If you see "Failed to fetch":</strong> This means CORS is blocked. Run from a local server: <code style="background:#f0efeb;padding:2px 6px;border-radius:4px">python3 -m http.server 8080</code> then open <a href="http://localhost:8080" style="color:var(--info)">http://localhost:8080</a>';
-    box.style.background='var(--danger-bg)';box.style.color='var(--danger)';box.style.borderColor='var(--danger-border)';
+const data = {
+  week3: {
+    label: "Week 3 (Mar 16-22)",
+    linkedin: { 
+      posts:42, impressions:9217, clicks:377, likes:132, comments:1, reposts:1,
+      dailyImpressions:[2210,2446,1296,1445,1599,1895,2251],
+      dailyClicks:[97,96,34,42,73,94,79],
+      dailyReactions:[32,77,38,25,20,32,17]
+    },
+    email: { sent:8, delivered:5361, views:576, clicks:63, openRate:10.74, clickRate:1.18 },
+    blog: { posts:7, impressions:476 },
+    users: { newUsers:665, totalUsers:19746 },
+    quora: { posts:50, totalViews:0 },
+    orm: { posts:34, ambitionBox:32, glassdoor:2 },
+    platform: { posts:24, applause:3 },
+    videos: { total:15, confirmed:11, pending:1, done:3 },
+    postTypes: { 'Leadership Changes':14, 'Industry Spotlight':7, 'Job Post':5, 'Work Life Tips':7, 'LinkCXO Says':7 },
+    
+    postTypePerformance: {
+      'Job Post': { posts:5, impressions:3173, reactions:10, ctr:7.19, engagementRate:0.32 },
+      'Industry Spotlight': { posts:7, impressions:2436, reactions:47, ctr:4.27, engagementRate:1.93 },
+      'Leadership Changes': { posts:14, impressions:1776, reactions:38, ctr:1.13, engagementRate:2.14 },
+      'LinkCXO Says': { posts:7, impressions:561, reactions:16, ctr:0.71, engagementRate:2.85 },
+      'Work Life Tips': { posts:7, impressions:529, reactions:15, ctr:1.32, engagementRate:2.84 }
+    },
+    
+    emailMailers: [
+      {name:'R&D',date:'15/03',delivered:709,views:72,clicks:15,openRate:10.2,clickRate:2.1},
+      {name:'Marketing',date:'16/03',delivered:929,views:104,clicks:5,openRate:11.2,clickRate:0.5},
+      {name:'Finance',date:'17/03',delivered:687,views:85,clicks:9,openRate:12.4,clickRate:1.3},
+      {name:'Legal',date:'18/03',delivered:546,views:46,clicks:16,openRate:8.4,clickRate:2.9},
+      {name:'Sales & BD',date:'19/03',delivered:822,views:101,clicks:7,openRate:12.3,clickRate:0.9},
+      {name:'HR',date:'20/03',delivered:687,views:69,clicks:9,openRate:10.0,clickRate:1.3},
+      {name:'Planning',date:'21/03',delivered:265,views:19,clicks:1,openRate:7.2,clickRate:0.4},
+      {name:'R&D 2nd',date:'22/03',delivered:716,views:80,clicks:1,openRate:11.2,clickRate:0.1}
+    ],
+    
+    blogPosts: [
+      {date:'16/03',title:'Recruitment & Onboarding Alignment',impressions:76},
+      {date:'17/03',title:'The Evolving CFO',impressions:98},
+      {date:'18/03',title:'Defining the C-Suite',impressions:62},
+      {date:'19/03',title:'Emerging C-Suite Titles',impressions:92},
+      {date:'20/03',title:'Building High-Performing Teams',impressions:84},
+      {date:'21/03',title:'Women Reshaping Leadership',impressions:64},
+      {date:'22/03',title:'CHROs & AI Transformation',impressions:0}
+    ],
+    
+    topPosts: [
+      {title:'Marketing Job Post',type:'Job Post',date:'16/03',impressions:1294,likes:8,clicks:102},
+      {title:'Captain Fresh Funding',type:'Industry Spotlight',date:'17/03',impressions:997,likes:17,clicks:36},
+      {title:'Strategy Job Post',type:'Job Post',date:'21/03',impressions:783,likes:2,clicks:30},
+      {title:'Boba Bhai Funding',type:'Industry Spotlight',date:'16/03',impressions:647,likes:16,clicks:16},
+      {title:'HR Job Post',type:'Job Post',date:'20/03',impressions:542,likes:0,clicks:38}
+    ],
+    
+    bottomPosts: [
+      {title:'Work Life Tips Post',type:'Work Life Tips',date:'15/03',impressions:39,likes:1,clicks:0},
+      {title:'Work Life Tips Post',type:'Work Life Tips',date:'18/03',impressions:39,likes:2,clicks:1},
+      {title:'Alok Jain – Cadence',type:'Leadership Changes',date:'21/03',impressions:40,likes:1,clicks:1},
+      {title:'Sreejith Vasudevan',type:'Leadership Changes',date:'16/03',impressions:48,likes:2,clicks:0},
+      {title:'Work Life Tips Post',type:'Work Life Tips',date:'21/03',impressions:56,likes:3,clicks:1}
+    ],
+    
+    platformPostMix: {
+      'Leadership Changes':{count:9,percent:37.5},
+      'Industry Spotlight':{count:6,percent:25.0},
+      'Work Life Tips':{count:6,percent:25.0},
+      'LinkCXO Says':{count:1,percent:4.2},
+      'Other':{count:2,percent:8.3}
+    },
+    
+    videosDone: [
+      {name:'Vaijayantimala Belsare',org:'MSKA & Associates – Partner',duration:'45 min'},
+      {name:'Abhimanyu Rathi',org:'RenewCred Carbon – Founder & CEO',duration:'19 min'},
+      {name:'Rohit Manghnani',org:'L&T Energy – VP & Head HR',duration:'25 min'}
+    ],
+    
+    videosConfirmed: [
+      {name:'Bhaswati Ramanujam',org:'Freelance Sr. Marketing Consultant',note:'This Friday'},
+      {name:'Latha Nathan',org:'RoofCoats – Interim MD',note:'This Friday'},
+      {name:'Sonal Goyal',org:'Zingg.AI – Founder',note:'Next Friday'},
+      {name:'Anurag Arora',org:'VFS Global – Strategic Advisor',note:'This Saturday'},
+      {name:'Gowri Ramani',org:'GroWithGowri – Leadership Coach',note:'This Saturday'},
+      {name:'Karan Arora',org:'Mygate – Director Sales & Ops',note:'Time TBC'},
+      {name:'Deepak Batra',org:'—',note:'Timings TBC'},
+      {name:'Kamalpreet Chawla',org:'EXL Services – VP HR',note:'1st April'},
+      {name:'Ramesh Menon',org:'SEEK – Founder',note:'Time to finalize'},
+      {name:'Adetya V N Chopra',org:'HOAG – Founder',note:'Shoot planned'},
+      {name:'Poonam',org:'—',note:'Thursday 28/03/26'}
+    ],
+    
+    videosPending: [
+      {name:'Abhishek Vishwakarma',org:'CARE Analytics – Senior Role',note:'Date not fixed'}
+    ]
+  },
+  
+  week4: {
+    label: "Week 4 (Mar 23-29)",
+    linkedin: { 
+      posts:43, impressions:12892, clicks:448, likes:208, comments:7, reposts:7,
+      dailyImpressions:[3174,2141,1893,2129,2365,2430,2564],
+      dailyClicks:[121,75,59,72,66,81,75],
+      dailyReactions:[49,30,27,25,21,71,30]
+    },
+    email: { sent:7, delivered:10451, views:1644, clicks:132, openRate:15.73, clickRate:1.26 },
+    blog: { posts:4, impressions:380 },
+    users: { newUsers:741, totalUsers:20470 },
+    quora: { posts:15, totalViews:0 },
+    orm: { posts:13, ambitionBox:0, glassdoor:0 },
+    platform: { posts:28, applause:0 },
+    videos: { total:15, confirmed:11, pending:1, done:2 },
+    postTypes: { 'Leadership Changes':16, 'Industry Spotlight':11, 'Job Post':7, 'Work Life Tips':5, 'LinkCXO Says':4 }
   }
+};
+
+const C = { gold:'#C9A961', green:'#16a34a', red:'#dc2626', blue:'#2563eb', purple:'#9333ea', orange:'#f97316', grey:'#8a9e97', teal:'#14b8a6', gridLine:'rgba(0,0,0,0.05)' };
+let charts = {};
+
+function destroyCharts() { Object.keys(charts).forEach(id => { if(charts[id]) { charts[id].destroy(); delete charts[id]; } }); }
+function mkChart(id,cfg) { const el=document.getElementById(id); if(!el)return; const ctx=el.getContext('2d'); if(charts[id])charts[id].destroy(); charts[id]=new Chart(ctx,cfg); }
+function fmt(n) { return n.toLocaleString(); }
+function pct(n) { return n.toFixed(1)+'%'; }
+function pct2(n) { return n.toFixed(2)+'%'; }
+
+function calc(d) {
+  return {
+    linkedinCTR: (d.linkedin.clicks / d.linkedin.impressions * 100),
+    emailCTR: (d.email.clicks / d.email.views * 100),
+    engagement: d.linkedin.likes + d.linkedin.comments + d.linkedin.reposts,
+    engagementRate: ((d.linkedin.likes + d.linkedin.comments + d.linkedin.reposts) / d.linkedin.impressions * 100),
+    avgEngPerPost: ((d.linkedin.likes + d.linkedin.comments + d.linkedin.reposts) / d.linkedin.posts),
+    dailyCTR: d.linkedin.dailyClicks.map((c,i) => (c / d.linkedin.dailyImpressions[i] * 100))
+  };
 }
 
-async function testGemini(){
-  const box=document.getElementById('testResult');
-  box.style.display='block';
-  if(!geminiKey){box.textContent='No Gemini key entered. Save your key first.';box.style.background='var(--danger-bg)';box.style.color='var(--danger)';box.style.borderColor='#f5c6c6';return}
-  box.textContent='Testing Gemini connection...';box.style.background='#fffce6';box.style.color='#7a6a00';box.style.borderColor='#f0e68c';
-  try{
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Say OK'}]}],generationConfig:{maxOutputTokens:5}})});
-    const d=await r.json();
-    if(r.ok&&d.candidates?.[0]){box.textContent='Gemini connected successfully!';box.style.background='var(--accent2)';box.style.color='var(--accent)';box.style.borderColor='#a8d5ba'}
-    else{box.textContent='Gemini returned error: '+(d.error?.message||JSON.stringify(d).slice(0,200));box.style.background='var(--danger-bg)';box.style.color='var(--danger)';box.style.borderColor='#f5c6c6'}
-  }catch(e){
-    box.innerHTML='Connection failed: '+e.message+'<br><br><strong>If you see "Failed to fetch":</strong> This means CORS is blocked. Run: <code style="background:#f0efeb;padding:2px 6px;border-radius:4px">python3 -m http.server 8080</code> then open <a href="http://localhost:8080" style="color:var(--info)">http://localhost:8080</a>';
-    box.style.background='var(--danger-bg)';box.style.color='var(--danger)';box.style.borderColor='#f5c6c6';
-  }
-}
-function loadSample(){document.getElementById('jdInput').value=`Job Title: Director of Solutions Engineering - AI/ML\nLocation: Hyderabad, Mumbai, Delhi, Bangalore, India\nExperience: 15-22 years\n\nWe are seeking a Director of Solutions Engineering to lead our AI/ML practice.\n\nResponsibilities:\n- Lead AI solution architecture for enterprise clients\n- Design agentic AI systems, MLOps pipelines, LLMOps frameworks\n- Drive deal structuring and technical pre-sales\n\nRequirements:\n- 15+ years in enterprise solutions engineering\n- Expertise in Agentic AI, Enterprise Architecture, MLOps, LLMOps\n- Background in IT Services, AI Platforms, Product Engineering\n\nTarget Companies: TCS, Infosys, HCLTech, Wipro, Tech Mahindra, Fractal Analytics, Tiger Analytics`;}
-
-function resetAll(){
-  // Clear JD
-  document.getElementById('jdInput').value='';
-  // Clear all state
-  queries=null;params=null;searchResults={};collapsed={};
-  shortlistData=[];shortlistRunning=false;slFilters={tier:'all',strategy:'all',score:0};
-  targetCompanies=[];aiCos=null;
-  // Reset scope to default
-  setScope('same_industry');
-  // Clear all output areas
-  document.getElementById('resultsArea').innerHTML='';
-  document.getElementById('summaryArea').innerHTML='';
-  document.getElementById('diagArea').innerHTML='';
-  document.getElementById('shortlistArea').innerHTML='';
-  document.getElementById('genError').innerHTML='';
-  document.getElementById('genStatus').style.display='none';
-  // Hide tab system
-  document.getElementById('tabSystem').style.display='none';
-  // Reset tab badges
-  ['badge-summary','badge-diag','badge-shortlist'].forEach(id=>{
-    const el=document.getElementById(id);if(el){el.style.display='none';el.textContent=''}
-  });
-  // Reset generate button
-  const btn=document.getElementById('genBtn');
-  btn.disabled=false;btn.textContent='Generate queries';
-}
-function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
-
-
-function setScope(s){
-  searchScope=s;document.querySelectorAll('.scope-card').forEach(c=>c.classList.remove('active'));
-  const map={same_industry:'same',cross_industry:'cross',target_companies:'target'};
-  document.getElementById('scope-'+map[s]).classList.add('active');
-  document.getElementById('targetSection').style.display=s==='target_companies'?'block':'none';
-  if(s==='target_companies'){aiCos=null;genCompanySugs()}
+function getChange(week,metric) {
+  const curr = data[week];
+  const prev = week==='week4' ? data.week3 : null;
+  if(!prev) return {v:0,c:'',s:''};
+  let cv,pv;
+  if(metric==='impr') { cv=curr.linkedin.impressions; pv=prev.linkedin.impressions; }
+  else if(metric==='clk') { cv=curr.linkedin.clicks; pv=prev.linkedin.clicks; }
+  else if(metric==='open') { cv=curr.email.openRate; pv=prev.email.openRate; }
+  else if(metric==='user') { cv=curr.users.newUsers; pv=prev.users.newUsers; }
+  else return {v:0,c:'',s:''};
+  const chg = ((cv-pv)/pv)*100;
+  return { v:chg, c:chg>0?'up':chg<0?'down':'', s:chg>0?'↑ ':chg<0?'↓ ':'' };
 }
 
-async function genCompanySugs(){
-  const jd=document.getElementById('jdInput').value.trim();
-  if(!jd||!geminiKey){document.getElementById('aiSugs').innerHTML='<p style="font-size:13px;color:var(--text3);margin-top:10px">Paste JD and save Gemini key for AI suggestions.</p>';return}
-  document.getElementById('aiSugs').innerHTML='<div style="margin-top:10px;font-size:13px;color:var(--text2)"><span class="sp-dark" style="width:12px;height:12px;margin-right:6px"></span>AI analyzing JD for company suggestions...</div>';
-  try{
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({system_instruction:{parts:[{text:`Suggest companies where talent from this JD sits. Return ONLY JSON:{"same_industry":[{"name":"Co","reason":"5 words"}],"adjacent":[{"name":"Co","reason":"5 words"}],"startups":[{"name":"Co","reason":"5 words"}]} same_industry: 15-20, adjacent: 10-15, startups: 5-10. India-focused. Real names only.`}]},contents:[{parts:[{text:jd}]}],generationConfig:{temperature:0.7,maxOutputTokens:2000,responseMimeType:"application/json"}})});
-    if(!r.ok)throw new Error('API error');
-    const d=await r.json();let raw='';if(d.candidates?.[0]?.content?.parts)raw=d.candidates[0].content.parts.map(p=>p.text||'').join('');
-    raw=raw.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
-    const i1=raw.indexOf('{'),i2=raw.lastIndexOf('}');if(i1===-1)throw new Error('No JSON returned');aiCos=JSON.parse(raw.slice(i1,i2+1));renderSugs();
-  }catch(e){document.getElementById('aiSugs').innerHTML=`<p style="font-size:13px;color:var(--danger);margin-top:10px">Suggestion failed: ${esc(e.message)}. Type companies manually.</p>`}
+function toggleExpand(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
 }
 
-function renderSugs(){
-  if(!aiCos)return;const box=document.getElementById('aiSugs');
-  const secs=[{k:'same_industry',t:'Same industry'},{k:'adjacent',t:'Adjacent industries'},{k:'startups',t:'Startups & scaleups'}];
-  let h='';secs.forEach(s=>{const items=aiCos[s.k]||[];if(!items.length)return;
-    h+=`<div class="sug-section fade"><h4>${s.t}</h4><div class="sug-chips">${items.filter(c=>!targetCompanies.includes(c.name)).map(c=>`<span class="sug-chip" onclick="addCo('${c.name.replace(/'/g,"\\'")}')"><span>${esc(c.name)}</span><span style="font-size:10px;color:var(--text3);margin-left:4px">${esc(c.reason||'')}</span></span>`).join('')}</div></div>`});
-  box.innerHTML=h||'<p style="font-size:13px;color:var(--text3);margin-top:10px">All suggested companies added.</p>';
-}
-
-function addCo(n){n=n.trim();if(!n||targetCompanies.includes(n))return;targetCompanies.push(n);renderChips();renderSugs()}
-function removeCo(i){targetCompanies.splice(i,1);renderChips();renderSugs()}
-function chipKey(e){if(e.key==='Enter'&&e.target.value.trim()){e.preventDefault();addCo(e.target.value);e.target.value=''}if(e.key==='Backspace'&&!e.target.value&&targetCompanies.length)removeCo(targetCompanies.length-1)}
-function renderChips(){const box=document.getElementById('chipBox');const inp=document.getElementById('compInput');box.innerHTML='';targetCompanies.forEach((c,i)=>{const ch=document.createElement('span');ch.className='chip';ch.innerHTML=`${esc(c)} <span class="x" onclick="event.stopPropagation();removeCo(${i})">&times;</span>`;box.appendChild(ch)});box.appendChild(inp);inp.value=''}
-
-const SC={S1:{bg:"#e8f0fe",bd:"#4285f4",tx:"#1a56db",nm:"Exact match"},S2:{bg:"#e6f4ea",bd:"#34a853",tx:"#1a7431",nm:"Synonym expansion"},S3:{bg:"#fef7e0",bd:"#f9ab00",tx:"#945a00",nm:"Skills-led"},S4:{bg:"#fce8e6",bd:"#ea4335",tx:"#b3261e",nm:"Company-reverse"},S5:{bg:"#f3e8fd",bd:"#9334e6",tx:"#6b21a8",nm:"Platform diversified"},S6:{bg:"#fde8d8",bd:"#e8710a",tx:"#9a3412",nm:"Adjacent-role"},S7:{bg:"#e8faf0",bd:"#059669",tx:"#065f46",nm:"Commercial/GTM"},S8:{bg:"#fef3c7",bd:"#d97706",tx:"#92400e",nm:"Builder/CoE"}};
-
-function buildSys(){
-  let scope='';
-  if(searchScope==='same_industry'){
-    scope='\n\nSCOPE RULES — SAME INDUSTRY (strict):\n- ALL queries must be constrained to the EXACT industry extracted from the JD.\n- S4 must use ONLY peer companies from the same industry. NEVER include the hiring company.\n- Do NOT mix adjacent industries even if skills overlap.';}
-  else if(searchScope==='cross_industry'){
-    scope='\n\nSCOPE RULES — CROSS-INDUSTRY (intentional expansion):\n- S1/S2/S6: use primary industry context.\n- S3: include transferable skills across industries — do not restrict to one sector.\n- S4 MUST include companies from AT LEAST 2-3 DIFFERENT industries. Pull talent from adjacent sectors that run the same function.\n- S7/S8 if applicable: span multiple sectors.\n- NEVER include the hiring company in any query.';}
-  else scope='\nSCOPE: TARGET COMPANIES ONLY. S4 MUST use ONLY: '+targetCompanies.join(', ')+'. NEVER include the hiring company.';
-
-  const jdText=document.getElementById('jdInput').value;
-  const coMatch=jdText.match(/(?:at|for|join)\s+([A-Z][\w\s&.,-]{1,40}?)(?:\s+is|\s+seeks|\.|,|\n)/);
-  const hiringCo=coMatch?coMatch[1].trim():'the hiring company';
-
-  return `You are NetraX Query Architect. You generate precise, high-signal LinkedIn talent search queries for ANY role in ANY industry.
-
-Return ONLY valid JSON. No markdown, no preamble.
-
-JSON schema:
-{"extracted_params":{"titles":[],"skills":[],"location":"","industry":"","sub_industry":"","function":"","seniority_level":"","hiring_company":"","role_archetype":"","is_regulated_industry":false,"is_builder_role":false,"has_commercial_angle":false,"peer_companies":[]},"queries":[{"strategy":"S1","strategy_name":"...","query_string":"...","rationale":"..."}]}
-
-══════════════════════════════════════════════
-STEP 1 — ANALYSE THE ROLE (no fixed list, reason from scratch)
-══════════════════════════════════════════════
-Do NOT pick from a predefined list. Read the JD and reason from first principles.
-
-1a — DERIVE THE ARCHETYPE LABEL
-Write a free-text role_archetype that precisely describes this role's function and industry.
-Examples of how to think: "Healthcare Revenue Cycle / Medical Coding", "Submarine Systems Engineering", "Islamic Finance / Sharia Compliance", "D2C E-commerce Growth Marketing", "Semiconductor Process Engineering".
-Be specific. "HR" is wrong if the role is actually "Clinical Documentation Auditing". "Tech" is wrong if the role is "ERP Implementation Consulting". Name the actual function.
-
-1b — DERIVE S1 TITLES (what do real people write on LinkedIn?)
-Ask: what exact phrases would someone in this role write in their LinkedIn headline?
-Test every title: search it mentally — does it return this type of person, or does it return adjacent/irrelevant people?
-NEVER use the JD's internal job title directly if it is proprietary, branded, or invented. Decompose to the real underlying function.
-Extract 3-5 real, searchable LinkedIn headline phrases for this specific role.
-CRITICAL: titles[] must NEVER be empty. If you cannot find branded equivalents, use the JD title as-is plus 2-3 functional synonyms.
-Examples by function:
-  Medical coder/auditor: "Medical Coder", "Certified Professional Coder", "CPC", "Coding Specialist", "Clinical Documentation Specialist", "Medical Coding Auditor"
-  RCM specialist: "Revenue Cycle Specialist", "Revenue Cycle Analyst", "RCM Specialist", "Billing Specialist", "Claims Specialist"
-  Software engineer: "Software Engineer", "Backend Engineer", "Full Stack Developer", "SWE"
-  Data scientist: "Data Scientist", "ML Engineer", "Applied Scientist", "Research Scientist"
-  HR business partner: "HRBP", "HR Business Partner", "People Business Partner"
-The titles array is the foundation of S1. Empty titles = zero results from the best query.
-
-1c — DERIVE S3 SKILLS (what certifications, tools, methodologies are unique to this function?)
-Ask: what skills, credentials, or domain terms would ONLY appear on profiles of people who do this specific job?
-NEVER use generic skills (Leadership, Communication, Stakeholder Management, Budget Management, Team Management).
-CRITICAL: skills[] must NEVER be empty. Even if the JD is sparse, extract what makes this role identifiable.
-Function-specific skill examples (use as a guide, not a fixed list):
-  Medical coding/auditing: CPC, CCS, CPMA, ICD-10, CPT, HCPCS, EM coding, medical auditing, chart review, anesthesia coding, radiology coding, emergency medicine coding, Revenue Cycle Management, medical documentation review
-  RCM/billing: denial management, AR follow-up, claims processing, EOB, payer contracts, EPIC, Meditech, Athenahealth
-  Software engineering: specific languages/frameworks from JD (Python, React, Kubernetes, AWS etc.)
-  Data science: PyTorch, TensorFlow, XGBoost, A/B testing, statistical modelling, NLP
-  Finance: specific instruments/regs from JD (IFRS, Basel III, DCF, options Greeks, ISDA)
-  Legal: specific practice areas from JD (M&A, SEBI, litigation, IP, contracts)
-  HR: HRBP, Workday, SuccessFactors, compensation benchmarking, org design
-  Marketing: specific channels from JD (Google Ads, Meta, Salesforce Marketing Cloud, HubSpot)
-Extract 4-6 skills that are genuinely differentiating. A generic person cannot fake having these.
-
-1d — DERIVE PEER COMPANIES (who employs this type of person at scale?)
-Ask: which companies in the same industry and adjacent industries have significant teams doing this function?
-Think: direct competitors, adjacent service providers, companies that run this function at scale internally.
-Extract 8-12 real company names. NEVER include the hiring company.
-CRITICAL PEER COMPANY RULES:
-  Match peers to the FUNCTION, not just the industry. A medical coder at an RCM company is NOT equivalent to a software engineer at an IT services firm.
-  WRONG for a medical coding role: Accenture, TCS, Wipro, Infosys — these are IT firms, not RCM employers.
-  RIGHT for a medical coding role: R1 RCM, Omega Healthcare, Firstsource Solutions, GeBBS Healthcare, nThrive, Maximus, Conduent Health, Precyse, Parallon, Ciox Health, Episource, MedQuist.
-  WRONG for a finance role: any tech company not in finance.
-  RIGHT for a finance role: banks, NBFCs, insurance companies, investment firms in that geography.
-  WRONG for an HR role: random companies from the JD's industry — HR professionals move across industries.
-  RIGHT for an HR role: companies known as strong HR talent exporters in that geography and size band.
-  The peer company list must be companies where the EXACT SAME FUNCTION is performed at scale. Generic IT services / consulting firms are only correct if the JD is itself for an IT services or consulting role.
-
-1e — DETERMINE S5 ELIGIBILITY (does this type of person have an open web presence?)
-S5 searches beyond LinkedIn — personal sites, conference talks, GitHub, industry forums, association pages.
-ALLOW S5 if: the role type typically writes publicly (tech, marketing, research, academia, consulting).
-SUPPRESS S5 if: the role type rarely has personal sites and the open web returns institutional noise instead of profiles (legal databases, regulatory filings, hospital policy pages, job boards, HR portals).
-Reason from the specific role — do not apply a blanket rule.
-
-1f — DETERMINE SENIORITY LEVEL AND HIRE TYPE
-Extract from JD context: reporting line, team size, budget ownership, titles mentioned.
-If not explicit, infer: IC/Specialist, Manager, Senior Manager, Director, VP, C-suite.
-This drives WHERE seniority gates are applied across strategies.
-
-CRITICAL — Classify the hire type. Three possible types:
-
-LEADERSHIP HIRE (VP / Director / Head / C-suite level):
-  The JD seeks someone who leads a function, builds teams, owns P&L or delivery org.
-  Signals: "build and scale", "lead a team", "reporting to VP/C-suite", "manage global org", "0-to-1 org", "practice head", "team of N+".
-  Seniority gate rule: INJECT ("VP" OR "Director" OR "Head of" OR "Principal" OR "Managing Director") as a mandatory AND-block into S1, S2, S6, S7, S8.
-  Rationale: without this gate, S1 and S6 flood with IC practitioners — architects, engineers, specialists — who match the skill keywords but cannot do a leadership job.
-  Example S1 for a leadership hire: site:linkedin.com/in/ ("AI Solution Architect" OR "Applied AI Lead") AND ("Director" OR "VP" OR "Head of") AND ("Mumbai" OR "Bangalore" OR "India")
-
-SENIOR IC HIRE (Staff / Principal / Lead / Senior Specialist — deep expert, minimal management):
-  The JD wants hands-on expertise. May manage 1-2 people but is not a people manager by primary function.
-  Signals: "hands-on", "individual contributor", "technical lead", "staff engineer", "senior specialist", "deep expertise in X".
-  Seniority gate rule: INJECT seniority gate ONLY into S6 and S8 (adjacent and builder pools are large and noisy without it).
-  Do NOT gate S1 and S2 — the title itself already implies the level.
-
-IC / SPECIALIST HIRE (Analyst / Engineer / Specialist / Coder / Associate — practitioner role):
-  The JD is for a doer, not a manager. No team ownership, no org-building, no P&L.
-  Signals: no "lead a team", no "build org", no "manage N reports", no P&L/budget ownership.
-  Seniority gate rule: DO NOT inject seniority gates into ANY strategy. Adding VP/Director/Head to these queries eliminates 95%+ of valid candidates.
-  S1, S2, S3 use role-specific title and skill terms only.
-
-1g — IS THIS A REGULATED INDUSTRY OR FUNCTION?
-Regulated = financial services, healthcare, pharma, legal, government, nuclear, aviation.
-If yes: S5 suppressed (returns compliance docs, not profiles). Flag is_regulated_industry: true.
-
-1h — HAS COMMERCIAL / GTM ANGLE? (triggers S7)
-True if JD mentions: pre-sales, quota, revenue targets, deal structuring, GTM, pricing, account management.
-
-1i — IS THIS A BUILDER / 0-TO-1 ROLE? (triggers S8)
-True if JD mentions: build from scratch, establish, 0-to-1, new practice, CoE setup, greenfield.
-
-══════════════════════════════════════════════
-STEP 2 — UNIVERSAL RULES (apply to every query)
-══════════════════════════════════════════════
-
-RULE A — SENIORITY GATE: APPLY BASED ON HIRE TYPE FROM STEP 1f
-
-LEADERSHIP HIRE → Gate S1, S2, S6, S7, S8 with seniority AND-block:
-  ("VP" OR "Director" OR "Head of" OR "Principal" OR "Managing Director" OR role-appropriate senior term)
-  WRONG S1: site:linkedin.com/in/ ("AI Architect" OR "AI Lead") AND (geo)          ← floods with ICs
-  RIGHT S1: site:linkedin.com/in/ ("AI Architect" OR "AI Lead") AND ("Director" OR "VP" OR "Head of") AND (geo)
-
-SENIOR IC HIRE → Gate only S6 and S8. Leave S1 and S2 ungated.
-  WRONG: adding "Director" OR "VP" to S1 for a Staff Engineer search
-  RIGHT: S6 gated with ("Senior" OR "Staff" OR "Principal" OR "Lead"), S1 uses title terms only
-
-IC / SPECIALIST HIRE → No seniority gate in any strategy.
-  WRONG: adding "VP" OR "Director" to a Medical Coder or Software Engineer search
-  RIGHT: S1 uses exact role titles, S3 uses role-specific skills, no seniority keywords anywhere
-
-SENIORITY + FUNCTION PAIRING (always, regardless of hire type):
-Every seniority keyword MUST be paired with the function in the same query.
-WRONG: "VP" AND "Pune" | RIGHT: "VP" AND "Customer Service" AND "Pune"
-WRONG: "Director" AND "Bangalore" | RIGHT: "Director" AND ("Engineering" OR "AI") AND "Bangalore"
-
-MULTI-DIMENSION CHECK: Does the JD require all 3 simultaneously?
-  (1) Seniority + (2) Technical/functional depth + (3) Delivery mode (client-facing/operations/P&L)
-  If yes: every query must include all 3 as AND blocks, not just 1 or 2.
-
-RULE B — S1 uses real LinkedIn headline phrases only (derived in Step 1b).
-BRANDED TITLE WARNING: If the JD title is proprietary or invented, decompose to the real underlying function.
-
-RULE C — S3 uses function-specific differentiating skills only (derived in Step 1c).
-NEVER use: Budget Management, Stakeholder Management, Communication, Leadership, Team Management.
-ALWAYS add seniority AND-block to S3: ("VP" OR "Director" OR "Head" OR "Principal" OR role-appropriate seniority term).
-
-RULE D — S4 is mandatory, always present, never skip:
-1. NEVER include "${hiringCo}" — returns current employees.
-2. Use 6-8 peer companies from Step 1d.
-3. Function in S4 must be SPECIFIC to this role — not a generic department name.
-4. Seniority + specific function + competitor companies = all 3 required.
-
-RULE E — S5 follows the eligibility decision from Step 1e.
-
-RULE F — S6 pipeline spans adjacent roles or industries. Only strategy where seniority mixing is allowed.
-Same industry scope: S6 can include adjacent sectors. Cross-industry scope: S6 spans multiple sectors.
-
-RULE G — Seniority ladder (use the level derived in Step 1f):
-C-suite: "Chief" OR "Global Head" OR "MD" OR "President" OR "SVP" OR "EVP"
-VP/Director: "VP" OR "Director" OR "Head of" — ALWAYS + function
-Senior Manager: "Senior Manager" OR "Principal" — + function
-Specialist/IC: use role-specific title terms from Step 1b, not seniority keywords
-
-RULE H — site:linkedin.com/in/ is MANDATORY in EVERY query except S5:
-CRITICAL: Every single query for strategies S1, S2, S3, S4, S6, S7, S8 MUST begin with site:linkedin.com/in/
-WITHOUT site:linkedin.com/in/ Google returns job boards, news articles, Instagram posts, Vimeo videos, PDFs — NOT candidate profiles.
-WRONG (returns job boards): ("VP Engineering" OR "Director AI") AND "Bangalore"
-RIGHT (returns profiles): site:linkedin.com/in/ ("VP Engineering" OR "Director AI") AND "Bangalore"
-S5 is the ONLY exception — it intentionally searches beyond LinkedIn.
-site:linkedin.com/in/ alone does NOT filter by country. City names are ALSO required.
-Extract from JD. India default: ("Mumbai" OR "Delhi" OR "Bangalore" OR "Hyderabad" OR "Pune" OR "India")
-Max 5 cities per OR group.
-
-RULE I — Query length:
-Max 3 OR-blocks. Max 5 values per OR block. Under 280 chars total including site:linkedin.com/in/. No experience strings.
-
-══════════════════════════════════════════════
-STEP 3 — CONDITIONAL STRATEGIES
-══════════════════════════════════════════════
-S7 COMMERCIAL/GTM: Add if JD has: pre-sales, deal structuring, pricing, GTM, P&L, quota, revenue targets.
-S8 BUILDER/COE: Add if JD has: 0-to-1, build from scratch, establish practice, CoE, playbooks, new function.
-  Use CoE/Practice pattern NOT "Founded"/"Built" keywords (attracts startup founders not enterprise builders).
-
-══════════════════════════════════════════════
-STEP 4 — SELF-CHECK each query before finalising
-══════════════════════════════════════════════
-- Does this query start with site:linkedin.com/in/ ? (MANDATORY for S1-S4, S6-S8. If not, REWRITE IT.)
-- Hire type classified in Step 1f? (LEADERSHIP / SENIOR IC / IC)
-- Seniority gate applied to the RIGHT strategies for this hire type? (Rule A)
-  → LEADERSHIP: does S1 have a seniority AND-block? If not, REWRITE IT.
-  → LEADERSHIP: do S6, S7, S8 have a seniority AND-block? If not, REWRITE THEM.
-  → IC/SPECIALIST: does ANY query have VP/Director/Head keywords? If yes, REMOVE THEM.
-- S1 titles real LinkedIn phrases from Step 1b? Not the JD's internal title?
-- S3 skills function-specific from Step 1c? No generic skills?
-- S4 present, excludes ${hiringCo}, uses peer companies from Step 1d? (Rule D)
-- S5 eligibility matches Step 1e decision?
-- Every query has city/location terms? (Rule H)
-- Under 280 chars including site:linkedin.com/in/? (Rule I)
-
-FINAL VALIDATION: Count queries missing site:linkedin.com/in/ (except S5). If count > 0, fix before returning JSON.
-FINAL VALIDATION 2: For LEADERSHIP hires — count S1/S6/S7/S8 queries missing seniority gate. If count > 0, fix before returning JSON.
-FINAL VALIDATION 3: For IC hires — count queries containing VP/Director/Head/C-suite keywords. If count > 0, remove them before returning JSON.
-
-Generate 10-14 queries. Return ONLY the JSON.
-${scope}`;
-}
-async function generate(){
-  const jd=document.getElementById('jdInput').value.trim();
-  if(!jd){alert('Paste a JD first.');return}
-  if(!geminiKey){alert('Enter Gemini API key (free: aistudio.google.com)');return}
-  if(searchScope==='target_companies'&&!targetCompanies.length){alert('Add target companies first.');return}
-  const btn=document.getElementById('genBtn');
-  const st=document.getElementById('genStatus');
-  const err=document.getElementById('genError');
-  // BUG 2 fix: null-check btn before touching it
-  if(!btn){console.error('genBtn not found — DOM may be broken');return}
-  // BUG 3 fix: hide tab system immediately on new run
-  const tabSys=document.getElementById('tabSystem');
-  if(tabSys)tabSys.style.display='none';
-  btn.disabled=true;btn.innerHTML='<span class="sp"></span> Generating...';
-  if(st){st.style.display='inline';st.textContent='~10-15 seconds...';}
-  if(err)err.innerHTML='';
-  queries=null;params=null;searchResults={};collapsed={};
-  const rArea=document.getElementById('resultsArea');if(rArea)rArea.innerHTML='';
-  const sArea=document.getElementById('summaryArea');if(sArea)sArea.innerHTML='';
-  const dArea=document.getElementById('diagArea');if(dArea)dArea.innerHTML='';
-  const slArea=document.getElementById('shortlistArea');if(slArea)slArea.innerHTML='';
-  shortlistData=[];
-  try{
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({system_instruction:{parts:[{text:buildSys()}]},contents:[{parts:[{text:jd}]}],generationConfig:{temperature:0.5,maxOutputTokens:6000,responseMimeType:"application/json"}})});
-    if(!r.ok){
-      const errBody=await r.json().catch(()=>({}));
-      throw new Error('Gemini error '+r.status+': '+(errBody?.error?.message||'Unknown error'));
-    }
-    const d=await r.json();
-    // BUG 4 fix: detect empty/blocked response clearly
-    if(!d.candidates?.length){
-      const reason=d.promptFeedback?.blockReason||'No candidates returned';
-      throw new Error('Gemini returned no response. Reason: '+reason+'. Try shortening the JD or rephrasing it.');
-    }
-    let raw=(d.candidates[0]?.content?.parts||[]).map(p=>p.text||'').join('');
-    raw=raw.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
-    const i1=raw.indexOf('{'),i2=raw.lastIndexOf('}');
-    if(i1===-1)throw new Error('Gemini returned text but no JSON was found. Response: '+raw.slice(0,200));
-    const parsed=JSON.parse(raw.slice(i1,i2+1));
-    if(!parsed.queries?.length)throw new Error('JSON parsed but no queries array found. Keys returned: '+Object.keys(parsed).join(', '));
-    queries=parsed.queries;params=parsed.extracted_params||{};
-    queries.forEach((_,i)=>{collapsed[i]=true});
-    renderResults();
-    // Run structural diagnostic immediately (A-section checks don't need search results)
-    runDiagnostic();
-  }catch(e){
-    if(err)err.innerHTML=`<div class="err"><strong>Generation failed:</strong> ${esc(e.message)}</div>`;
-    console.error('generate() error:',e);
-  }finally{
-    // BUG 2 fix: always reset button in finally, even if btn access threw
-    if(btn){btn.disabled=false;btn.textContent='Generate queries';}
-    if(st)st.style.display='none';
-  }
-}
-
-async function runSearch(idx){
-  if(!serpKey){alert('Enter Serper.dev API key and click Save Keys first.');return}
-  console.log('Starting search for query',idx,queries[idx].query_string);
-  const btn=document.getElementById('sbtn-'+idx);
-  const statusEl=document.getElementById('sstatus-'+idx);
-  if(!btn){console.error('Button not found: sbtn-'+idx);return}
-  btn.disabled=true;btn.innerHTML='<span class="sp"></span> Searching...';
-  if(statusEl)statusEl.textContent='Calling Serper API...';
-
-  try{
-    // Auto-quote hyphenated terms (e.g. ICD-10 → "ICD-10") so Serper doesn't split them
-    const qs=queries[idx].query_string.replace(/(?<!")(\w+-\w+)(?!")/g,'"$1"');
-    const MAX_PAGES=100;
-    let allItems=[],totalResults=0,page=1;
-    while(page<=MAX_PAGES){
-      if(statusEl)statusEl.textContent='Fetching page '+page+' ('+allItems.length+' results so far)...';
-      const r=await fetch('https://google.serper.dev/search',{
-        method:'POST',
-        headers:{'X-API-KEY':serpKey,'Content-Type':'application/json'},
-        body:JSON.stringify({q:qs,num:10,page:page})
-      });
-      const d=await r.json();
-      if(!r.ok){throw new Error('Serper API error '+r.status+': '+(d.message||d.error||'Unknown error'))}
-      if(d.statusCode&&d.statusCode!==200){throw new Error('Serper error: '+(d.message||'Status '+d.statusCode))}
-      const pageItems=d.organic||[];
-      if(page===1)totalResults=parseInt(d.searchInformation?.totalResults||0)||pageItems.length;
-      pageItems.forEach(o=>allItems.push({title:o.title||'',link:o.link||'',snippet:o.snippet||'',position:allItems.length+1}));
-      if(pageItems.length<10)break;
-      page++;
-      await new Promise(r=>setTimeout(r,200));
-    }
-    searchResults[idx]={items:allItems,total:totalResults,fetched:allItems.length};
-    collapsed[idx]=true;
-    console.log('Search complete:',allItems.length,'results across',page,'page(s)');
-  }catch(e){
-    console.error('Search failed:',e);
-    const isCors=e.message==='Failed to fetch'||e.message.includes('NetworkError')||e.message.includes('CORS');
-    const corsHint=isCors?' ⚠ CORS blocked — open this file via a local server: run <code>python3 -m http.server 8080</code> in the same folder, then open http://localhost:8080':'';
-    searchResults[idx]={items:[{title:'Error',link:'',snippet:e.message+(isCors?' — CORS blocked: run python3 -m http.server 8080 in this folder, then open http://localhost:8080':''),position:0}],total:0,fetched:0};
-    const statusDiv=document.getElementById('sstatus-'+idx);
-    if(statusDiv&&isCors)statusDiv.innerHTML=`<span style="color:var(--danger)">⚠ CORS blocked — run <code style="background:#f0efeb;padding:1px 5px;border-radius:3px">python3 -m http.server 8080</code> in this folder and open <a href="http://localhost:8080" style="color:var(--info)">localhost:8080</a></span>`;
-  }
-  if(btn){btn.disabled=false;btn.textContent='Re-search';}
-  if(statusEl)statusEl.textContent='';
-  renderCard(idx);renderSummary();runDiagnostic();
-}
-
-async function searchAll(){
-  if(!serpKey){alert('Enter Serper.dev API key first.');return}
-  if(!confirm(`${queries.length} queries will be searched. Each query uses 1 credit per page fetched (10 results/page) until all results are exhausted. Proceed?`))return;
-  searchAllAbort=false;
-  let totalCreditsUsed=0;
-  // Show cancel button in status area
-  const statusDiv=document.getElementById('searchAllStatus');
-  if(statusDiv){statusDiv.style.display='block';statusDiv.innerHTML=`<span>Searching… </span><span id="searchAllCredits" style="font-weight:600">0 credits used</span> &nbsp;<button class="btn btn-s btn-sm" onclick="searchAllAbort=true;this.textContent='Cancelling…'">Cancel</button>`;}
-  for(let i=0;i<queries.length;i++){
-    if(searchAllAbort)break;
-    const credsBefore=Object.values(searchResults).reduce((s,r)=>s+(r?.fetched?Math.ceil(r.fetched/10):0),0);
-    await runSearch(i);
-    totalCreditsUsed+=Math.ceil((searchResults[i]?.fetched||0)/10);
-    const credEl=document.getElementById('searchAllCredits');if(credEl)credEl.textContent=totalCreditsUsed+' credits used';
-    await new Promise(r=>setTimeout(r,400));
-  }
-  if(statusDiv)statusDiv.style.display='none';
-  searchAllAbort=false;
-  // All searches done — switch to summary and show shortlist prompt
-  switchTab('summary');
-  const slArea=document.getElementById('shortlistArea');
-  if(slArea&&!shortlistData.length){
-    const total=getUnique().filter(x=>isLI(x.link)).length;
-    slArea.innerHTML=`<div class="sl-empty" style="padding:60px 20px">
-      <div style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:8px">${total} LinkedIn profiles ready to shortlist</div>
-      <div style="font-size:13px;color:var(--text3);margin-bottom:20px">Gemini will score every profile against your JD and rank them by fit — Strong, Potential, or Weak.</div>
-      <button class="btn btn-p" onclick="runShortlist();switchTab('shortlist')">Run AI Shortlist</button>
-    </div>`;
-  }
-}
-
-function getUnique(){
-  const seen=new Map();
-  Object.entries(searchResults).forEach(([idx,r])=>{
-    if(!r?.items)return;
-    const q=queries?.[idx];
-    const qLabel=q?`${q.strategy} — ${q.strategy_name||q.strategy}`:'Unknown';
-    const qStr=q?.query_string||'';
-    r.items.forEach(i=>{
-      if(!i.link||i.title==='Error')return;
-      const u=i.link.toLowerCase().replace(/\/$/,'').replace(/\?.*$/,'');
-      if(!seen.has(u))seen.set(u,{title:i.title,link:i.link,snippet:i.snippet,queryIdx:parseInt(idx),queryLabel:qLabel,queryString:qStr,strategy:q?.strategy||''});
+function openVideoModal(week) {
+  const d = data[week];
+  let html = '';
+  
+  if(d.videosDone && d.videosDone.length > 0) {
+    html += '<div class="video-list"><div class="video-status-label">Done (' + d.videosDone.length + ')</div>';
+    d.videosDone.forEach(v => {
+      html += `<div class="video-item">
+        <div class="video-name">${v.name}</div>
+        <div class="video-org">${v.org}</div>
+        <div class="video-note">${v.duration}</div>
+      </div>`;
     });
-  });
-  return[...seen.values()];
+    html += '</div>';
+  }
+  
+  if(d.videosConfirmed && d.videosConfirmed.length > 0) {
+    html += '<div class="video-list"><div class="video-status-label">Confirmed (' + d.videosConfirmed.length + ')</div>';
+    d.videosConfirmed.forEach(v => {
+      html += `<div class="video-item">
+        <div class="video-name">${v.name}</div>
+        <div class="video-org">${v.org}</div>
+        <div class="video-note">${v.note}</div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  
+  if(d.videosPending && d.videosPending.length > 0) {
+    html += '<div class="video-list"><div class="video-status-label">Pending (' + d.videosPending.length + ')</div>';
+    d.videosPending.forEach(v => {
+      html += `<div class="video-item">
+        <div class="video-name">${v.name}</div>
+        <div class="video-org">${v.org}</div>
+        <div class="video-note">${v.note}</div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  
+  document.getElementById('videoModalContent').innerHTML = html;
+  document.getElementById('videoModal').classList.add('open');
 }
-function isLI(u){return/linkedin\.com\/in\//i.test(u)}
-function toggleResults(i){collapsed[i]=!collapsed[i];document.getElementById('srbody-'+i).className='sr-body '+(collapsed[i]?'collapsed':'expanded');document.getElementById('srarrow-'+i).className='sr-arrow '+(collapsed[i]?'':'open')}
 
-function renderSummary(){
-  const area=document.getElementById('summaryArea');let tf=0;Object.values(searchResults).forEach(r=>{if(r?.items)tf+=r.items.filter(i=>i.title!=='Error').length});
-  if(!tf){area.innerHTML='';return}
-  const bdg=document.getElementById('badge-summary');if(bdg){bdg.textContent=tf;bdg.style.display='inline-flex';}
-  const u=getUnique();const li=u.filter(p=>isLI(p.link));
-  let h=`<div class="summary-card fade"><h2 style="margin-bottom:16px;text-align:center">Search results summary</h2>
-  <div class="summary-metrics">
-    <div class="summary-met"><div class="met-l">Total fetched</div><div class="met-v">${tf.toLocaleString()}</div></div>
-    <div class="summary-met"><div class="met-l">Unique profiles</div><div class="met-v b">${u.length.toLocaleString()}</div><div style="font-size:11px;color:var(--text3);margin-top:4px">Deduped</div></div>
-    <div class="summary-met"><div class="met-l">LinkedIn profiles</div><div class="met-v g">${li.length.toLocaleString()}</div><div style="font-size:11px;color:var(--text3);margin-top:4px">${u.length-li.length} other</div></div>
-  </div>
-  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
-    <button class="btn btn-p" onclick="dlProfiles('all')">Download all ${u.length} unique profiles (CSV)</button>
-    ${li.length?`<button class="btn btn-s" onclick="dlProfiles('linkedin')">Download ${li.length} LinkedIn only</button>`:''}
-    <button class="btn btn-s" onclick="runShortlist();switchTab('shortlist')">AI Shortlist →</button>
-  </div>
-  <div style="border-top:1px solid var(--border);padding-top:16px">
-    <table style="width:100%;border-collapse:collapse;font-size:13px">
-      <tr style="border-bottom:1px solid var(--border)"><th style="text-align:left;padding:8px 0;color:var(--text3);font-size:12px">Strategy</th><th style="text-align:right;padding:8px 0;color:var(--text3);font-size:12px">Google total</th><th style="text-align:right;padding:8px 0;color:var(--text3);font-size:12px">Fetched</th></tr>`;
-  queries.forEach((q,i)=>{const r=searchResults[i];const c=SC[q.strategy]||SC.S1;if(r)h+=`<tr style="border-bottom:1px solid #f0efeb"><td style="padding:8px 0"><span class="tag" style="background:${c.bg};color:${c.tx};border-color:${c.bd};font-size:10px">${q.strategy}</span> ${esc(q.strategy_name||c.nm)}</td><td style="text-align:right;font-weight:600">${r.total?Number(r.total).toLocaleString():'—'}</td><td style="text-align:right">${r.fetched||0}</td></tr>`});
-  h+=`</table></div></div>`;area.innerHTML=h;
+function closeVideoModal() {
+  document.getElementById('videoModal').classList.remove('open');
 }
 
-function runDiagnostic(){
-  if(!queries||!Object.keys(searchResults).length)return;
-  const allItems=getUnique();
-  const totalFetched=Object.values(searchResults).reduce((s,r)=>s+(r?.fetched||0),0);
-  if(!totalFetched)return;
-  const p=params||{};
-  const hiringCo=(p.hiring_company||'').toLowerCase();
+function showPage(id,nav) {
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  if(nav)nav.classList.add('active');
+  destroyCharts();
+  if(id==='week3'||id==='week4') renderWeek(id);
+  else if(id==='2week') render2Week();
+  else if(id==='comparison') renderCompare();
+  else if(id==='monthly') renderMonthly();
+}
 
-  const coreSkills=['genai','generative ai','llm','mlops','llmops','agentic','ai transformation','ai strategy','applied ai'];
-  const aiRel=allItems.filter(x=>coreSkills.some(k=>(x.title+x.snippet).toLowerCase().includes(k))).length;
-  const aiPct=Math.round(aiRel/Math.max(totalFetched,1)*100);
+function renderWeek(week) {
+  const d = data[week];
+  const c = calc(d);
+  const ch1=getChange(week,'impr'), ch2=getChange(week,'clk'), ch3=getChange(week,'open'), ch4=getChange(week,'user');
+  
+  const ptKeys = Object.keys(d.postTypes);
+  const ptVals = Object.values(d.postTypes);
+  
+  const hasDetailedData = d.postTypePerformance !== undefined;
+  
+  document.getElementById('mainContent').innerHTML = `
+  <div class="page">
+    <div class="page-header">
+      <h1>${d.label}</h1>
+      <p>Performance overview and key marketing metrics</p>
+    </div>
 
-  const seniorKw=['vp ','vice president','director','head of','chief','svp','evp','managing director'];
-  const seniorHits=allItems.filter(x=>seniorKw.some(k=>(x.title+x.snippet).toLowerCase().includes(k))).length;
-  const seniorPct=Math.round(seniorHits/Math.max(totalFetched,1)*100);
+    <h2 class="section-header">Primary Metrics</h2>
+    <div class="row-5">
+      <div class="kpi">
+        <div class="kpi-label">LinkedIn Impressions</div>
+        <div class="kpi-val">${fmt(d.linkedin.impressions)}</div>
+        <div class="kpi-sub ${ch1.c}">${ch1.s}${pct(Math.abs(ch1.v))} vs last week</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Total Clicks</div>
+        <div class="kpi-val">${fmt(d.linkedin.clicks)}</div>
+        <div class="kpi-sub ${ch2.c}">${ch2.s}${pct(Math.abs(ch2.v))} vs last week</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">LinkedIn CTR</div>
+        <div class="kpi-val">${pct2(c.linkedinCTR)}</div>
+        <div class="kpi-sub">Clicks / Impressions</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Email Open Rate</div>
+        <div class="kpi-val">${pct(d.email.openRate)}</div>
+        <div class="kpi-sub ${ch3.c}">${ch3.s}${pct(Math.abs(ch3.v))} vs last week</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">New Users</div>
+        <div class="kpi-val">${fmt(d.users.newUsers)}</div>
+        <div class="kpi-sub ${ch4.c}">${ch4.s}${pct(Math.abs(ch4.v))} vs last week</div>
+      </div>
+    </div>
 
-  const compCounts={};
-  if(hiringCo){allItems.forEach(x=>{if((x.title+x.snippet).toLowerCase().includes(hiringCo))compCounts[hiringCo]=(compCounts[hiringCo]||0)+1})}
-  const maxCoCount=Object.values(compCounts).length?Math.max(...Object.values(compCounts)):0;
-  const maxCoPct=Math.round(maxCoCount/Math.max(totalFetched,1)*100);
+    <h2 class="section-header">Engagement Metrics</h2>
+    <div class="row-5">
+      <div class="kpi">
+        <div class="kpi-label">Total Engagement</div>
+        <div class="kpi-val">${fmt(c.engagement)}</div>
+        <div class="kpi-sub">Likes + Comments + Reposts</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Engagement Rate</div>
+        <div class="kpi-val">${pct2(c.engagementRate)}</div>
+        <div class="kpi-sub">% of Impressions</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Avg Eng / Post</div>
+        <div class="kpi-val">${c.avgEngPerPost.toFixed(1)}</div>
+        <div class="kpi-sub">Per LinkedIn post</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Likes</div>
+        <div class="kpi-val">${fmt(d.linkedin.likes)}</div>
+        <div class="kpi-sub">${pct2(d.linkedin.likes/c.engagement*100)} of engagement</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Comments</div>
+        <div class="kpi-val">${d.linkedin.comments}</div>
+        <div class="kpi-sub">${pct2(d.linkedin.comments/c.engagement*100)} of engagement</div>
+      </div>
+    </div>
 
-  const noiseKw=['talent acquisition','human resources','hr manager','recruiter','undergrad ','fresher','intern ','job seeker'];
-  const noiseCount=allItems.filter(x=>noiseKw.some(k=>(x.title+x.snippet).toLowerCase().includes(k))).length;
-  const noisePct=Math.round(noiseCount/Math.max(totalFetched,1)*100);
+    <h2 class="section-header">Email Performance</h2>
+    <div class="row-4">
+      <div class="kpi">
+        <div class="kpi-label">Campaigns Sent</div>
+        <div class="kpi-val">${d.email.sent}</div>
+        <div class="kpi-sub">${fmt(d.email.delivered)} delivered</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Email Views</div>
+        <div class="kpi-val">${fmt(d.email.views)}</div>
+        <div class="kpi-sub">${pct(d.email.openRate)} open rate</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Email Clicks</div>
+        <div class="kpi-val">${d.email.clicks}</div>
+        <div class="kpi-sub">${pct2(d.email.clickRate)} click rate</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Email CTR</div>
+        <div class="kpi-val">${pct2(c.emailCTR)}</div>
+        <div class="kpi-sub">Clicks / Opens</div>
+      </div>
+    </div>
 
-  const yields=Object.values(searchResults).map(r=>r?.fetched||0);
-  const maxYield=Math.max(...yields,0);
-  const maxYieldPct=Math.round(maxYield/Math.max(totalFetched,1)*100);
+    <h2 class="section-header">Performance Trends</h2>
+    <div class="row-3">
+      <div class="chart-box">
+        <div class="chart-hdr">Daily LinkedIn Impressions</div>
+        <div class="chart-wrap"><canvas id="ch1"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-hdr">Daily CTR Trend</div>
+        <div class="chart-wrap"><canvas id="ch2"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-hdr">Engagement Breakdown</div>
+        <div class="chart-wrap"><canvas id="ch3"></canvas></div>
+      </div>
+    </div>
 
-  const liCount=allItems.filter(x=>isLI(x.link)).length;
-  const liPct=Math.round(liCount/Math.max(allItems.length,1)*100);
+    <div class="row-2">
+      <div class="chart-box">
+        <div class="chart-hdr">Email Funnel</div>
+        <div class="chart-wrap"><canvas id="ch4"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-hdr">Content by Channel</div>
+        <div class="chart-wrap"><canvas id="ch5"></canvas></div>
+      </div>
+    </div>
 
-  const s4q=queries.filter(q=>q.strategy==='S4');
-  const s4HasHiringCo=hiringCo&&s4q.some(q=>q.query_string.toLowerCase().includes(hiringCo));
-  const s1q=queries.filter(q=>q.strategy==='S1');
-  const genericTitles=['forward deployment','ai champion','ai evangelist'];
-  const s1HasGeneric=s1q.some(q=>genericTitles.some(t=>q.query_string.toLowerCase().includes(t)));
-  const seniorStrats=queries.filter(q=>['S1','S2','S3','S4'].includes(q.strategy));
-  const seniorHasManager=seniorStrats.some(q=>/"manager"/i.test(q.query_string)&&!/"senior manager"/i.test(q.query_string));
-  const hasCommercial=queries.some(q=>q.strategy==='S7'||/pre-sales|solutions engineer|gtm/i.test(q.query_string));
-  const hasBuilder=queries.some(q=>q.strategy==='S8'||/coe|center of excellence|ai practice/i.test(q.query_string));
-  const allHaveGeo=queries.every(q=>/mumbai|delhi|bangalore|hyderabad|pune|india|london|new york|singapore|dubai|chennai|kolkata/i.test(q.query_string));
+    <h2 class="section-header">Post Type Breakdown</h2>
+    <div class="row-2">
+      <div class="chart-box">
+        <div class="chart-hdr">Post Type Distribution</div>
+        <div class="chart-wrap"><canvas id="ch6"></canvas></div>
+      </div>
+      <div class="smol-grid" style="align-content:start;">
+        ${ptKeys.map((key,i) => `
+          <div class="smol-card">
+            <div class="smol-label">${key}</div>
+            <div class="smol-val ${ptVals[i]===0?'empty-state':''}">${ptVals[i] || '—'}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
 
-  function sc(val,good,ok){return val>=good?2:val>=ok?1:0}
+    ${hasDetailedData ? `
+    <h2 class="section-header">Post Type Performance Analysis</h2>
+    <button class="expand-btn" onclick="toggleExpand('postTypeDetails')">Show Detailed Performance</button>
+    <div class="expandable" id="postTypeDetails">
+      <table>
+        <thead>
+          <tr>
+            <th>Post Type</th>
+            <th>Posts</th>
+            <th>Impressions</th>
+            <th>Reactions</th>
+            <th>CTR</th>
+            <th>Engagement Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${Object.entries(d.postTypePerformance).map(([type,perf]) => `
+            <tr>
+              <td class="text-col"><strong>${type}</strong></td>
+              <td>${perf.posts}</td>
+              <td>${fmt(perf.impressions)}</td>
+              <td>${perf.reactions}</td>
+              <td>${pct2(perf.ctr)}</td>
+              <td>${pct2(perf.engagementRate)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      
+      <div class="row-2" style="margin-top:24px;">
+        <div class="chart-box">
+          <div class="chart-hdr">CTR by Post Type</div>
+          <div class="chart-wrap"><canvas id="chPostCTR"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-hdr">Engagement Rate by Post Type</div>
+          <div class="chart-wrap"><canvas id="chPostEng"></canvas></div>
+        </div>
+      </div>
+    </div>
+    ` : ''}
 
-  const checks={
-    a1:{label:'S4 avoids hiring company',score:s4HasHiringCo?0:2,detail:s4HasHiringCo?'Hiring company found in S4 — returns current employees':'S4 correctly targets competitor companies'},
-    a2:{label:'S1 uses real LinkedIn titles',score:s1HasGeneric?0:2,detail:s1HasGeneric?'Internal/branded titles found in S1 — near-zero results expected':'S1 titles match real LinkedIn headline language'},
-    a3:{label:'Seniority consistency',score:seniorHasManager?0:2,detail:seniorHasManager?'"Manager" found in senior queries (S1–S4) — mixing seniority levels':'Seniority keywords correctly matched to role level'},
-    a4:{label:'Commercial/GTM coverage',score:p.has_commercial_angle===false?2:hasCommercial?2:1,detail:hasCommercial?'Commercial/GTM query present':p.has_commercial_angle?'JD has commercial angle but no GTM query generated':'Not required for this role'},
-    a4b:{label:'S5 regulated industry check',score:p.is_regulated_industry&&queries.some(q=>q.strategy==='S5')?0:2,detail:p.is_regulated_industry&&queries.some(q=>q.strategy==='S5')?'S5 open-web query present for regulated industry — returns policy pages, not profiles':'S5 handling correct for this industry type'},
-    a5:{label:'Builder/CoE coverage',score:p.is_builder_role===false?2:hasBuilder?2:1,detail:hasBuilder?'Builder/CoE query present':p.is_builder_role?'Builder role detected but no CoE query generated':'Not required for this role'},
-    a6:{label:'Geo in all queries',score:allHaveGeo?2:1,detail:allHaveGeo?'All queries contain explicit city names':'Some queries rely on site: alone for location — add city names'},
-    b1:{label:'AI/skill relevance rate',score:sc(aiPct,40,20),detail:aiPct+'% of results have core skill signals (GenAI/LLM/MLOps etc.)'},
-    b2:{label:'Target seniority hit rate',score:sc(seniorPct,35,20),detail:seniorPct+'% of results mention VP/Director/Head-level titles'},
-    b3:{label:'Company diversity',score:sc(100-maxCoPct,80,60),detail:maxCoPct>0?'Dominant employer cluster: '+maxCoPct+'% of results from one company':'Company spread looks healthy across results'},
-    b4:{label:'Noise rate',score:sc(100-noisePct,97,92),detail:noisePct+'% irrelevant profiles detected (HR/students/job-seekers)'},
-    b5:{label:'Query yield balance',score:sc(100-maxYieldPct,65,50),detail:'Single largest query contributes '+maxYieldPct+'% of total results'},
-    b6:{label:'LinkedIn profile rate',score:sc(liPct,90,75),detail:liPct+'% are confirmed LinkedIn profile URLs (not job boards or company pages)'},
+    ${d.topPosts ? `
+    <h2 class="section-header">Top & Bottom Performing Posts</h2>
+    <button class="expand-btn" onclick="toggleExpand('topBottomPosts')">Show Top & Bottom Posts</button>
+    <div class="expandable" id="topBottomPosts">
+      <h3 style="font-size:14px;font-weight:600;margin:24px 0 16px 0;color:var(--text);">Top 5 Posts (Highest Impressions)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Post</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Impressions</th>
+            <th>Likes</th>
+            <th>Clicks</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${d.topPosts.map(p => `
+            <tr>
+              <td class="text-col">${p.title}</td>
+              <td class="text-col">${p.type}</td>
+              <td>${p.date}</td>
+              <td>${fmt(p.impressions)}</td>
+              <td>${p.likes}</td>
+              <td>${p.clicks}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      
+      <h3 style="font-size:14px;font-weight:600;margin:32px 0 16px 0;color:var(--text);">Bottom 5 Posts (Lowest Impressions)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Post</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Impressions</th>
+            <th>Likes</th>
+            <th>Clicks</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${d.bottomPosts.map(p => `
+            <tr>
+              <td class="text-col">${p.title}</td>
+              <td class="text-col">${p.type}</td>
+              <td>${p.date}</td>
+              <td>${fmt(p.impressions)}</td>
+              <td>${p.likes}</td>
+              <td>${p.clicks}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    ` : ''}
+
+    ${d.emailMailers ? `
+    <h2 class="section-header">Email Mailer Details</h2>
+    <button class="expand-btn" onclick="toggleExpand('emailDetails')">Show Individual Campaign Performance</button>
+    <div class="expandable" id="emailDetails">
+      <table>
+        <thead>
+          <tr>
+            <th>Campaign</th>
+            <th>Date</th>
+            <th>Delivered</th>
+            <th>Views</th>
+            <th>Clicks</th>
+            <th>Open Rate</th>
+            <th>Click Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${d.emailMailers.map(m => `
+            <tr>
+              <td class="text-col"><strong>${m.name}</strong></td>
+              <td>${m.date}</td>
+              <td>${fmt(m.delivered)}</td>
+              <td>${m.views}</td>
+              <td>${m.clicks}</td>
+              <td>${pct(m.openRate)}</td>
+              <td>${pct(m.clickRate)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      
+      <div class="chart-box" style="margin-top:24px;">
+        <div class="chart-hdr">Open & Click Rates by Campaign</div>
+        <div class="chart-wrap"><canvas id="chEmailRates"></canvas></div>
+      </div>
+    </div>
+    ` : ''}
+
+    ${d.blogPosts ? `
+    <h2 class="section-header">Blog Post Details</h2>
+    <button class="expand-btn" onclick="toggleExpand('blogDetails')">Show Individual Blog Posts</button>
+    <div class="expandable" id="blogDetails">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Title</th>
+            <th>Impressions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${d.blogPosts.map(b => `
+            <tr>
+              <td>${b.date}</td>
+              <td class="text-col">${b.title}</td>
+              <td>${b.impressions > 0 ? fmt(b.impressions) : '—'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      
+      <div class="chart-box" style="margin-top:24px;">
+        <div class="chart-hdr">Blog Impressions by Post</div>
+        <div class="chart-wrap"><canvas id="chBlogImpr"></canvas></div>
+      </div>
+    </div>
+    ` : ''}
+
+    <h2 class="section-header">Channel Breakdown</h2>
+    <div class="smol-grid">
+      <div class="smol-card">
+        <div class="smol-label">LinkedIn Posts</div>
+        <div class="smol-val">${d.linkedin.posts}</div>
+      </div>
+      <div class="smol-card">
+        <div class="smol-label">Platform Posts</div>
+        <div class="smol-val">${d.platform.posts}</div>
+      </div>
+      ${d.platform.applause > 0 ? `
+      <div class="smol-card" style="border-left-color:${C.green};">
+        <div class="smol-label">Posts with Applause</div>
+        <div class="smol-val">${d.platform.applause}</div>
+      </div>
+      ` : ''}
+      <div class="smol-card">
+        <div class="smol-label">Blog Posts</div>
+        <div class="smol-val">${d.blog.posts}</div>
+      </div>
+      <div class="smol-card">
+        <div class="smol-label">Blog Impressions</div>
+        <div class="smol-val">${fmt(d.blog.impressions)}</div>
+      </div>
+      <div class="smol-card">
+        <div class="smol-label">Quora Posts</div>
+        <div class="smol-val">${d.quora.posts}${d.quora.posts >= 50 ? '+' : ''}</div>
+      </div>
+      <div class="smol-card">
+        <div class="smol-label">Total ORM Activity</div>
+        <div class="smol-val">${d.orm.posts}</div>
+      </div>
+      ${d.orm.ambitionBox > 0 ? `
+      <div class="smol-card" style="border-left-color:${C.blue};">
+        <div class="smol-label">AmbitionBox</div>
+        <div class="smol-val">${d.orm.ambitionBox}</div>
+      </div>
+      ` : ''}
+      ${d.orm.glassdoor > 0 ? `
+      <div class="smol-card" style="border-left-color:${C.purple};">
+        <div class="smol-label">Glassdoor</div>
+        <div class="smol-val">${d.orm.glassdoor}</div>
+      </div>
+      ` : ''}
+      <div class="smol-card">
+        <div class="smol-label">Total Platform Users</div>
+        <div class="smol-val">${fmt(d.users.totalUsers)}</div>
+      </div>
+      <div class="smol-card">
+        <div class="smol-label">Video Pipeline</div>
+        <div class="smol-val">${d.videos.total}</div>
+      </div>
+    </div>
+
+    ${d.platformPostMix ? `
+    <h2 class="section-header">Platform Post Type Mix</h2>
+    <div class="row-2">
+      <div class="chart-box">
+        <div class="chart-hdr">Platform Post Distribution</div>
+        <div class="chart-wrap"><canvas id="chPlatformMix"></canvas></div>
+      </div>
+      <div class="smol-grid" style="align-content:start;">
+        ${Object.entries(d.platformPostMix).map(([type,data]) => `
+          <div class="smol-card">
+            <div class="smol-label">${type}</div>
+            <div class="smol-val">${data.count}</div>
+            <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">${pct(data.percent)} of posts</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ` : ''}
+
+    <h2 class="section-header">YourStory Video Pipeline</h2>
+    <div class="row-3">
+      <div class="smol-card" style="border-left-color:${C.green};">
+        <div class="smol-label">Done</div>
+        <div class="smol-val ${d.videos.done===0?'empty-state':''}">${d.videos.done || '—'}</div>
+      </div>
+      <div class="smol-card" style="border-left-color:${C.gold};">
+        <div class="smol-label">Confirmed</div>
+        <div class="smol-val ${d.videos.confirmed===0?'empty-state':''}">${d.videos.confirmed || '—'}</div>
+      </div>
+      <div class="smol-card" style="border-left-color:${C.blue};">
+        <div class="smol-label">Pending</div>
+        <div class="smol-val ${d.videos.pending===0?'empty-state':''}">${d.videos.pending || '—'}</div>
+      </div>
+    </div>
+    
+    ${(d.videosDone || d.videosConfirmed || d.videosPending) ? `
+    <button class="expand-btn" onclick="openVideoModal('${week}')">View Video Pipeline Details</button>
+    ` : ''}
+  </div>`;
+
+  setTimeout(() => {
+    // Daily Impressions
+    mkChart('ch1', {
+      type:'line',
+      data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets:[{ label:'Impressions', data:d.linkedin.dailyImpressions, borderColor:C.gold,
+          backgroundColor:'rgba(201,169,97,0.08)', tension:0.4, fill:true, pointRadius:5,
+          pointBackgroundColor:C.gold, pointBorderColor:'#fff', pointBorderWidth:2, borderWidth:3 }]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
+      }
+    });
+
+    // Daily CTR
+    mkChart('ch2', {
+      type:'line',
+      data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets:[{ label:'CTR %', data:c.dailyCTR, borderColor:C.blue,
+          backgroundColor:'rgba(37,99,235,0.08)', tension:0.4, fill:true, pointRadius:5,
+          pointBackgroundColor:C.blue, pointBorderColor:'#fff', pointBorderWidth:2, borderWidth:3 }]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine},ticks:{callback:v=>v.toFixed(1)+'%'}}, x:{grid:{display:false}} }
+      }
+    });
+
+    // Engagement Breakdown
+    mkChart('ch3', {
+      type:'doughnut',
+      data:{ labels:['Likes','Comments','Reposts'],
+        datasets:[{ data:[d.linkedin.likes,d.linkedin.comments,d.linkedin.reposts],
+          backgroundColor:[C.gold,C.blue,C.green], borderWidth:0 }]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
+    });
+
+    // Email Funnel
+    mkChart('ch4', {
+      type:'bar',
+      data:{ labels:['Sent','Delivered','Opened','Clicked'],
+        datasets:[{ label:'Count', data:[d.email.sent,d.email.delivered,d.email.views,d.email.clicks],
+          backgroundColor:[C.grey,C.gold,C.blue,C.green], borderRadius:6 }]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
+      }
+    });
+
+    // Content by Channel
+    mkChart('ch5', {
+      type:'bar',
+      data:{ labels:['LinkedIn','Platform','Blog','Quora','ORM'],
+        datasets:[{ label:'Posts', data:[d.linkedin.posts,d.platform.posts,d.blog.posts,d.quora.posts,d.orm.posts],
+          backgroundColor:C.gold, borderRadius:6 }]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
+      }
+    });
+
+    // Post Types
+    mkChart('ch6', {
+      type:'doughnut',
+      data:{ labels:ptKeys, datasets:[{ data:ptVals, backgroundColor:[C.gold,C.blue,C.green,C.purple,C.orange], borderWidth:0 }] },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
+    });
+    
+    // Post Type Performance Charts (if data exists)
+    if(d.postTypePerformance) {
+      const ptTypes = Object.keys(d.postTypePerformance);
+      const ptCTRs = ptTypes.map(t => d.postTypePerformance[t].ctr);
+      const ptEngs = ptTypes.map(t => d.postTypePerformance[t].engagementRate);
+      
+      mkChart('chPostCTR', {
+        type:'bar',
+        data:{ labels:ptTypes, datasets:[{ data:ptCTRs, backgroundColor:C.blue, borderRadius:6 }] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+          scales:{ y:{beginAtZero:true,grid:{color:C.gridLine},ticks:{callback:v=>v.toFixed(1)+'%'}}, x:{grid:{display:false}} }
+        }
+      });
+      
+      mkChart('chPostEng', {
+        type:'bar',
+        data:{ labels:ptTypes, datasets:[{ data:ptEngs, backgroundColor:C.green, borderRadius:6 }] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+          scales:{ y:{beginAtZero:true,grid:{color:C.gridLine},ticks:{callback:v=>v.toFixed(2)+'%'}}, x:{grid:{display:false}} }
+        }
+      });
+    }
+    
+    // Email Rates Chart (if data exists)
+    if(d.emailMailers) {
+      const emailNames = d.emailMailers.map(m => m.name);
+      const openRates = d.emailMailers.map(m => m.openRate);
+      const clickRates = d.emailMailers.map(m => m.clickRate);
+      
+      mkChart('chEmailRates', {
+        type:'bar',
+        data:{ labels:emailNames,
+          datasets:[
+            { label:'Open Rate %', data:openRates, backgroundColor:C.blue, borderRadius:6 },
+            { label:'Click Rate %', data:clickRates, backgroundColor:C.green, borderRadius:6 }
+          ]
+        },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
+          scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
+        }
+      });
+    }
+    
+    // Blog Impressions Chart (if data exists)
+    if(d.blogPosts) {
+      const blogTitles = d.blogPosts.map(b => b.title.substring(0,20) + '...');
+      const blogImprs = d.blogPosts.map(b => b.impressions);
+      
+      mkChart('chBlogImpr', {
+        type:'bar',
+        data:{ labels:blogTitles, datasets:[{ data:blogImprs, backgroundColor:C.teal, borderRadius:6 }] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+          scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
+        }
+      });
+    }
+    
+    // Platform Mix Chart (if data exists)
+    if(d.platformPostMix) {
+      const pmTypes = Object.keys(d.platformPostMix);
+      const pmCounts = pmTypes.map(t => d.platformPostMix[t].count);
+      
+      mkChart('chPlatformMix', {
+        type:'doughnut',
+        data:{ labels:pmTypes, datasets:[{ data:pmCounts, backgroundColor:[C.gold,C.blue,C.green,C.purple,C.orange], borderWidth:0 }] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
+      });
+    }
+  }, 50);
+}
+
+function render2Week() {
+  const w3=data.week3, w4=data.week4;
+  const c3=calc(w3), c4=calc(w4);
+  const c = {
+    li:{ p:w3.linkedin.posts+w4.linkedin.posts, i:w3.linkedin.impressions+w4.linkedin.impressions,
+         c:w3.linkedin.clicks+w4.linkedin.clicks, l:w3.linkedin.likes+w4.linkedin.likes,
+         co:w3.linkedin.comments+w4.linkedin.comments, r:w3.linkedin.reposts+w4.linkedin.reposts },
+    em:{ s:w3.email.sent+w4.email.sent, d:w3.email.delivered+w4.email.delivered,
+         v:w3.email.views+w4.email.views, c:w3.email.clicks+w4.email.clicks },
+    bl:{ p:w3.blog.posts+w4.blog.posts, i:w3.blog.impressions+w4.blog.impressions },
+    us:{ n:w3.users.newUsers+w4.users.newUsers, t:w4.users.totalUsers },
+    qu:{ p:w3.quora.posts+w4.quora.posts },
+    or:{ p:w3.orm.posts+w4.orm.posts },
+    pl:{ p:w3.platform.posts+w4.platform.posts }
   };
 
-  const maxScore=Object.keys(checks).length*2;
-  const total=Object.values(checks).reduce((s,c)=>s+c.score,0);
-  const pct=Math.round(total/maxScore*100);
-  const grade=pct>=83?'Excellent':pct>=58?'Good':pct>=33?'Fair':'Poor';
-  const gradeColor=pct>=83?'var(--accent)':pct>=58?'#945a00':'var(--danger)';
+  const avgCTR = (c.li.c / c.li.i * 100);
+  const avgEmailCTR = (c.em.c / c.em.v * 100);
+  const totalEng = c.li.l + c.li.co + c.li.r;
 
-  function row([k,ch]){
-    const dot=ch.score===2?'var(--accent)':ch.score===1?'#945a00':'var(--danger)';
-    const lbl=ch.score===2?'Pass':ch.score===1?'Partial':'Fail';
-    return`<div style="display:grid;grid-template-columns:14px 1fr 56px;gap:8px;align-items:start;padding:8px 0;border-bottom:1px solid #f0efeb">
-      <span style="width:8px;height:8px;border-radius:50%;background:${dot};display:inline-block;margin-top:4px;flex-shrink:0"></span>
-      <div><div style="font-size:13px;font-weight:500">${esc(ch.label)}</div><div style="font-size:12px;color:var(--text2);margin-top:1px">${esc(ch.detail)}</div></div>
-      <span style="font-size:11px;font-weight:600;color:${dot};text-align:right">${lbl} (${ch.score}/2)</span>
-    </div>`}
-
-  const aRows=Object.entries(checks).filter(([k])=>k.startsWith('a')).map(row).join('');
-  const bRows=Object.entries(checks).filter(([k])=>k.startsWith('b')).map(row).join('');
-
-  const html=`<div class="summary-card fade" style="margin-top:16px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-      <h2 style="margin:0">Search diagnostic</h2>
-      <div style="text-align:right"><div style="font-size:30px;font-weight:700;color:${gradeColor};line-height:1">${total}/${maxScore}</div><div style="font-size:13px;color:${gradeColor};font-weight:600">${grade}</div></div>
+  document.getElementById('mainContent').innerHTML = `
+  <div class="page">
+    <div class="page-header">
+      <h1>2-Week Cumulative Performance</h1>
+      <p>Combined metrics from Week 3 and Week 4</p>
     </div>
-    <div style="background:#f0efeb;border-radius:8px;height:8px;margin-bottom:20px;overflow:hidden"><div style="background:${gradeColor};height:100%;width:${pct}%;border-radius:8px"></div></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-      <div><div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">A — Query structure</div>${aRows}</div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">B — Result quality</div>${bRows}</div>
+
+    <h2 class="section-header">Primary Metrics</h2>
+    <div class="row-5">
+      <div class="kpi">
+        <div class="kpi-label">Total Impressions</div>
+        <div class="kpi-val">${fmt(c.li.i)}</div>
+        <div class="kpi-sub">2-week total</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Total Clicks</div>
+        <div class="kpi-val">${fmt(c.li.c)}</div>
+        <div class="kpi-sub">2-week total</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Avg CTR</div>
+        <div class="kpi-val">${pct2(avgCTR)}</div>
+        <div class="kpi-sub">2-week average</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Total Engagement</div>
+        <div class="kpi-val">${fmt(totalEng)}</div>
+        <div class="kpi-sub">Likes + Comments + Reposts</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">New Users</div>
+        <div class="kpi-val">${fmt(c.us.n)}</div>
+        <div class="kpi-sub">2-week total</div>
+      </div>
     </div>
-    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--text3)">Scored against ${totalFetched} fetched results · ${allItems.length} unique profiles · ${queries.length} queries</div>
+
+    <h2 class="section-header">Email Performance</h2>
+    <div class="row-4">
+      <div class="kpi">
+        <div class="kpi-label">Email Campaigns</div>
+        <div class="kpi-val">${c.em.s}</div>
+        <div class="kpi-sub">${fmt(c.em.d)} delivered</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Avg Open Rate</div>
+        <div class="kpi-val">${pct(c.em.v/c.em.d*100)}</div>
+        <div class="kpi-sub">2-week average</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Total Email Clicks</div>
+        <div class="kpi-val">${c.em.c}</div>
+        <div class="kpi-sub">2-week total</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Email CTR</div>
+        <div class="kpi-val">${pct2(avgEmailCTR)}</div>
+        <div class="kpi-sub">Clicks / Opens</div>
+      </div>
+    </div>
+
+    <h2 class="section-header">Comparison Charts</h2>
+    <div class="row-2">
+      <div class="chart-box">
+        <div class="chart-hdr">Week-by-Week Metrics</div>
+        <div class="chart-wrap"><canvas id="ch1"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-hdr">Week-by-Week CTR Comparison</div>
+        <div class="chart-wrap"><canvas id="ch2"></canvas></div>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="chart-box">
+        <div class="chart-hdr">Engagement Breakdown</div>
+        <div class="chart-wrap"><canvas id="ch3"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-hdr">Channel Distribution</div>
+        <div class="chart-wrap"><canvas id="ch4"></canvas></div>
+      </div>
+    </div>
+
+    <h2 class="section-header">Channel Summary</h2>
+    <div class="smol-grid">
+      <div class="smol-card"><div class="smol-label">LinkedIn</div><div class="smol-val">${c.li.p}</div></div>
+      <div class="smol-card"><div class="smol-label">Platform</div><div class="smol-val">${c.pl.p}</div></div>
+      <div class="smol-card"><div class="smol-label">Blog</div><div class="smol-val">${c.bl.p}</div></div>
+      <div class="smol-card"><div class="smol-label">Blog Impressions</div><div class="smol-val">${fmt(c.bl.i)}</div></div>
+      <div class="smol-card"><div class="smol-label">Quora</div><div class="smol-val">${c.qu.p}</div></div>
+      <div class="smol-card"><div class="smol-label">ORM</div><div class="smol-val">${c.or.p}</div></div>
+    </div>
   </div>`;
 
-  const da=document.getElementById('diagArea');
-  if(da)da.innerHTML=html;
-  const db=document.getElementById('badge-diag');if(db){db.textContent=grade;db.style.display='inline-flex';}
-}
-
-
-let shortlistData=[];
-let shortlistRunning=false;
-
-async function runShortlist(){
-  if(shortlistRunning)return;
-  if(!geminiKey){alert('Gemini API key required for shortlisting.');return}
-  const profiles=getUnique().filter(x=>x.link&&x.title!=='Error');
-  if(!profiles.length){alert('Run searches first to get profiles.');return}
-  shortlistRunning=true;
-  shortlistAbort=false;
-  shortlistData=[];
-  const jd=document.getElementById('jdInput').value.trim();
-  const area=document.getElementById('shortlistArea');
-  area.innerHTML=`<div style="text-align:center;padding:40px 20px">
-    <div style="font-size:15px;font-weight:500;margin-bottom:8px">Scoring ${profiles.length} profiles against the JD...</div>
-    <div style="font-size:13px;color:var(--text3);margin-bottom:20px">This uses Gemini to evaluate each profile. Takes ~30–60 seconds.</div>
-    <div id="sl-progress-bar" style="background:#f0efeb;border-radius:8px;height:8px;max-width:400px;margin:0 auto;overflow:hidden"><div id="sl-progress-fill" style="background:var(--accent);height:100%;width:0%;border-radius:8px;transition:width .3s"></div></div>
-    <div id="sl-progress-label" style="font-size:12px;color:var(--text3);margin-top:8px">0 / ${profiles.length}</div>
-    <button class="btn btn-s btn-sm" style="margin-top:16px" onclick="shortlistAbort=true;this.textContent='Cancelling...'">Cancel</button>
-  </div>`;
-
-  // Batch profiles — Gemini can score ~20 at a time
-  const BATCH=20;
-  const batches=[];
-  for(let i=0;i<profiles.length;i+=BATCH)batches.push(profiles.slice(i,i+BATCH));
-
-  try{
-  for(let b=0;b<batches.length;b++){
-    if(shortlistAbort)break;
-    const batch=batches[b];
-    const done=b*BATCH;
-    const fillEl=document.getElementById('sl-progress-fill');
-    const labelEl=document.getElementById('sl-progress-label');
-    if(fillEl)fillEl.style.width=Math.round(done/profiles.length*100)+'%';
-    if(labelEl)labelEl.textContent=`${done} / ${profiles.length} scored`;
-
-    const profileList=batch.map((p,i)=>{
-      const nm=(p.title||'').replace(/\s*[-\u2013|].*linkedin.*/i,'').replace(/\s*[-\u2013|].*$/,'').trim();
-      return `Profile ${done+i+1}:\nName: ${nm}\nHeadline/Snippet: ${(p.snippet||p.title||'').slice(0,300)}\nStrategy: ${p.strategy||''}\nSource: ${isLI(p.link)?'LinkedIn':'Web'}`;
-    }).join('\n\n---\n\n');
-
-    const prompt=`You are a senior recruiter scoring candidate profiles against a job description.
-
-JOB DESCRIPTION:
-${jd.slice(0,1500)}
-
-PROFILES TO SCORE:
-${profileList}
-
-For each profile, return a JSON array of objects. Score each profile 0-100 for fit with the JD.
-Return ONLY a JSON array — no markdown, no explanation.
-Schema: [{"profile_num":1,"name":"...","score":85,"tier":"Strong"|"Potential"|"Weak","match_signals":["signal1","signal2"],"gaps":["gap1"],"one_line":"One sentence why they fit or don't"}]
-
-Scoring guide:
-80-100 = Strong: seniority matches, core skills present, relevant industry/function
-50-79 = Potential: some fit but missing 1-2 key dimensions
-0-49 = Weak: missing seniority or core function or irrelevant background
-
-Be strict. Most profiles will be Weak or Potential. Only mark Strong if they genuinely match.`;
-
-    try{
-      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.2,maxOutputTokens:4000}})
-      });
-      if(!r.ok)throw new Error('Gemini '+r.status);
-      const d=await r.json();
-      let raw=(d.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
-      raw=raw.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
-      const i1=raw.indexOf('['),i2=raw.lastIndexOf(']');
-      if(i1!==-1){
-        const scored=JSON.parse(raw.slice(i1,i2+1));
-        scored.forEach((s,si)=>{
-          const prof=batch[si];
-          if(!prof)return;
-          const nm=(prof.title||'').replace(/\s*[-\u2013|].*linkedin.*/i,'').replace(/\s*[-\u2013|].*$/,'').trim();
-          shortlistData.push({...s,name:nm||s.name,link:prof.link,strategy:prof.strategy,queryLabel:prof.queryLabel,snippet:prof.snippet,isLI:isLI(prof.link)});
-        });
+  setTimeout(() => {
+    mkChart('ch1', {
+      type:'bar',
+      data:{ labels:['Impressions','Clicks','Likes','Email Views'],
+        datasets:[
+          { label:'Week 3', data:[w3.linkedin.impressions,w3.linkedin.clicks,w3.linkedin.likes,w3.email.views],
+            backgroundColor:'#e5e7eb', borderRadius:6 },
+          { label:'Week 4', data:[w4.linkedin.impressions,w4.linkedin.clicks,w4.linkedin.likes,w4.email.views],
+            backgroundColor:C.gold, borderRadius:6 }
+        ]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
+        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
       }
-    }catch(e){console.error('Shortlist batch error:',e)}
-    await new Promise(r=>setTimeout(r,500));
-  }
-  }finally{
-    // Sort by score descending
-    shortlistData.sort((a,b)=>b.score-a.score);
-    const bdg=document.getElementById('badge-shortlist');
-    if(bdg){bdg.textContent=shortlistData.filter(x=>x.tier==='Strong').length;bdg.style.display='inline-flex';}
-    renderShortlist();
-    shortlistRunning=false;
-    shortlistAbort=false;
-  }
-}
-
-let slPage=0;
-const SL_PAGE_SIZE=50;
-
-function renderShortlistCards(data,page){
-  page=page||0;
-  const start=page*SL_PAGE_SIZE;
-  const slice=data.slice(start,start+SL_PAGE_SIZE);
-  if(!slice.length)return'<div class="sl-empty">No profiles match this filter.</div>';
-  let h='';
-  slice.forEach((p,i)=>{
-    const rank=start+i+1;
-    const isTop=rank<=3;
-    const tierColor=p.tier==='Strong'?'var(--green)':p.tier==='Potential'?'#945a00':'var(--danger)';
-    const tierBg=p.tier==='Strong'?'var(--green-bg)':p.tier==='Potential'?'var(--amber-bg)':'var(--danger-bg)';
-    const tierBorder=p.tier==='Strong'?'var(--green-border)':p.tier==='Potential'?'var(--amber-border)':'var(--danger-border)';
-    const scoreColor=p.score>=80?'var(--green)':p.score>=50?'#945a00':'var(--danger)';
-    const c=SC[p.strategy]||SC.S1;
-    h+=`<div class="sl-card">
-      <div class="sl-rank ${isTop?'top':''}">${rank}</div>
-      <div>
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
-          <span class="sl-name">${p.link?`<a href="${esc(p.link)}" target="_blank" style="color:var(--info);text-decoration:none">${esc(p.name||'Unknown')}</a>`:esc(p.name||'Unknown')}</span>
-          <span style="font-size:11px;padding:2px 9px;border-radius:20px;font-weight:600;background:${tierBg};color:${tierColor};border:1px solid ${tierBorder}">${p.tier||'—'}</span>
-          ${p.strategy?`<span class="tag" style="background:${c.bg};color:${c.tx};border-color:${c.bd};font-size:9px">${p.strategy}</span>`:''}
-          ${p.isLI===false?'<span class="bdg bdg-x" style="font-size:9px">Web</span>':'<span class="bdg bdg-b" style="font-size:9px">LinkedIn</span>'}
-        </div>
-        <div class="sl-why">${esc(p.one_line||'')}</div>
-        <div class="sl-tags">
-          ${(p.match_signals||[]).map(s=>`<span class="sl-tag match">✓ ${esc(s)}</span>`).join('')}
-          ${(p.gaps||[]).map(s=>`<span class="sl-tag gap">✗ ${esc(s)}</span>`).join('')}
-        </div>
-      </div>
-      <div class="sl-score-ring">
-        <div class="sl-score-num" style="color:${scoreColor}">${p.score||0}</div>
-        <div class="sl-score-label">/ 100</div>
-      </div>
-    </div>`;
-  });
-  // Pagination controls
-  const totalPages=Math.ceil(data.length/SL_PAGE_SIZE);
-  if(totalPages>1){
-    h+=`<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:16px 0;border-top:1px solid var(--border);margin-top:8px">`;
-    if(page>0)h+=`<button class="btn btn-s btn-sm" onclick="slPage=${page-1};document.getElementById('sl-list').innerHTML=renderShortlistCards(currentSlData,${page-1})">← Prev</button>`;
-    h+=`<span style="font-size:13px;color:var(--text3)">Page ${page+1} of ${totalPages} · ${data.length} profiles</span>`;
-    if(page<totalPages-1)h+=`<button class="btn btn-s btn-sm" onclick="slPage=${page+1};document.getElementById('sl-list').innerHTML=renderShortlistCards(currentSlData,${page+1})">Next →</button>`;
-    h+=`</div>`;
-  }
-  return h;
-}
-
-let currentSlData=[];
-
-function renderShortlist(){
-  const area=document.getElementById('shortlistArea');
-  if(!shortlistData.length){area.innerHTML='<div class="sl-empty">No profiles scored yet. Click Run Shortlist after searching.</div>';return}
-  slFilters={tier:'all',strategy:'all',score:0};
-  slPage=0;
-  currentSlData=shortlistData;
-  const strong=shortlistData.filter(x=>x.tier==='Strong');
-  const potential=shortlistData.filter(x=>x.tier==='Potential');
-  const weak=shortlistData.filter(x=>x.tier==='Weak');
-  const strategies=[...new Set(shortlistData.map(x=>x.strategy).filter(Boolean))].sort();
-
-  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
-    <div>
-      <h2 style="margin:0">AI Shortlist</h2>
-      <div style="font-size:13px;color:var(--text3);margin-top:3px">${shortlistData.length} profiles scored · <span style="color:var(--green);font-weight:600">${strong.length} Strong</span> · ${potential.length} Potential · ${weak.length} Weak</div>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-s btn-sm" onclick="dlShortlist()">Export CSV</button>
-      <button class="btn btn-s btn-sm" onclick="runShortlist()">Re-run</button>
-    </div>
-  </div>
-  <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px">
-    <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end">
-      <div>
-        <div class="section-label" style="margin-bottom:6px">Tier</div>
-        <div style="display:flex;gap:5px">
-          <button class="btn btn-s btn-sm sl-fbtn active" data-ft="tier" data-fv="all" onclick="applySlFilters(this)">All (${shortlistData.length})</button>
-          <button class="btn btn-sm sl-fbtn" data-ft="tier" data-fv="Strong" onclick="applySlFilters(this)" style="background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)">Strong (${strong.length})</button>
-          <button class="btn btn-s btn-sm sl-fbtn" data-ft="tier" data-fv="Potential" onclick="applySlFilters(this)">Potential (${potential.length})</button>
-          <button class="btn btn-s btn-sm sl-fbtn" data-ft="tier" data-fv="Weak" onclick="applySlFilters(this)">Weak (${weak.length})</button>
-        </div>
-      </div>
-      ${strategies.length>1?`<div>
-        <div class="section-label" style="margin-bottom:6px">Strategy</div>
-        <div style="display:flex;gap:5px;flex-wrap:wrap">
-          <button class="btn btn-s btn-sm sl-fbtn active" data-ft="strategy" data-fv="all" onclick="applySlFilters(this)">All</button>
-          ${strategies.map(s=>`<button class="btn btn-s btn-sm sl-fbtn" data-ft="strategy" data-fv="${s}" onclick="applySlFilters(this)">${s}</button>`).join('')}
-        </div>
-      </div>`:''}
-      <div>
-        <div class="section-label" style="margin-bottom:6px">Min Score</div>
-        <div style="display:flex;gap:5px">
-          <button class="btn btn-s btn-sm sl-fbtn active" data-ft="score" data-fv="0" onclick="applySlFilters(this)">Any</button>
-          <button class="btn btn-s btn-sm sl-fbtn" data-ft="score" data-fv="50" onclick="applySlFilters(this)">50+</button>
-          <button class="btn btn-s btn-sm sl-fbtn" data-ft="score" data-fv="65" onclick="applySlFilters(this)">65+</button>
-          <button class="btn btn-s btn-sm sl-fbtn" data-ft="score" data-fv="80" onclick="applySlFilters(this)">80+</button>
-        </div>
-      </div>
-    </div>
-    <div id="sl-filter-summary" style="font-size:12px;color:var(--text3);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">Showing all ${shortlistData.length} profiles</div>
-  </div>
-  <div id="sl-list">`;
-
-  h+=renderShortlistCards(shortlistData,0);
-  h+=`</div>`;
-  area.innerHTML=h;
-  currentSlData=shortlistData;
-}
-
-function applySlFilters(btn){
-  const ft=btn.dataset.ft,fv=btn.dataset.fv;
-  slFilters[ft]=ft==='score'?parseInt(fv):fv;
-  document.querySelectorAll(`.sl-fbtn[data-ft="${ft}"]`).forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  let data=shortlistData;
-  if(slFilters.tier!=='all')data=data.filter(x=>x.tier===slFilters.tier);
-  if(slFilters.strategy!=='all')data=data.filter(x=>x.strategy===slFilters.strategy);
-  if(slFilters.score>0)data=data.filter(x=>(x.score||0)>=slFilters.score);
-  currentSlData=data;slPage=0;
-  const list=document.getElementById('sl-list');
-  if(list)list.innerHTML=renderShortlistCards(data,0);
-  const summary=document.getElementById('sl-filter-summary');
-  if(summary){
-    const parts=[];
-    if(slFilters.tier!=='all')parts.push('Tier: '+slFilters.tier);
-    if(slFilters.strategy!=='all')parts.push('Strategy: '+slFilters.strategy);
-    if(slFilters.score>0)parts.push('Score ≥ '+slFilters.score);
-    summary.textContent=parts.length?`Showing ${data.length} of ${shortlistData.length} profiles · Filters: ${parts.join(' · ')}`:`Showing all ${shortlistData.length} profiles`;
-  }
-}
-
-
-function dlShortlist(){
-  if(!shortlistData.length)return;
-  const l=['Rank,Score,Tier,Name,Profile URL,Strategy,Query,One Line Summary,Match Signals,Gaps'];
-  shortlistData.forEach((p,i)=>{
-    l.push([
-      i+1,p.score||0,p.tier||'',
-      '"'+(p.name||'').replace(/"/g,'""')+'"',
-      '"'+(p.link||'')+'"',
-      '"'+(p.strategy||'').replace(/"/g,'""')+'"',
-      '"'+(p.queryLabel||'').replace(/"/g,'""')+'"',
-      '"'+(p.one_line||'').replace(/"/g,'""')+'"',
-      '"'+((p.match_signals||[]).join('; ')).replace(/"/g,'""')+'"',
-      '"'+((p.gaps||[]).join('; ')).replace(/"/g,'""')+'"'
-    ].join(','));
-  });
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([l.join('\n')],{type:'text/csv'}));
-  a.download=`netrax_shortlist_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-}
-
-
-function dlProfiles(type){
-  const u=getUnique();
-  const p=type==='linkedin'?u.filter(x=>isLI(x.link)):u;
-  const l=['#,Name,Profile URL,Description,Source,Strategy,Query Name,Query String'];
-  p.forEach((x,i)=>{
-    const nm=(x.title||'').replace(/\s*[-\u2013|].*linkedin.*/i,'').replace(/\s*[-\u2013|].*$/,'').trim();
-    l.push([
-      i+1,
-      '"'+nm.replace(/"/g,'""')+'"',
-      '"'+(x.link||'')+'"',
-      '"'+(x.snippet||'').replace(/"/g,'""')+'"',
-      isLI(x.link)?'LinkedIn':'Other',
-      '"'+(x.strategy||'').replace(/"/g,'""')+'"',
-      '"'+(x.queryLabel||'').replace(/"/g,'""')+'"',
-      '"'+(x.queryString||'').replace(/"/g,'""')+'"'
-    ].join(','));
-  });
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([l.join('\n')],{type:'text/csv'}));
-  a.download=`netrax_${type}_profiles_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-}
-
-function renderResults(){
-  document.getElementById('tabSystem').style.display='block';
-  switchTab('queries');
-  const area=document.getElementById('resultsArea');
-  const counts=queries.reduce((a,q)=>{a[q.strategy]=(a[q.strategy]||0)+1;return a},{});const p=params;
-  const sl={same_industry:'Same industry',cross_industry:'Cross-industry',target_companies:'Target ('+targetCompanies.length+')'}[searchScope];
-  let h=`<div class="fade"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-    <div><h2>${queries.length} queries generated</h2><span class="bdg bdg-b" style="margin-top:4px">${sl}</span></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-s btn-sm" onclick="resetAll()">New JD</button>
-      <button class="btn btn-s btn-sm" onclick="copyAll()">Copy all</button>
-      <button class="btn btn-s btn-sm" onclick="dlCSV()">CSV</button>
-      <button class="btn btn-s btn-sm" onclick="dlJSON()">JSON</button>
-      <button class="btn btn-s btn-sm" onclick="addCustomQuery()">+ Add query</button>
-      ${serpKey?`<button class="btn btn-p btn-sm" onclick="searchAll()">Search all (${queries.length} credits)</button>`:''}
-    </div></div>`;
-  // searchAll status/cancel bar
-  h+=`<div id="searchAllStatus" style="display:none;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius);padding:10px 15px;font-size:13px;color:var(--amber);margin-bottom:10px;display:flex;align-items:center;gap:10px"></div>`;
-  if(p?.titles){
-    h+=`<div id="paramsCard"></div>`;
-  }
-  // S4 missing warning
-  const hasS4=queries.some(q=>q.strategy==='S4');
-  const isRegulated=params?.is_regulated_industry;
-  const missingSite=queries.filter(q=>q.strategy!=='S5'&&!/site:linkedin\.com\/in/i.test(q.query_string||''));
-  if(missingSite.length>0)h+=`<div style="background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:var(--radius);padding:12px 18px;font-size:13px;color:var(--danger);margin-bottom:14px;display:flex;align-items:flex-start;gap:8px"><strong>⚠ ${missingSite.length} quer${missingSite.length>1?'ies are':'y is'} missing site:linkedin.com/in/</strong> — ${missingSite.map(q=>q.strategy).join(', ')} will return job boards and noise instead of profiles. Re-generate to fix.</div>`;
-  if(!hasS4)h+=`<div style="background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:var(--radius);padding:12px 18px;font-size:13px;color:var(--danger);margin-bottom:14px;display:flex;align-items:center;gap:8px"><strong>⚠ S4 Company-Reverse query is missing.</strong> This is the highest-signal strategy — it targets candidates at competitor companies. Re-generate to fix.</div>`;
-  if(isRegulated)h+=`<div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius);padding:12px 18px;font-size:13px;color:var(--amber);margin-bottom:14px;display:flex;align-items:center;gap:8px">Regulated industry detected — S5 open-web queries have been suppressed to avoid policy/compliance page noise.</div>`;
-  h+=`<div class="metrics"><div class="met"><div class="met-l">Old system</div><div class="met-v r">60</div></div><div class="met"><div class="met-l">New system</div><div class="met-v g">${queries.length}</div></div><div class="met"><div class="met-l">Strategies</div><div class="met-v">${Object.keys(counts).length}</div></div><div class="met"><div class="met-l">Calls saved</div><div class="met-v g">${60-queries.length}</div></div></div>`;
-  h+=`<div class="pills">${Object.entries(counts).sort().map(([s,n])=>{const c=SC[s]||SC.S1;return`<span class="pill" style="background:${c.bg};color:${c.tx};border-color:${c.bd}">${s}: ${c.nm} (${n})</span>`}).join('')}</div>`;
-  queries.forEach((_,i)=>{h+=`<div id="qcard-${i}"></div>`});h+=`</div>`;area.innerHTML=h;
-  if(params?.titles)renderParamsCard();
-  queries.forEach((_,i)=>renderCard(i));
-}
-
-// ── Params card (editable) ──────────────────────────────────────────────
-let paramsEditing=false;
-
-const archetypeLabels={'TECH_AI_ENGINEERING':'Tech / AI / Engineering','CUSTOMER_SERVICE_CX':'Customer Service / CX','SALES_GTM_BD':'Sales / GTM / Business Dev','HR_PEOPLE':'HR / People','FINANCE_RISK_COMPLIANCE':'Finance / Risk / Compliance','OPERATIONS_SUPPLY_CHAIN':'Operations / Supply Chain','MARKETING_BRAND_GROWTH':'Marketing / Brand / Growth','LEGAL_COMPLIANCE_SECRETARIAL':'Legal / Compliance','GENERAL_MANAGEMENT_LEADERSHIP':'General Management'};
-const archetypeColors={'TECH_AI_ENGINEERING':'#185FA5','CUSTOMER_SERVICE_CX':'#0F6E56','SALES_GTM_BD':'#854F0B','HR_PEOPLE':'#6b21a8','FINANCE_RISK_COMPLIANCE':'#A32D2D','OPERATIONS_SUPPLY_CHAIN':'#3B6D11','MARKETING_BRAND_GROWTH':'#993C1D','LEGAL_COMPLIANCE_SECRETARIAL':'#5F5E5A','GENERAL_MANAGEMENT_LEADERSHIP':'#185FA5'};
-
-function renderParamsCard(){
-  const el=document.getElementById('paramsCard');
-  if(!el||!params)return;
-  const p=params;
-  const at=p.role_archetype||'';
-  const atLabel=archetypeLabels[at]||at||'';
-  const atColor=archetypeColors[at]||'var(--info)';
-
-  if(!paramsEditing){
-    // ── Read-only view ──
-    el.innerHTML=`<div class="card" style="padding:16px 20px" id="paramsCardInner">
-      ${at?`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);flex-wrap:wrap">
-        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Role archetype detected</div>
-        <span style="font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px;background:${atColor}18;color:${atColor};border:1px solid ${atColor}40">${esc(atLabel)}</span>
-        <span style="font-size:11px;color:var(--text3)">Query rules applied automatically</span>
-      </div>`:''}
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Extracted parameters</div>
-        <button class="btn btn-s btn-sm" onclick="paramsEditing=true;renderParamsCard()">Edit parameters</button>
-      </div>
-      <div class="pg">
-        ${[['Titles',(p.titles||[]).join(', ')],['Location',p.location||''],['Industry',p.industry||''],['Function',p.function||''],['Seniority',p.seniority_level||''],['Skills',(p.skills||[]).join(', ')],['Peer companies',(p.peer_companies||[]).join(', ')],['Archetype',at],['Regulated',p.is_regulated_industry?'Yes':'No'],['Builder role',p.is_builder_role?'Yes':'No'],['Commercial angle',p.has_commercial_angle?'Yes':'No']].map(([k,v])=>`<div><span class="pg-l">${esc(k)}:</span> ${esc(v||'—')}</div>`).join('')}
-      </div>
-    </div>`;
-  } else {
-    // ── Edit view ──
-    // Build chip sets from current params (user may have already edited once)
-    const titlesArr=params.titles||[];
-    const skillsArr=params.skills||[];
-    const peersArr=params.peer_companies||[];
-
-    el.innerHTML=`<div class="card" style="padding:16px 20px;border-color:var(--accent);border-width:1.5px" id="paramsCardInner">
-      ${at?`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);flex-wrap:wrap">
-        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Role archetype detected</div>
-        <span style="font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px;background:${atColor}18;color:${atColor};border:1px solid ${atColor}40">${esc(atLabel)}</span>
-      </div>`:''}
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <div style="font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Editing parameters — changes feed into query regeneration</div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px;">
-
-        <div style="grid-column:1/-1">
-          <div class="section-label" style="margin-bottom:6px">Titles <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">(used in S1 — what candidates write on LinkedIn)</span></div>
-          <div class="chip-input" id="pe-titles-box" onclick="document.getElementById('pe-titles-input').focus()">
-            ${titlesArr.map((t,i)=>`<span class="chip">${esc(t)} <span class="x" onclick="event.stopPropagation();peRemoveChip('titles',${i})">&times;</span></span>`).join('')}
-            <input type="text" id="pe-titles-input" placeholder="Add title + Enter" onkeydown="peChipKey(event,'titles')" style="border:none;outline:none;font-family:var(--sans);font-size:13px;flex:1;min-width:140px;background:transparent;color:var(--text)"/>
-          </div>
-        </div>
-
-        <div style="grid-column:1/-1">
-          <div class="section-label" style="margin-bottom:6px">Skills <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">(used in S3 — function-specific differentiators)</span></div>
-          <div class="chip-input" id="pe-skills-box" onclick="document.getElementById('pe-skills-input').focus()">
-            ${skillsArr.map((s,i)=>`<span class="chip">${esc(s)} <span class="x" onclick="event.stopPropagation();peRemoveChip('skills',${i})">&times;</span></span>`).join('')}
-            <input type="text" id="pe-skills-input" placeholder="Add skill + Enter" onkeydown="peChipKey(event,'skills')" style="border:none;outline:none;font-family:var(--sans);font-size:13px;flex:1;min-width:140px;background:transparent;color:var(--text)"/>
-          </div>
-        </div>
-
-        <div style="grid-column:1/-1">
-          <div class="section-label" style="margin-bottom:6px">Peer companies <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">(used in S4 — never include hiring company)</span></div>
-          <div class="chip-input" id="pe-peers-box" onclick="document.getElementById('pe-peers-input').focus()">
-            ${peersArr.map((c,i)=>`<span class="chip">${esc(c)} <span class="x" onclick="event.stopPropagation();peRemoveChip('peers',${i})">&times;</span></span>`).join('')}
-            <input type="text" id="pe-peers-input" placeholder="Add company + Enter" onkeydown="peChipKey(event,'peers')" style="border:none;outline:none;font-family:var(--sans);font-size:13px;flex:1;min-width:160px;background:transparent;color:var(--text)"/>
-          </div>
-        </div>
-
-        <div>
-          <div class="section-label" style="margin-bottom:6px">Location</div>
-          <input type="text" id="pe-location" value="${esc(p.location||'')}" placeholder="e.g. Mumbai, Bangalore, India" />
-        </div>
-
-        <div>
-          <div class="section-label" style="margin-bottom:6px">Industry</div>
-          <input type="text" id="pe-industry" value="${esc(p.industry||'')}" placeholder="e.g. IT Services / AI" />
-        </div>
-
-        <div>
-          <div class="section-label" style="margin-bottom:6px">Function</div>
-          <input type="text" id="pe-function" value="${esc(p.function||'')}" placeholder="e.g. Solutions Engineering" />
-        </div>
-
-        <div>
-          <div class="section-label" style="margin-bottom:6px">Seniority level</div>
-          <input type="text" id="pe-seniority" value="${esc(p.seniority_level||'')}" placeholder="e.g. Director / VP" />
-        </div>
-
-        <div style="grid-column:1/-1">
-          <div class="section-label" style="margin-bottom:8px">Flags <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">(control which strategies are generated)</span></div>
-          <div style="display:flex;gap:20px;flex-wrap:wrap">
-            <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer">
-              <input type="checkbox" id="pe-regulated" ${p.is_regulated_industry?'checked':''} style="width:14px;height:14px;cursor:pointer"/>
-              <span>Regulated industry <span style="color:var(--text3);font-size:12px">(suppresses S5)</span></span>
-            </label>
-            <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer">
-              <input type="checkbox" id="pe-builder" ${p.is_builder_role?'checked':''} style="width:14px;height:14px;cursor:pointer"/>
-              <span>Builder / 0-to-1 role <span style="color:var(--text3);font-size:12px">(triggers S8)</span></span>
-            </label>
-            <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer">
-              <input type="checkbox" id="pe-commercial" ${p.has_commercial_angle?'checked':''} style="width:14px;height:14px;cursor:pointer"/>
-              <span>Commercial / GTM angle <span style="color:var(--text3);font-size:12px">(triggers S7)</span></span>
-            </label>
-          </div>
-        </div>
-
-      </div>
-
-      <div style="display:flex;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border);align-items:center;flex-wrap:wrap">
-        <button class="btn btn-p" id="regenParamsBtn" onclick="regenFromParams()">Regenerate queries from these params</button>
-        <button class="btn btn-s" onclick="peCancelEdit()">Cancel</button>
-        <span style="font-size:12px;color:var(--text3)">Only the queries are regenerated — JD is not re-processed</span>
-      </div>
-      <div id="regenParamsError" style="margin-top:10px"></div>
-    </div>`;
-  }
-}
-
-// chip helpers for params editor
-function peReadChips(field){
-  const fieldMap={titles:'titles',skills:'skills',peers:'peer_companies'};
-  return params[fieldMap[field]]||[];
-}
-function peRemoveChip(field,idx){
-  const fieldMap={titles:'titles',skills:'skills',peers:'peer_companies'};
-  const key=fieldMap[field];
-  params[key].splice(idx,1);
-  renderParamsCard();
-}
-function peChipKey(e,field){
-  if(e.key==='Enter'&&e.target.value.trim()){
-    e.preventDefault();
-    const val=e.target.value.trim();
-    const fieldMap={titles:'titles',skills:'skills',peers:'peer_companies'};
-    const key=fieldMap[field];
-    if(!params[key])params[key]=[];
-    if(!params[key].includes(val))params[key].push(val);
-    e.target.value='';
-    renderParamsCard();
-  }
-  if(e.key==='Backspace'&&!e.target.value){
-    const fieldMap={titles:'titles',skills:'skills',peers:'peer_companies'};
-    const key=fieldMap[field];
-    if(params[key]&&params[key].length)params[key].pop();
-    renderParamsCard();
-  }
-}
-function peSaveEdits(){
-  // Read all text inputs back into params before using
-  const loc=document.getElementById('pe-location');
-  const ind=document.getElementById('pe-industry');
-  const fn=document.getElementById('pe-function');
-  const sen=document.getElementById('pe-seniority');
-  const reg=document.getElementById('pe-regulated');
-  const bld=document.getElementById('pe-builder');
-  const com=document.getElementById('pe-commercial');
-  if(loc)params.location=loc.value.trim();
-  if(ind)params.industry=ind.value.trim();
-  if(fn)params.function=fn.value.trim();
-  if(sen)params.seniority_level=sen.value.trim();
-  if(reg)params.is_regulated_industry=reg.checked;
-  if(bld)params.is_builder_role=bld.checked;
-  if(com)params.has_commercial_angle=com.checked;
-}
-function peCancelEdit(){
-  paramsEditing=false;
-  renderParamsCard();
-}
-
-async function regenFromParams(){
-  if(!geminiKey){alert('Gemini API key required.');return}
-  peSaveEdits();
-  const btn=document.getElementById('regenParamsBtn');
-  const errEl=document.getElementById('regenParamsError');
-  if(btn){btn.disabled=true;btn.innerHTML='<span class="sp"></span> Regenerating…';}
-  if(errEl)errEl.innerHTML='';
-
-  const p=params;
-  const jdText=document.getElementById('jdInput').value;
-  const coMatch=jdText.match(/(?:at|for|join)\s+([A-Z][\w\s&.,-]{1,40}?)(?:\s+is|\s+seeks|\.|,|\n)/);
-  const hiringCo=p.hiring_company||(coMatch?coMatch[1].trim():'the hiring company');
-
-  // Scope block — same logic as buildSys
-  let scope='';
-  if(searchScope==='same_industry') scope='\n\nSCOPE: SAME INDUSTRY — all queries must stay within: '+p.industry+'. S4 uses only same-industry peer companies.';
-  else if(searchScope==='cross_industry') scope='\n\nSCOPE: CROSS-INDUSTRY — intentionally span 2-3 industries. S4 must target companies across different sectors.';
-  else scope='\n\nSCOPE: TARGET COMPANIES ONLY. S4 MUST use ONLY: '+targetCompanies.join(', ')+'. NEVER include '+hiringCo+'.';
-
-  const prompt=`You are NetraX Query Architect. Generate LinkedIn talent search queries using the ALREADY-EXTRACTED parameters below. Do NOT re-extract from a JD — trust these parameters exactly as given.
-
-EXTRACTED PARAMETERS (do not override these):
-Titles (S1 basis): ${(p.titles||[]).join(', ')||'(none)'}
-Skills (S3 basis): ${(p.skills||[]).join(', ')||'(none)'}
-Peer companies (S4 basis): ${(p.peer_companies||[]).join(', ')||'(none)'}
-Location: ${p.location||'India'}
-Industry: ${p.industry||''}
-Sub-industry: ${p.sub_industry||''}
-Function: ${p.function||''}
-Seniority level: ${p.seniority_level||''}
-Role archetype: ${p.role_archetype||''}
-Hiring company (NEVER include in any query): ${hiringCo}
-is_regulated_industry: ${p.is_regulated_industry}
-is_builder_role: ${p.is_builder_role}
-has_commercial_angle: ${p.has_commercial_angle}
-
-INSTRUCTIONS — apply all standard NetraX rules using ONLY the parameters above:
-
-RULE H — site:linkedin.com/in/ is MANDATORY in every query except S5.
-RULE I — Under 280 chars. Max 3 OR-blocks. Max 5 values per OR-block. No experience strings.
-RULE A — Apply seniority gate based on seniority_level: if Director/VP/Head level, gate S1/S2/S6/S7/S8 with ("VP" OR "Director" OR "Head of"). If IC/Specialist, no seniority gates.
-RULE D — S4 is mandatory. Use peer companies list above. NEVER include ${hiringCo}.
-RULE C — S3 uses skills list above. Must have seniority AND-block.
-S5 — include ONLY if is_regulated_industry is false AND role type has open-web presence.
-S7 — include ONLY if has_commercial_angle is true.
-S8 — include ONLY if is_builder_role is true.
-Every query must include city/geo terms from location field above.${scope}
-
-Return ONLY valid JSON. No markdown, no preamble.
-Schema: {"queries":[{"strategy":"S1","strategy_name":"...","query_string":"...","rationale":"..."}]}
-Generate 10-14 queries. Return ONLY the JSON.`;
-
-  try{
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.5,maxOutputTokens:5000,responseMimeType:'application/json'}})
     });
-    if(!r.ok){const eb=await r.json().catch(()=>({}));throw new Error('Gemini error '+r.status+': '+(eb?.error?.message||'Unknown'));}
-    const d=await r.json();
-    if(!d.candidates?.length)throw new Error('Gemini returned no candidates');
-    let raw=(d.candidates[0]?.content?.parts||[]).map(x=>x.text||'').join('');
-    raw=raw.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
-    const i1=raw.indexOf('{'),i2=raw.lastIndexOf('}');
-    if(i1===-1)throw new Error('No JSON in response');
-    const parsed=JSON.parse(raw.slice(i1,i2+1));
-    if(!parsed.queries?.length)throw new Error('No queries in response');
-    // Replace queries, clear old search results
-    queries=parsed.queries;
-    searchResults={};collapsed={};
-    queries.forEach((_,i)=>{collapsed[i]=true});
-    paramsEditing=false;
-    renderResults();
-    runDiagnostic();
-  }catch(e){
-    console.error('regenFromParams error:',e);
-    if(errEl)errEl.innerHTML=`<div class="err"><strong>Regeneration failed:</strong> ${esc(e.message)}</div>`;
-    if(btn){btn.disabled=false;btn.textContent='Regenerate queries from these params';}
-  }
-}
 
-function validateQuery(q){
-  const qs=q.query_string||'';
-  const warnings=[];
-  const strategy=q.strategy||'';
-  const archetype=(params?.role_archetype||'').toUpperCase();
-
-  // CRITICAL: site:linkedin.com/in/ check — mandatory for all non-S5 strategies
-  const hasSiteOp=/site:linkedin\.com\/in/i.test(qs);
-  if(strategy!=='S5'&&!hasSiteOp)
-    warnings.push({type:'error',msg:'Missing site:linkedin.com/in/ — this query will return job boards, news articles and Instagram posts instead of candidate profiles'});
-
-  const hasFunction=/(Customer|CX|Engineer|Sales|Finance|HR|Marketing|Operations|Technology|Legal|Product|Service|Experience|Strategy|Analytics|Risk|Compliance|Growth|Brand|Supply|Procurement|Digital|Data|AI|IT|Cloud|People|Talent|Revenue|GTM|Counsel|Treasury|Audit)/i.test(qs);
-  const hasSeniority=/(VP|Director|Head|Chief|SVP|EVP|Managing Director|Principal)/i.test(qs);
-
-  if((strategy==='S1'||strategy==='S2'||strategy==='S4')&&hasSeniority&&!hasFunction)
-    warnings.push({type:'error',msg:'Seniority without function — returns any title in this field'});
-
-  if(strategy==='S3'&&!hasSeniority)
-    warnings.push({type:'error',msg:'S3 missing seniority gate — will flood with junior profiles. Add (VP OR Director OR Head) as AND block'});
-
-  if(strategy==='S3'){
-    const generic=/(Budget Management|Stakeholder Management|Service Quality|Communication Skills|Leadership|Team Management)/i.test(qs);
-    if(generic)warnings.push({type:'warn',msg:'Generic skills in S3 — use function-specific skills instead'});}
-
-  if(strategy==='S1'&&/CUSTOMER_SERVICE|FINANCE|LEGAL|HR_PEOPLE/.test(archetype)){
-    const hasIndustry=/(NBFC|Banking|Finance|Insurance|Legal|HR|People|Fintech|BFSI)/i.test(qs);
-    if(!hasIndustry)warnings.push({type:'warn',msg:'S1 missing industry anchor — will match this title in any industry'});}
-
-  const suppressS5=/CUSTOMER_SERVICE|FINANCE_RISK|HR_PEOPLE|LEGAL/.test(archetype);
-  if(strategy==='S5'&&(suppressS5||params?.is_regulated_industry))
-    warnings.push({type:'error',msg:'S5 suppressed for this role type — returns policy/compliance pages not profiles'});
-
-  if(qs.length>300)warnings.push({type:'warn',msg:'Query '+qs.length+' chars — may hit Serper 400 error'});
-
-  const hasGeo=/(mumbai|delhi|bangalore|bengaluru|hyderabad|pune|chennai|kolkata|india|london|new york|singapore|dubai|noida|gurgaon)/i.test(qs);
-  if(!hasGeo)warnings.push({type:'error',msg:'No city found — results will not be geographically filtered'});
-
-  if(strategy==='S6'){
-    const hasCsuite=/(SVP|Senior Vice President|Chief|Global Head|EVP)/i.test(qs);
-    if(hasCsuite)warnings.push({type:'warn',msg:'S6 Adjacent should be one level below target'});}
-
-  return warnings;
-}
-function renderCard(i){
-  const q=queries[i],c=SC[q.strategy]||SC.S1;
-  const geo=/mumbai|delhi|bangalore|bengaluru|hyderabad|pune|chennai|kolkata|india|noida|gurgaon|gurugram/i.test(q.query_string);
-  const res=searchResults[i];const hasRes=res?.items?.length&&res.items[0].title!=='Error';const isColl=collapsed[i]!==false;
-  const isEditing=editingIdx===i;
-  let h=`<div class="qc" id="qcard-inner-${i}">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px">
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <span class="tag" style="background:${c.bg};color:${c.tx};border-color:${c.bd}">${q.strategy}: ${q.strategy_name||c.nm}</span>
-        <span style="font-size:12px;color:var(--text3)">#${i+1}</span>
-        ${geo?'<span class="bdg bdg-g">geo</span>':'<span class="bdg bdg-r">no geo</span>'}
-      </div>
-      <div style="display:flex;gap:6px;align-items:center">
-        ${res?.total?`<span class="count-badge">~${Number(res.total).toLocaleString()}</span>`:''}
-        ${hasRes?`<span class="bdg bdg-g">${res.fetched} fetched</span>`:''}
-      </div>
-    </div>
-    <div style="font-size:13px;color:var(--text2);margin-bottom:8px;line-height:1.5">${esc(q.rationale)}</div>
-    ${(()=>{const ws=validateQuery(q);if(!ws.length)return'';return'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">'+ws.map(w=>`<span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:${w.type==='error'?'var(--danger-bg)':'#fffce6'};color:${w.type==='error'?'var(--danger)':'#7a6a00'};border:1px solid ${w.type==='error'?'#f5c6c6':'#f0e68c'}">${w.type==='error'?'⚠ ':'! '}${esc(w.msg)}</span>`).join('')+'</div>';})()}`;
-  if(isEditing){
-    h+=`<textarea id="qedit-${i}" style="font-family:var(--mono);font-size:11.5px;margin:10px 0 8px;line-height:1.75;min-height:80px">${esc(q.query_string)}</textarea>
-    <div style="display:flex;gap:6px;margin-bottom:8px">
-      <button class="btn btn-p btn-sm" onclick="saveEdit(${i})">Save</button>
-      <button class="btn btn-s btn-sm" onclick="cancelEdit()">Cancel</button>
-    </div>`;
-  }else{
-    h+=`<div class="qs">${esc(q.query_string)}</div>`;
-  }
-  h+=`<div class="acts">
-      <button class="btn btn-p btn-sm" id="sbtn-${i}" onclick="runSearch(${i})">${hasRes?'Re-search':'Search'}</button>
-      <span class="lnk" onclick="navigator.clipboard.writeText(queries[${i}].query_string);this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</span>
-      <a href="https://www.google.com/search?q=${encodeURIComponent(q.query_string)}" target="_blank">Google</a>
-      <span class="lnk" onclick="startEdit(${i})">Edit</span>
-      <span class="lnk" onclick="regenQuery(${i})">Regenerate</span>
-      <span class="lnk" style="color:var(--danger)" onclick="deleteQuery(${i})">Delete</span>
-    </div>
-    <div id="sstatus-${i}" style="font-size:12px;color:var(--text3);margin-top:6px"></div>`;
-  if(hasRes){
-    h+=`<div class="sr"><div class="sr-toggle" onclick="toggleResults(${i})"><h4>${res.fetched} profiles (${Number(res.total).toLocaleString()} total) &#8212; ${isColl?'expand':'collapse'}</h4><span class="sr-arrow ${isColl?'':'open'}" id="srarrow-${i}">&#9660;</span></div>
-    <div class="sr-body ${isColl?'collapsed':'expanded'}" id="srbody-${i}">`;
-    res.items.forEach(r=>{if(r.title==='Error'){h+=`<div class="sr-i" style="display:block"><div class="err" style="margin:0">${esc(r.snippet)}</div></div>`;return}
-      const li=isLI(r.link);h+=`<div class="sr-i"><span class="sr-num">${r.position||''}</span><div style="flex:1"><div class="sr-t">${r.link?`<a href="${esc(r.link)}" target="_blank">${esc(r.title)}</a>`:esc(r.title)} ${li?'<span class="bdg bdg-b" style="font-size:9px">LinkedIn</span>':''}<span class="bdg bdg-x" style="font-size:9px;margin-left:4px">${queries[i].strategy}</span></div>${r.link?`<div class="sr-u">${esc(r.link)}</div>`:''}<div class="sr-s">${esc(r.snippet)}</div></div></div>`});
-    h+=`</div></div>`}
-  h+=`</div>`;document.getElementById('qcard-'+i).innerHTML=h;
-}
-
-function switchTab(name){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  document.getElementById('pane-'+name).classList.add('active');
-}
-
-function startEdit(i){editingIdx=i;renderCard(i);const el=document.getElementById('qedit-'+i);if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length)}}
-function cancelEdit(){const prev=editingIdx;editingIdx=-1;if(prev>=0)renderCard(prev)}
-function saveEdit(i){const el=document.getElementById('qedit-'+i);if(!el)return;const val=el.value.trim();if(val){queries[i].query_string=val;}editingIdx=-1;renderCard(i);}
-function deleteQuery(i){if(!confirm('Delete this query?'))return;queries.splice(i,1);delete searchResults[i];const newSR={};Object.entries(searchResults).forEach(([k,v])=>{const ki=parseInt(k);if(ki<i)newSR[ki]=v;else if(ki>i)newSR[ki-1]=v;});searchResults=newSR;const newColl={};Object.entries(collapsed).forEach(([k,v])=>{const ki=parseInt(k);if(ki<i)newColl[ki]=v;else if(ki>i)newColl[ki-1]=v;});collapsed=newColl;renderResults();}
-
-async function regenQuery(i){
-  if(!geminiKey){alert('Gemini API key required.');return}
-  const q=queries[i];
-  const jd=document.getElementById('jdInput').value.trim();
-  const cardEl=document.getElementById('qcard-'+i);
-  if(cardEl)cardEl.innerHTML=`<div class="qc" style="padding:18px 22px;text-align:center;color:var(--text3);font-size:13px"><span class="sp-dark" style="margin-right:8px"></span>Regenerating ${q.strategy} query…</div>`;
-  const p=params||{};
-  const prompt=`You are NetraX Query Architect. Regenerate ONLY the ${q.strategy} query for this role.
-
-ALREADY EXTRACTED CONTEXT (use this, do not re-extract):
-Titles: ${(p.titles||[]).join(', ')}
-Skills: ${(p.skills||[]).join(', ')}
-Location: ${p.location||''}
-Industry: ${p.industry||''}
-Function: ${p.function||''}
-Seniority: ${p.seniority_level||''}
-Peer companies: ${(p.peer_companies||[]).join(', ')}
-Role archetype: ${p.role_archetype||''}
-Hiring company (NEVER include in queries): ${p.hiring_company||'the hiring company'}
-
-CURRENT QUERY (this is what you must IMPROVE upon):
-Strategy: ${q.strategy}
-Strategy name: ${q.strategy_name||''}
-Current query string: ${q.query_string}
-Current rationale: ${q.rationale}
-
-ISSUE TO FIX: Generate a better version of this ${q.strategy} query. Fix any warnings, improve signal quality, ensure site:linkedin.com/in/ is present (unless S5), ensure geo terms are present, stay under 280 chars.
-
-Return ONLY a JSON object — no markdown, no preamble:
-{"strategy":"${q.strategy}","strategy_name":"...","query_string":"...","rationale":"..."}`;
-
-  try{
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.6,maxOutputTokens:800,responseMimeType:'application/json'}})
+    mkChart('ch2', {
+      type:'bar',
+      data:{ labels:['LinkedIn CTR','Email CTR'],
+        datasets:[
+          { label:'Week 3', data:[c3.linkedinCTR,c3.emailCTR], backgroundColor:'#e5e7eb', borderRadius:6 },
+          { label:'Week 4', data:[c4.linkedinCTR,c4.emailCTR], backgroundColor:C.gold, borderRadius:6 }
+        ]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
+        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine},ticks:{callback:v=>v.toFixed(1)+'%'}}, x:{grid:{display:false}} }
+      }
     });
-    if(!r.ok)throw new Error('Gemini '+r.status);
-    const d=await r.json();
-    let raw=(d.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
-    raw=raw.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
-    const i1=raw.indexOf('{'),i2=raw.lastIndexOf('}');
-    if(i1===-1)throw new Error('No JSON returned');
-    const updated=JSON.parse(raw.slice(i1,i2+1));
-    if(!updated.query_string)throw new Error('No query_string in response');
-    queries[i]={...queries[i],...updated};
-  }catch(e){
-    console.error('regenQuery error:',e);
-    alert('Regeneration failed: '+e.message);
-  }
-  renderCard(i);
+
+    mkChart('ch3', {
+      type:'bar',
+      data:{ labels:['Likes','Comments','Reposts'],
+        datasets:[
+          { label:'Week 3', data:[w3.linkedin.likes,w3.linkedin.comments,w3.linkedin.reposts],
+            backgroundColor:'#e5e7eb', borderRadius:6 },
+          { label:'Week 4', data:[w4.linkedin.likes,w4.linkedin.comments,w4.linkedin.reposts],
+            backgroundColor:C.gold, borderRadius:6 }
+        ]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
+        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
+      }
+    });
+
+    mkChart('ch4', {
+      type:'pie',
+      data:{ labels:['LinkedIn','Platform','Blog','Email','Quora'],
+        datasets:[{ data:[c.li.p,c.pl.p,c.bl.p,c.em.s,c.qu.p],
+          backgroundColor:[C.gold,C.blue,C.green,C.purple,'#e5e7eb'], borderWidth:0 }]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
+    });
+  }, 50);
 }
 
-function addCustomQuery(){
-  const strategy=prompt('Strategy code (e.g. S1, S4, S7):','S4');if(!strategy)return;
-  const qs=prompt('Enter query string:');if(!qs)return;
-  const rationale=prompt('Rationale (optional):','Custom query');
-  if(!queries)queries=[];
-  queries.push({strategy:strategy.toUpperCase(),strategy_name:'Custom',query_string:qs,rationale:rationale||'Custom query'});
-  const ni=queries.length-1;collapsed[ni]=true;
-  const area=document.getElementById('resultsArea');
-  const existing=area.querySelector('.fade');
-  if(existing){const ph=document.createElement('div');ph.id='qcard-'+ni;existing.appendChild(ph);}
-  renderCard(ni);
+function renderCompare() {
+  const w3=data.week3, w4=data.week4;
+  const c3=calc(w3), c4=calc(w4);
+  const calc2 = (m) => (((w4.linkedin[m]-w3.linkedin[m])/w3.linkedin[m])*100).toFixed(1);
+
+  document.getElementById('mainContent').innerHTML = `
+  <div class="page">
+    <div class="page-header">
+      <h1>Week-on-Week Comparison</h1>
+      <p>Performance changes between Week 3 and Week 4</p>
+    </div>
+
+    <h2 class="section-header">Key Metrics Comparison</h2>
+    <table>
+      <thead>
+        <tr><th>Metric</th><th>Week 3</th><th>Week 4</th><th>Change</th><th>% Change</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>LinkedIn Impressions</strong></td>
+          <td>${fmt(w3.linkedin.impressions)}</td>
+          <td>${fmt(w4.linkedin.impressions)}</td>
+          <td>${fmt(w4.linkedin.impressions-w3.linkedin.impressions)}</td>
+          <td style="color:${C.green}">↑ ${calc2('impressions')}%</td>
+        </tr>
+        <tr>
+          <td><strong>LinkedIn Clicks</strong></td>
+          <td>${fmt(w3.linkedin.clicks)}</td>
+          <td>${fmt(w4.linkedin.clicks)}</td>
+          <td>${fmt(w4.linkedin.clicks-w3.linkedin.clicks)}</td>
+          <td style="color:${C.green}">↑ ${calc2('clicks')}%</td>
+        </tr>
+        <tr>
+          <td><strong>LinkedIn CTR</strong></td>
+          <td>${pct2(c3.linkedinCTR)}</td>
+          <td>${pct2(c4.linkedinCTR)}</td>
+          <td>${(c4.linkedinCTR-c3.linkedinCTR).toFixed(2)}pp</td>
+          <td style="color:${c4.linkedinCTR>c3.linkedinCTR?C.green:C.red}">${c4.linkedinCTR>c3.linkedinCTR?'↑':'↓'} ${Math.abs(((c4.linkedinCTR-c3.linkedinCTR)/c3.linkedinCTR)*100).toFixed(1)}%</td>
+        </tr>
+        <tr>
+          <td><strong>Total Engagement</strong></td>
+          <td>${fmt(c3.engagement)}</td>
+          <td>${fmt(c4.engagement)}</td>
+          <td>${fmt(c4.engagement-c3.engagement)}</td>
+          <td style="color:${C.green}">↑ ${(((c4.engagement-c3.engagement)/c3.engagement)*100).toFixed(1)}%</td>
+        </tr>
+        <tr>
+          <td><strong>Email Open Rate</strong></td>
+          <td>${pct(w3.email.openRate)}</td>
+          <td>${pct(w4.email.openRate)}</td>
+          <td>${(w4.email.openRate-w3.email.openRate).toFixed(2)}pp</td>
+          <td style="color:${C.green}">↑ ${(((w4.email.openRate-w3.email.openRate)/w3.email.openRate)*100).toFixed(1)}%</td>
+        </tr>
+        <tr>
+          <td><strong>Email CTR</strong></td>
+          <td>${pct2(c3.emailCTR)}</td>
+          <td>${pct2(c4.emailCTR)}</td>
+          <td>${(c4.emailCTR-c3.emailCTR).toFixed(2)}pp</td>
+          <td style="color:${c4.emailCTR>c3.emailCTR?C.green:C.red}">${c4.emailCTR>c3.emailCTR?'↑':'↓'} ${Math.abs(((c4.emailCTR-c3.emailCTR)/c3.emailCTR)*100).toFixed(1)}%</td>
+        </tr>
+        <tr>
+          <td><strong>New Users</strong></td>
+          <td>${fmt(w3.users.newUsers)}</td>
+          <td>${fmt(w4.users.newUsers)}</td>
+          <td>${fmt(w4.users.newUsers-w3.users.newUsers)}</td>
+          <td style="color:${C.green}">↑ ${(((w4.users.newUsers-w3.users.newUsers)/w3.users.newUsers)*100).toFixed(1)}%</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 class="section-header">Visual Comparison</h2>
+    <div class="row-2">
+      <div class="chart-box">
+        <div class="chart-hdr">Key Metrics Side-by-Side</div>
+        <div class="chart-wrap"><canvas id="ch1"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-hdr">Percentage Growth</div>
+        <div class="chart-wrap"><canvas id="ch2"></canvas></div>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="chart-box">
+        <div class="chart-hdr">CTR Comparison</div>
+        <div class="chart-wrap"><canvas id="ch3"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-hdr">Engagement Comparison</div>
+        <div class="chart-wrap"><canvas id="ch4"></canvas></div>
+      </div>
+    </div>
+  </div>`;
+
+  setTimeout(() => {
+    mkChart('ch1', {
+      type:'bar',
+      data:{ labels:['Impressions','Clicks','Engagement','New Users'],
+        datasets:[
+          { label:'Week 3', data:[w3.linkedin.impressions,w3.linkedin.clicks,c3.engagement,w3.users.newUsers],
+            backgroundColor:'#e5e7eb', borderRadius:6 },
+          { label:'Week 4', data:[w4.linkedin.impressions,w4.linkedin.clicks,c4.engagement,w4.users.newUsers],
+            backgroundColor:C.gold, borderRadius:6 }
+        ]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
+        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
+      }
+    });
+
+    mkChart('ch2', {
+      type:'bar',
+      data:{ labels:['Impressions','Clicks','Engagement','New Users'],
+        datasets:[{
+          data:[calc2('impressions'),calc2('clicks'),(((c4.engagement-c3.engagement)/c3.engagement)*100).toFixed(1),(((w4.users.newUsers-w3.users.newUsers)/w3.users.newUsers)*100).toFixed(1)],
+          backgroundColor:C.green, borderRadius:6
+        }]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine},ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} }
+      }
+    });
+
+    mkChart('ch3', {
+      type:'bar',
+      data:{ labels:['LinkedIn CTR','Email CTR'],
+        datasets:[
+          { label:'Week 3', data:[c3.linkedinCTR,c3.emailCTR], backgroundColor:'#e5e7eb', borderRadius:6 },
+          { label:'Week 4', data:[c4.linkedinCTR,c4.emailCTR], backgroundColor:C.gold, borderRadius:6 }
+        ]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
+        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine},ticks:{callback:v=>v.toFixed(1)+'%'}}, x:{grid:{display:false}} }
+      }
+    });
+
+    mkChart('ch4', {
+      type:'bar',
+      data:{ labels:['Likes','Comments','Reposts'],
+        datasets:[
+          { label:'Week 3', data:[w3.linkedin.likes,w3.linkedin.comments,w3.linkedin.reposts],
+            backgroundColor:'#e5e7eb', borderRadius:6 },
+          { label:'Week 4', data:[w4.linkedin.likes,w4.linkedin.comments,w4.linkedin.reposts],
+            backgroundColor:C.gold, borderRadius:6 }
+        ]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
+        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
+      }
+    });
+  }, 50);
 }
 
-function copyAll(){const t=queries.map((q,i)=>{const r=searchResults[i];let s=`[${q.strategy}] ${q.query_string}`;if(r?.total)s+=` | ~${Number(r.total).toLocaleString()}`;return s}).join('\n\n');navigator.clipboard.writeText(t);alert('Copied!')}
-function dlCSV(){const l=['Strategy,Name,Query,Rationale,Google Total,Fetched'];queries.forEach((q,i)=>{const r=searchResults[i];l.push([q.strategy,'"'+(q.strategy_name||'')+'"','"'+(q.query_string||'').replace(/"/g,'""')+'"','"'+(q.rationale||'').replace(/"/g,'""')+'"',r?.total||'',r?.fetched||''].join(','))});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([l.join('\n')],{type:'text/csv'}));a.download='netrax_queries.csv';a.click()}
-function dlJSON(){const u=getUnique();const out={params,scope:searchScope,target_companies:targetCompanies,summary:{queries:queries.length,fetched:Object.values(searchResults).reduce((s,r)=>s+(r?.fetched||0),0),unique:u.length,linkedin:u.filter(p=>isLI(p.link)).length},queries:queries.map((q,i)=>({...q,total:searchResults[i]?.total||null,fetched:searchResults[i]?.fetched||null,results:searchResults[i]?.items||null})),unique_profiles:u,shortlist:shortlistData.length?shortlistData:undefined};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));a.download='netrax_full.json';a.click()}
+function renderMonthly() {
+  const w3=data.week3, w4=data.week4;
+  const c3=calc(w3), c4=calc(w4);
+  const m = {
+    li:{ p:w3.linkedin.posts+w4.linkedin.posts, i:w3.linkedin.impressions+w4.linkedin.impressions,
+         c:w3.linkedin.clicks+w4.linkedin.clicks, l:w3.linkedin.likes+w4.linkedin.likes,
+         co:w3.linkedin.comments+w4.linkedin.comments, r:w3.linkedin.reposts+w4.linkedin.reposts },
+    em:{ s:w3.email.sent+w4.email.sent, d:w3.email.delivered+w4.email.delivered, v:w3.email.views+w4.email.views, c:w3.email.clicks+w4.email.clicks },
+    bl:{ p:w3.blog.posts+w4.blog.posts, i:w3.blog.impressions+w4.blog.impressions },
+    us:{ n:w3.users.newUsers+w4.users.newUsers, t:w4.users.totalUsers },
+    pl:{ p:w3.platform.posts+w4.platform.posts },
+    qu:{ p:w3.quora.posts+w4.quora.posts },
+    or:{ p:w3.orm.posts+w4.orm.posts }
+  };
+
+  const avgCTR = (m.li.c / m.li.i * 100);
+  const totalEng = m.li.l + m.li.co + m.li.r;
+
+  document.getElementById('mainContent').innerHTML = `
+  <div class="page">
+    <div class="page-header">
+      <h1>Monthly Performance — March 2026</h1>
+      <p>Complete overview of all marketing activities</p>
+    </div>
+
+    <h2 class="section-header">Primary Metrics</h2>
+    <div class="row-5">
+      <div class="kpi">
+        <div class="kpi-label">Monthly Impressions</div>
+        <div class="kpi-val">${fmt(m.li.i)}</div>
+        <div class="kpi-sub">LinkedIn total</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Monthly Clicks</div>
+        <div class="kpi-val">${fmt(m.li.c)}</div>
+        <div class="kpi-sub">LinkedIn total</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Avg CTR</div>
+        <div class="kpi-val">${pct2(avgCTR)}</div>
+        <div class="kpi-sub">Monthly average</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Total Engagement</div>
+        <div class="kpi-val">${fmt(totalEng)}</div>
+        <div class="kpi-sub">Likes + Comments + Reposts</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">User Growth</div>
+        <div class="kpi-val">${fmt(m.us.n)}</div>
+        <div class="kpi-sub">New users</div>
+      </div>
+    </div>
+
+    <h2 class="section-header">Email & Content</h2>
+    <div class="row-4">
+      <div class="kpi">
+        <div class="kpi-label">Email Performance</div>
+        <div class="kpi-val">${pct(m.em.v/m.em.d*100)}</div>
+        <div class="kpi-sub">Open rate</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Content Published</div>
+        <div class="kpi-val">${m.li.p+m.bl.p+m.pl.p+m.qu.p}</div>
+        <div class="kpi-sub">All channels</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Blog Reach</div>
+        <div class="kpi-val">${fmt(m.bl.i)}</div>
+        <div class="kpi-sub">Total impressions</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Platform Users</div>
+        <div class="kpi-val">${fmt(m.us.t)}</div>
+        <div class="kpi-sub">Total registered</div>
+      </div>
+    </div>
+
+    <h2 class="section-header">Monthly Charts</h2>
+    <div class="row-2">
+      <div class="chart-box">
+        <div class="chart-hdr">Weekly Performance Breakdown</div>
+        <div class="chart-wrap"><canvas id="ch1"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-hdr">Weekly CTR Trend</div>
+        <div class="chart-wrap"><canvas id="ch2"></canvas></div>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="chart-box">
+        <div class="chart-hdr">Engagement Breakdown</div>
+        <div class="chart-wrap"><canvas id="ch3"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-hdr">Channel Distribution</div>
+        <div class="chart-wrap"><canvas id="ch4"></canvas></div>
+      </div>
+    </div>
+
+    <h2 class="section-header">Channel Summary</h2>
+    <div class="smol-grid">
+      <div class="smol-card"><div class="smol-label">LinkedIn</div><div class="smol-val">${m.li.p}</div></div>
+      <div class="smol-card"><div class="smol-label">Platform</div><div class="smol-val">${m.pl.p}</div></div>
+      <div class="smol-card"><div class="smol-label">Blog</div><div class="smol-val">${m.bl.p}</div></div>
+      <div class="smol-card"><div class="smol-label">Blog Impressions</div><div class="smol-val">${fmt(m.bl.i)}</div></div>
+      <div class="smol-card"><div class="smol-label">Quora</div><div class="smol-val">${m.qu.p}</div></div>
+      <div class="smol-card"><div class="smol-label">ORM</div><div class="smol-val">${m.or.p}</div></div>
+      <div class="smol-card"><div class="smol-label">Emails</div><div class="smol-val">${m.em.s}</div></div>
+      <div class="smol-card"><div class="smol-label">Current Users</div><div class="smol-val">${fmt(m.us.t)}</div></div>
+    </div>
+  </div>`;
+
+  setTimeout(() => {
+    mkChart('ch1', {
+      type:'bar',
+      data:{ labels:['Week 3','Week 4'],
+        datasets:[
+          { label:'Impressions', data:[w3.linkedin.impressions,w4.linkedin.impressions], backgroundColor:C.gold, borderRadius:6 },
+          { label:'Clicks', data:[w3.linkedin.clicks,w4.linkedin.clicks], backgroundColor:C.blue, borderRadius:6 },
+          { label:'Engagement', data:[c3.engagement,c4.engagement], backgroundColor:C.green, borderRadius:6 }
+        ]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
+        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
+      }
+    });
+
+    mkChart('ch2', {
+      type:'line',
+      data:{ labels:['Week 3','Week 4'],
+        datasets:[{ label:'CTR %', data:[c3.linkedinCTR,c4.linkedinCTR], borderColor:C.blue,
+          backgroundColor:'rgba(37,99,235,0.08)', tension:0.4, fill:true, pointRadius:6,
+          pointBackgroundColor:C.blue, pointBorderColor:'#fff', pointBorderWidth:2, borderWidth:3 }]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine},ticks:{callback:v=>v.toFixed(1)+'%'}}, x:{grid:{display:false}} }
+      }
+    });
+
+    mkChart('ch3', {
+      type:'doughnut',
+      data:{ labels:['Likes','Comments','Reposts'],
+        datasets:[{ data:[m.li.l,m.li.co,m.li.r], backgroundColor:[C.gold,C.blue,C.green], borderWidth:0 }]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
+    });
+
+    mkChart('ch4', {
+      type:'doughnut',
+      data:{ labels:['LinkedIn','Platform','Quora','ORM','Blog'],
+        datasets:[{ data:[m.li.p,m.pl.p,m.qu.p,m.or.p,m.bl.p],
+          backgroundColor:[C.gold,C.blue,C.green,C.purple,C.orange], borderWidth:0 }]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
+    });
+  }, 50);
+}
+
+function toggleMobileNav() {
+  const nav = document.querySelector('.sidenav');
+  const overlay = document.getElementById('mobileNavOverlay');
+  if(nav.classList.contains('mobile-open')) { closeMobileNav(); }
+  else { nav.classList.add('mobile-open'); overlay.classList.add('visible'); }
+}
+
+function closeMobileNav() {
+  document.querySelector('.sidenav').classList.remove('mobile-open');
+  document.getElementById('mobileNavOverlay').classList.remove('visible');
+}
+
+showPage('week4', document.querySelector('.nav-item'));
 </script>
 </body>
 </html>
