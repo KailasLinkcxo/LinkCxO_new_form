@@ -3,1443 +3,575 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marketing Dashboard — LinkCxO</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Recruitment Intelligence Dashboard — ExoTalent ATS</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --gold: #C9A961; --gold-dark: #9d8147; --bg: #f2f5f3; --surface: #ffffff;
-  --surface2: #f9faf9; --border: rgba(157,129,71,0.08); --green: #16a34a;
-  --red: #dc2626; --blue: #2563eb; --purple: #9333ea; --text: #111714; 
-  --text-muted: #4a5a53; --text-dim: #8a9e97; --nav-w: 220px; --header-h: 64px;
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-html, body { height:100%; }
-body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; display:flex; flex-direction:column; }
-
-.top-bar { height:var(--header-h); background:var(--surface); border-bottom:2px solid var(--gold); display:flex; align-items:center; padding:0 28px; gap:20px; position:sticky; top:0; z-index:100; box-shadow:0 1px 8px rgba(0,0,0,0.06); }
-.logo-mark { font-size:17px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; }
-.logo-mark span { color:var(--gold); }
-.top-bar-divider { width:1px; height:28px; background:var(--border); }
-.top-bar-title { font-size:13px; font-weight:500; color:var(--text-muted); flex:1; }
-.top-bar-date { font-family:'DM Mono',monospace; font-size:11px; color:var(--text-dim); }
-
-.app-body { display:flex; flex:1; overflow:hidden; }
-
-.sidenav { width:var(--nav-w); background:var(--gold-dark); display:flex; flex-direction:column; padding:20px 12px; gap:4px; overflow-y:auto; flex-shrink:0; }
-.nav-section-label { font-size:9px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.35); padding:8px 10px 4px; margin-top:8px; }
-.nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:400; color:rgba(255,255,255,0.65); transition:all 0.15s; border:1px solid transparent; user-select:none; }
-.nav-item:hover { background:rgba(255,255,255,0.10); color:rgba(255,255,255,0.9); }
-.nav-item.active { background:var(--gold); color:#ffffff; font-weight:600; border-color:rgba(255,255,255,0.15); }
-.nav-icon { width:18px; height:18px; flex-shrink:0; opacity:0.7; }
-.nav-item.active .nav-icon { opacity:1; }
-
-.main { flex:1; overflow-y:auto; padding:40px; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
-.page { animation:fadeIn 0.3s ease; }
-
-.page-header { margin-bottom:40px; }
-.page-header h1 { font-size:28px; font-weight:600; color:var(--text); margin-bottom:8px; letter-spacing:-0.5px; }
-.page-header p { font-size:14px; color:var(--text-dim); font-weight:400; }
-
-.section-header { font-size:11px; font-weight:600; color:var(--text-muted); margin:56px 0 20px 0; letter-spacing:0.12em; text-transform:uppercase; }
-.section-header:first-of-type { margin-top:0; }
-
-.row-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:32px; }
-.row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-bottom:32px; }
-.row-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-bottom:32px; }
-.row-5 { display:grid; grid-template-columns:repeat(5,1fr); gap:20px; margin-bottom:32px; }
-
-.kpi { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:22px 18px; position:relative; transition:all 0.2s; }
-.kpi:hover { border-color:rgba(201,169,97,0.25); box-shadow:0 2px 12px rgba(0,0,0,0.02); }
-.kpi-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#95a5a6; margin-bottom:10px; }
-.kpi-val { font-size:32px; font-weight:400; color:#2d3436; line-height:1.2; margin-bottom:6px; letter-spacing:-0.2px; font-family:'DM Mono',monospace; font-variant-numeric:tabular-nums; }
-.kpi-sub { font-size:12px; font-weight:400; color:#b2bec3; display:flex; align-items:center; gap:6px; margin-top:4px; }
-.kpi-sub.up { color:var(--green); }
-.kpi-sub.down { color:var(--red); }
-
-.chart-box { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:20px; }
-.chart-hdr { font-size:13px; font-weight:600; color:var(--text); margin-bottom:18px; letter-spacing:-0.1px; }
-.chart-wrap { position:relative; height:280px; }
-
-.smol-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; }
-.smol-card { background:var(--surface); border:1px solid var(--border); padding:16px; border-radius:8px; border-left:3px solid var(--gold); transition:all 0.15s; }
-.smol-card:hover { border-left-color:var(--gold-dark); box-shadow:0 2px 6px rgba(0,0,0,0.02); }
-.smol-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:#95a5a6; margin-bottom:8px; }
-.smol-val { font-size:22px; font-weight:400; color:#2d3436; letter-spacing:-0.2px; font-family:'DM Mono',monospace; font-variant-numeric:tabular-nums; }
-
-table { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; border-collapse:separate; border-spacing:0; margin-bottom:32px; }
-thead { background:var(--surface2); }
-th { padding:12px 18px; text-align:left; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); border-bottom:1px solid var(--border); }
-td { padding:14px 18px; font-size:14px; border-bottom:1px solid rgba(0,0,0,0.02); color:var(--text-muted); font-family:'DM Mono',monospace; font-variant-numeric:tabular-nums; }
-tbody tr { transition:background 0.12s; }
-tbody tr:hover { background:var(--surface2); }
-tbody tr:last-child td { border-bottom:none; }
-td:first-child { font-family:'Outfit',sans-serif; }
-td.text-col { font-family:'Outfit',sans-serif; }
-
-.expand-btn { background:var(--gold); color:#fff; border:none; padding:10px 20px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:'Outfit',sans-serif; transition:all 0.2s; margin-bottom:20px; }
-.expand-btn:hover { background:var(--gold-dark); transform:translateY(-1px); box-shadow:0 4px 12px rgba(201,169,97,0.3); }
-.expand-btn:active { transform:translateY(0); }
-
-.expandable { max-height:0; overflow:hidden; transition:max-height 0.3s ease; }
-.expandable.open { max-height:5000px; }
-
-.modal { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
-.modal.open { display:flex; }
-.modal-content { background:var(--surface); border-radius:12px; max-width:900px; max-height:80vh; overflow-y:auto; padding:32px; margin:20px; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
-.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; padding-bottom:16px; border-bottom:2px solid var(--border); }
-.modal-title { font-size:20px; font-weight:600; }
-.modal-close { background:none; border:none; font-size:28px; cursor:pointer; color:var(--text-dim); line-height:1; padding:0; width:32px; height:32px; border-radius:50%; transition:all 0.2s; }
-.modal-close:hover { background:var(--surface2); color:var(--text); }
-
-.video-list { margin-bottom:32px; }
-.video-status-label { font-size:14px; font-weight:600; color:var(--text); margin-bottom:16px; padding-bottom:8px; border-bottom:1px solid var(--border); }
-.video-item { padding:12px; border-bottom:1px solid rgba(0,0,0,0.04); }
-.video-item:last-child { border-bottom:none; }
-.video-name { font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px; }
-.video-org { font-size:13px; color:var(--text-muted); margin-bottom:4px; }
-.video-note { font-size:12px; color:var(--text-dim); font-style:italic; }
-
-@media (max-width:1400px) { .row-5 { grid-template-columns:repeat(3,1fr); } }
-@media (max-width:1200px) { .row-4 { grid-template-columns:1fr 1fr; } }
-@media (max-width:900px) {
-  .sidenav { position:fixed; left:-240px; top:var(--header-h); height:calc(100% - var(--header-h)); z-index:90; transition:left 0.3s; }
-  .sidenav.mobile-open { left:0; }
-  .main { padding:24px 20px; }
-  .row-2,.row-3,.row-4,.row-5 { grid-template-columns:1fr; }
-  .kpi-val { font-size:28px; }
-}
-
-.mobile-nav-overlay { display:none; position:fixed; top:var(--header-h); left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:89; opacity:0; transition:opacity 0.3s; }
-.mobile-nav-overlay.visible { display:block; opacity:1; }
-
-.hamburger { display:none; width:24px; height:24px; cursor:pointer; flex-direction:column; justify-content:center; gap:5px; }
-.hamburger span { display:block; height:2px; background:var(--text); border-radius:2px; }
-@media (max-width:900px) { .hamburger { display:flex; } }
-
-.empty-state { color:var(--text-dim); font-style:italic; }
+  :root {
+    --bg:        #F4F5F7;
+    --surface:   #FFFFFF;
+    --surface2:  #F8F9FA;
+    --border:    #E2E5EA;
+    --border2:   #CDD1D8;
+    --text:      #1A1D23;
+    --muted:     #5A6070;
+    --faint:     #9099A8;
+    --navy:      #1B3A6B;
+    --navy-dim:  #EEF2F9;
+    --teal:      #0D7A5F;
+    --teal-dim:  #EAF5F1;
+    --amber:     #92600A;
+    --amber-dim: #FDF5E6;
+    --red:       #B52A2A;
+    --red-dim:   #FDF0F0;
+    --slate:     #344055;
+    --slate-dim: #EEF0F3;
+    --green:     #1C6B3A;
+    --green-dim: #EAF5EE;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 13px; line-height: 1.55; }
+  .shell  { display: flex; min-height: 100vh; width: 100%; }
+  .sidebar { width: 220px; flex-shrink: 0; background: var(--navy); padding: 0; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; z-index: 100; display: flex; flex-direction: column; }
+  .main   { margin-left: 220px; padding: 32px 40px 64px; width: calc(100% - 220px); min-width: 0; }
+  .logo   { padding: 28px 22px 22px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .logo-org  { font-size: 10px; font-weight: 600; letter-spacing: .06em; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
+  .logo-title{ font-size: 15px; font-weight: 600; color: #FFF; line-height: 1.3; }
+  .logo-sub  { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+  .nav-group { padding: 20px 14px 0; }
+  .nav-group-label { font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.3); padding: 0 8px; margin-bottom: 4px; }
+  .nav-item  { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 5px; cursor: pointer; color: rgba(255,255,255,0.6); font-size: 12.5px; font-weight: 400; text-decoration: none; transition: all .12s; margin-bottom: 1px; }
+  .nav-item:hover  { background: rgba(255,255,255,0.08); color: #FFF; }
+  .nav-item.active { background: rgba(255,255,255,0.13); color: #FFF; font-weight: 500; }
+  .nav-icon { width: 14px; text-align: center; font-size: 11px; opacity: .7; }
+  .sidebar-footer { margin-top: auto; padding: 16px 22px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 10px; color: rgba(255,255,255,0.25); }
+  .section { display: none; }
+  .section.active { display: block; }
+  .page-header { margin-bottom: 28px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+  .page-title { font-size: 18px; font-weight: 600; color: var(--navy); }
+  .page-sub   { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .kpi-grid   { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 14px; margin-bottom: 22px; }
+  .kpi-grid-5 { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 14px; margin-bottom: 22px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 18px 16px 16px 19px; position: relative; }
+  .kpi-accent { position: absolute; top: 0; left: 0; bottom: 0; width: 3px; border-radius: 6px 0 0 6px; }
+  .kpi.navy  .kpi-accent { background: var(--navy); }
+  .kpi.teal  .kpi-accent { background: var(--teal); }
+  .kpi.amber .kpi-accent { background: #C07B0E; }
+  .kpi.red   .kpi-accent { background: var(--red); }
+  .kpi.slate .kpi-accent { background: var(--slate); }
+  .kpi.green .kpi-accent { background: var(--green); }
+  .kpi-label { font-size: 10.5px; font-weight: 500; letter-spacing: .04em; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; }
+  .kpi-val   { font-size: 26px; font-weight: 600; color: var(--text); font-family: 'IBM Plex Mono', monospace; letter-spacing: -.02em; line-height: 1; }
+  .kpi-sub   { font-size: 11px; color: var(--faint); margin-top: 5px; }
+  .kpi-badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 500; margin-top: 7px; }
+  .badge-navy  { background: var(--navy-dim); color: var(--navy); }
+  .badge-teal  { background: var(--teal-dim); color: var(--teal); }
+  .badge-amber { background: var(--amber-dim); color: var(--amber); }
+  .badge-red   { background: var(--red-dim); color: var(--red); }
+  .badge-slate { background: var(--slate-dim); color: var(--slate); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 20px; }
+  .card-title { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .full   { margin-bottom: 16px; }
+  .bar-row   { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .bar-label { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; width: 140px; }
+  .bar-label.w80  { width: 80px; }
+  .bar-label.w100 { width: 100px; }
+  .bar-label.w160 { width: 160px; }
+  .bar-track { flex: 1; background: #F0F2F5; border-radius: 2px; height: 13px; overflow: hidden; }
+  .bar-fill  { height: 100%; border-radius: 2px; }
+  .bar-num   { min-width: 38px; text-align: right; font-size: 11px; color: var(--text); font-weight: 500; font-family: 'IBM Plex Mono', monospace; }
+  .funnel-row   { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .funnel-label { width: 160px; font-size: 11.5px; color: var(--muted); flex-shrink: 0; }
+  .funnel-bar   { height: 26px; border-radius: 3px; display: flex; align-items: center; padding: 0 10px; font-size: 12px; font-weight: 500; }
+  .funnel-pct   { font-size: 11px; color: var(--faint); min-width: 40px; text-align: right; font-family: 'IBM Plex Mono', monospace; }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .data-table thead tr { background: var(--surface2); }
+  .data-table th { font-size: 10.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); padding: 8px 12px; border-bottom: 2px solid var(--border); text-align: left; }
+  .data-table th.r { text-align: right; }
+  .data-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+  .data-table td.r { text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tbody tr:hover td { background: #FAFBFC; }
+  .pill       { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10.5px; font-weight: 500; }
+  .pill-teal  { background: var(--teal-dim);  color: var(--teal); }
+  .pill-navy  { background: var(--navy-dim);  color: var(--navy); }
+  .pill-amber { background: var(--amber-dim); color: var(--amber); }
+  .pill-red   { background: var(--red-dim);   color: var(--red); }
+  .pill-slate { background: var(--slate-dim); color: var(--slate); }
+  .pill-green { background: var(--green-dim); color: var(--green); }
+  .stage-flow { display: flex; align-items: stretch; margin-bottom: 16px; }
+  .stage-box  { flex: 1; text-align: center; padding: 14px 6px; background: var(--surface2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); position: relative; }
+  .stage-box:first-child { border-left: 1px solid var(--border); border-radius: 5px 0 0 5px; }
+  .stage-box:last-child  { border-radius: 0 5px 5px 0; }
+  .stage-box.s-navy  { border-top: 2px solid var(--navy); }
+  .stage-box.s-teal  { border-top: 2px solid var(--teal); }
+  .stage-box.s-amber { border-top: 2px solid #C07B0E; }
+  .stage-box.s-red   { border-top: 2px solid var(--red); }
+  .stage-box.s-slate { border-top: 2px solid var(--slate); }
+  .stage-box.s-green { border-top: 2px solid var(--green); }
+  .stage-num   { font-size: 18px; font-weight: 600; font-family: 'IBM Plex Mono', monospace; color: var(--navy); }
+  .stage-label { font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
+  .stage-arrow { font-size: 12px; color: var(--border2); position: absolute; right: -7px; top: 50%; transform: translateY(-50%); z-index: 2; background: var(--surface2); padding: 0 1px; }
+  .donut-wrap   { display: flex; align-items: center; gap: 20px; }
+  .donut-legend { flex: 1; }
+  .legend-item  { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; font-size: 12px; }
+  .leg-sq    { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .leg-label { color: var(--muted); flex: 1; }
+  .leg-val   { color: var(--text); font-weight: 600; font-family: 'IBM Plex Mono', monospace; }
+  .chart-h160 { position: relative; height: 160px; }
+  .chart-h180 { position: relative; height: 180px; }
+  .chart-h200 { position: relative; height: 200px; }
+  .chart-h240 { position: relative; height: 240px; }
+  .chart-h280 { position: relative; height: 280px; }
+  .alert-box  { display: flex; align-items: flex-start; gap: 12px; padding: 13px 16px; border-radius: 5px; margin-bottom: 10px; }
+  .alert-box.danger { background: var(--red-dim);   border: 1px solid #EBC0C0; border-left: 3px solid var(--red); }
+  .alert-box.warn   { background: var(--amber-dim); border: 1px solid #E8C97A; border-left: 3px solid #C07B0E; }
+  .alert-box.info   { background: var(--navy-dim);  border: 1px solid #B8C8E8; border-left: 3px solid var(--navy); }
+  .alert-icon  { font-size: 13px; flex-shrink: 0; margin-top: 1px; color: inherit; }
+  .alert-title { font-size: 12.5px; font-weight: 600; color: var(--text); }
+  .alert-body  { font-size: 11.5px; color: var(--muted); margin-top: 3px; line-height: 1.6; }
+  .rank { width: 18px; height: 18px; border-radius: 3px; background: var(--surface2); border: 1px solid var(--border); display: inline-flex; align-items: center; justify-content: center; font-size: 9px; color: var(--faint); font-weight: 600; margin-right: 4px; flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; }
+  .note { font-size: 11px; color: var(--muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 8px 12px; margin-top: 10px; line-height: 1.6; }
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 </style>
 </head>
 <body>
-
-<div class="top-bar">
-  <div class="hamburger" id="hamburger" onclick="toggleMobileNav()">
-    <span></span><span></span><span></span>
+<div class="shell">
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-org">ExoTalent ATS</div>
+    <div class="logo-title">Recruitment Intelligence</div>
+    <div class="logo-sub">Report date: 2nd March 2026</div>
   </div>
-  <div class="logo-mark">LinkC<span>x</span>O</div>
-  <div class="top-bar-divider"></div>
-  <div class="top-bar-title">Marketing Dashboard</div>
-  <div class="top-bar-date">Updated: Apr 1, 2026</div>
+  <div class="nav-group">
+    <div class="nav-group-label">Overview</div>
+    <a class="nav-item active" onclick="show('overview',this)"><span class="nav-icon">▣</span> Executive Summary</a>
+    <a class="nav-item" onclick="show('funnel',this)"><span class="nav-icon">▽</span> Pipeline Funnel</a>
+    <a class="nav-item" onclick="show('trends',this)"><span class="nav-icon">◈</span> Trends &amp; Growth</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Performance</div>
+    <a class="nav-item" onclick="show('recruiters',this)"><span class="nav-icon">◉</span> Recruiters</a>
+    <a class="nav-item" onclick="show('clients',this)"><span class="nav-icon">◎</span> Clients</a>
+    <a class="nav-item" onclick="show('roles',this)"><span class="nav-icon">◷</span> Roles &amp; Demand</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Intelligence</div>
+    <a class="nav-item" onclick="show('alerts',this)"><span class="nav-icon">◆</span> Risk &amp; Alerts</a>
+  </div>
+  <div class="sidebar-footer">Confidential &nbsp;·&nbsp; Internal Use Only</div>
+</nav>
+
+<div class="main">
+
+<!-- OVERVIEW -->
+<div class="section active" id="sec-overview">
+  <div class="page-header">
+    <div class="page-title">Executive Summary</div>
+    <div class="page-sub">Complete recruitment overview — applications, positions, conversions and pipeline health as of 2nd March 2026</div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi navy"><div class="kpi-accent"></div>
+      <div class="kpi-label">Total Applications</div><div class="kpi-val">10,353</div>
+      <div class="kpi-sub">Across all recruiters &amp; BUs</div><div class="kpi-badge badge-navy">Since Feb 2025</div>
+    </div>
+    <div class="kpi teal"><div class="kpi-accent"></div>
+      <div class="kpi-label">Total Joined</div><div class="kpi-val">313</div>
+      <div class="kpi-sub">Application → Join: 3.02%</div><div class="kpi-badge badge-teal">Confirmed joiners</div>
+    </div>
+    <div class="kpi slate"><div class="kpi-accent"></div>
+      <div class="kpi-label">Jobs Posted</div><div class="kpi-val">1,717</div>
+      <div class="kpi-sub">1,686 positions created</div><div class="kpi-badge badge-slate">Active: 1,388</div>
+    </div>
+    <div class="kpi amber"><div class="kpi-accent"></div>
+      <div class="kpi-label">CVs Shared</div><div class="kpi-val">9,428</div>
+      <div class="kpi-sub">CV → Join rate: 3.46%</div><div class="kpi-badge badge-amber">With clients</div>
+    </div>
+  </div>
+  <div class="kpi-grid-5">
+    <div class="kpi navy"><div class="kpi-accent"></div><div class="kpi-label">Active in Pipeline</div><div class="kpi-val">6,426</div><div class="kpi-sub">62.1% of all apps</div></div>
+    <div class="kpi red"><div class="kpi-accent"></div><div class="kpi-label">Rejected / Dropped</div><div class="kpi-val">2,522</div><div class="kpi-sub">24.4% rejection rate</div></div>
+    <div class="kpi amber"><div class="kpi-accent"></div><div class="kpi-label">On Hold</div><div class="kpi-val">260</div><div class="kpi-sub">Pending decisions</div></div>
+    <div class="kpi teal"><div class="kpi-accent"></div><div class="kpi-label">Final Selections</div><div class="kpi-val">67</div><div class="kpi-sub">From job report</div></div>
+    <div class="kpi red"><div class="kpi-accent"></div><div class="kpi-label">Post-Offer Drops</div><div class="kpi-val">163</div><div class="kpi-sub">52% of total joiners</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Pipeline stage overview</div>
+      <div class="stage-flow">
+        <div class="stage-box s-navy"><div class="stage-num">6,089</div><div class="stage-label">Applied</div><div class="stage-arrow">›</div></div>
+        <div class="stage-box s-slate"><div class="stage-num">805</div><div class="stage-label">Screening</div><div class="stage-arrow">›</div></div>
+        <div class="stage-box s-amber"><div class="stage-num">1,173</div><div class="stage-label">L1 Interview</div><div class="stage-arrow">›</div></div>
+        <div class="stage-box s-red"><div class="stage-num">188</div><div class="stage-label">L2 Interview</div><div class="stage-arrow">›</div></div>
+        <div class="stage-box s-slate"><div class="stage-num">173</div><div class="stage-label">Final / Offer</div><div class="stage-arrow">›</div></div>
+        <div class="stage-box s-teal"><div class="stage-num">319</div><div class="stage-label">Joined</div></div>
+      </div>
+      <div class="note">L1 volume (1,173) exceeds Screening (805) — indicates some candidates are being pushed directly to interview without completing the screening stage in ATS.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">BU Head ownership &amp; performance</div>
+      <table class="data-table">
+        <thead><tr><th>BU Head</th><th class="r">Applications</th><th class="r">Joined</th><th class="r">Join Rate</th><th class="r">Rejected</th></tr></thead>
+        <tbody>
+          <tr><td>Bhagyashree Lanke</td><td class="r">5,507</td><td class="r">187</td><td class="r"><span class="pill pill-teal">3.40%</span></td><td class="r">1,681</td></tr>
+          <tr><td>Shruti Gupta</td><td class="r">1,727</td><td class="r">59</td><td class="r"><span class="pill pill-teal">3.42%</span></td><td class="r">273</td></tr>
+          <tr><td>Seema Goyal</td><td class="r">3,119</td><td class="r">67</td><td class="r"><span class="pill pill-amber">2.15%</span></td><td class="r">413</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:16px">
+        <div class="bar-row"><div class="bar-label">Bhagyashree Lanke</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#1B3A6B"></div></div><div class="bar-num">53.2%</div></div>
+        <div class="bar-row"><div class="bar-label">Seema Goyal</div><div class="bar-track"><div class="bar-fill" style="width:57%;background:#344055"></div></div><div class="bar-num">30.1%</div></div>
+        <div class="bar-row"><div class="bar-label">Shruti Gupta</div><div class="bar-track"><div class="bar-fill" style="width:31%;background:#0D7A5F"></div></div><div class="bar-num">16.7%</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Candidate experience distribution</div>
+      <div class="chart-h200"><canvas id="exp-chart" role="img" aria-label="Experience band distribution">Experience bands.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Application status composition</div>
+      <div class="donut-wrap">
+        <div style="width:150px;height:150px;flex-shrink:0;position:relative"><canvas id="status-donut" role="img" aria-label="Status donut"></canvas></div>
+        <div class="donut-legend">
+          <div class="legend-item"><div class="leg-sq" style="background:#1B3A6B"></div><div class="leg-label">Active</div><div class="leg-val">6,426</div></div>
+          <div class="legend-item"><div class="leg-sq" style="background:#B52A2A"></div><div class="leg-label">Rejected</div><div class="leg-val">2,522</div></div>
+          <div class="legend-item"><div class="leg-sq" style="background:#0D7A5F"></div><div class="leg-label">Selected +ve</div><div class="leg-val">1,014</div></div>
+          <div class="legend-item"><div class="leg-sq" style="background:#C07B0E"></div><div class="leg-label">On Hold</div><div class="leg-val">260</div></div>
+          <div class="legend-item"><div class="leg-sq" style="background:#9099A8"></div><div class="leg-label">Closed / Other</div><div class="leg-val">131</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileNav()"></div>
-
-<div class="app-body">
-  <nav class="sidenav">
-    <div class="nav-section-label">Weekly Views</div>
-    <div class="nav-item active" onclick="showPage('week4',this)">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-      </svg>
-      Week 4
+<!-- FUNNEL -->
+<div class="section" id="sec-funnel">
+  <div class="page-header">
+    <div class="page-title">Pipeline Funnel Analysis</div>
+    <div class="page-sub">Stage-by-stage conversion rates from application through to confirmed joining</div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi navy"><div class="kpi-accent"></div><div class="kpi-label">App → Screening</div><div class="kpi-val">7.8%</div><div class="kpi-sub">805 of 10,353 applications</div></div>
+    <div class="kpi amber"><div class="kpi-accent"></div><div class="kpi-label">L1 → L2 Conversion</div><div class="kpi-val">16.0%</div><div class="kpi-sub">188 of 1,173 at L1</div></div>
+    <div class="kpi teal"><div class="kpi-accent"></div><div class="kpi-label">App → Joined</div><div class="kpi-val">3.02%</div><div class="kpi-sub">313 of 10,353 applications</div></div>
+    <div class="kpi red"><div class="kpi-accent"></div><div class="kpi-label">Post-Offer Attrition</div><div class="kpi-val">34.3%</div><div class="kpi-sub">163 drops vs 476 offer stage</div></div>
+  </div>
+  <div class="full card">
+    <div class="card-title">Full application funnel — volume at each stage</div>
+    <div class="funnel-row"><div class="funnel-label">Applied</div><div class="funnel-bar" style="background:#EEF2F9;color:#1B3A6B;width:100%">6,089 applications</div><div class="funnel-pct">100%</div></div>
+    <div class="funnel-row"><div class="funnel-label">Screening stage</div><div class="funnel-bar" style="background:#EEF0F3;color:#344055;width:64%">805</div><div class="funnel-pct">13.2%</div></div>
+    <div class="funnel-row"><div class="funnel-label">L1 Interview</div><div class="funnel-bar" style="background:#FDF5E6;color:#92600A;width:58%">1,173</div><div class="funnel-pct">19.3%</div></div>
+    <div class="funnel-row"><div class="funnel-label">L2 Interview</div><div class="funnel-bar" style="background:#FDF0F0;color:#B52A2A;width:18%">188</div><div class="funnel-pct">3.1%</div></div>
+    <div class="funnel-row"><div class="funnel-label">L3 Interview</div><div class="funnel-bar" style="background:#F0F2F5;color:#5A6070;width:6%">18</div><div class="funnel-pct">0.3%</div></div>
+    <div class="funnel-row"><div class="funnel-label">Final / Offer stage</div><div class="funnel-bar" style="background:#EEF2F9;color:#1B3A6B;width:10%">173</div><div class="funnel-pct">2.8%</div></div>
+    <div class="funnel-row"><div class="funnel-label">Joined</div><div class="funnel-bar" style="background:#EAF5F1;color:#0D7A5F;width:16%">319</div><div class="funnel-pct">5.2%</div></div>
+    <div class="funnel-row"><div class="funnel-label">Rejected by client</div><div class="funnel-bar" style="background:#FDF0F0;color:#B52A2A;width:38%">1,203</div><div class="funnel-pct">19.7%</div></div>
+    <div class="funnel-row"><div class="funnel-label">Offer drop / back out</div><div class="funnel-bar" style="background:#FDF5E6;color:#92600A;width:8%">163</div><div class="funnel-pct">2.7%</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">CV sharing funnel — job report</div>
+      <div class="funnel-row"><div class="funnel-label">CVs Shared</div><div class="funnel-bar" style="background:#EEF2F9;color:#1B3A6B;width:100%">9,428</div><div class="funnel-pct">100%</div></div>
+      <div class="funnel-row"><div class="funnel-label">Final Select</div><div class="funnel-bar" style="background:#EAF5F1;color:#0D7A5F;width:10%">67</div><div class="funnel-pct">0.71%</div></div>
+      <div class="funnel-row"><div class="funnel-label">Joined</div><div class="funnel-bar" style="background:#EAF5F1;color:#0D7A5F;width:22%">326</div><div class="funnel-pct">3.46%</div></div>
+      <div class="note">Joined (326) exceeds Final Select (67) — Joined status is updated before "Final Select" in ATS. Workflow compliance review recommended.</div>
     </div>
-    <div class="nav-item" onclick="showPage('week3',this)">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-      </svg>
-      Week 3
+    <div class="card">
+      <div class="card-title">Post-offer drop breakdown</div>
+      <div class="bar-row"><div class="bar-label w160">Candidature Dropped</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#B52A2A"></div></div><div class="bar-num">42</div></div>
+      <div class="bar-row"><div class="bar-label w160">Back Out</div><div class="bar-track"><div class="bar-fill" style="width:93%;background:#B52A2A"></div></div><div class="bar-num">39</div></div>
+      <div class="bar-row"><div class="bar-label w160">Offer Rejected</div><div class="bar-track"><div class="bar-fill" style="width:86%;background:#C07B0E"></div></div><div class="bar-num">36</div></div>
+      <div class="bar-row"><div class="bar-label w160">Drop</div><div class="bar-track"><div class="bar-fill" style="width:81%;background:#C07B0E"></div></div><div class="bar-num">34</div></div>
+      <div class="bar-row"><div class="bar-label w160">CTC Offer Rejected</div><div class="bar-track"><div class="bar-fill" style="width:19%;background:#9099A8"></div></div><div class="bar-num">8</div></div>
+      <div class="bar-row"><div class="bar-label w160">Withdraw</div><div class="bar-track"><div class="bar-fill" style="width:10%;background:#9099A8"></div></div><div class="bar-num">4</div></div>
+      <div class="note">Total: <strong>163</strong> — equivalent to <strong>52%</strong> of confirmed joiners. Largest conversion gap in the pipeline.</div>
     </div>
-    <div class="nav-section-label">Comparisons</div>
-    <div class="nav-item" onclick="showPage('2week',this)">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-      </svg>
-      2-Week Total
-    </div>
-    <div class="nav-item" onclick="showPage('comparison',this)">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
-        <line x1="6" y1="20" x2="6" y2="14"/>
-      </svg>
-      WoW Compare
-    </div>
-    <div class="nav-item" onclick="showPage('monthly',this)">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-        <line x1="3" y1="10" x2="21" y2="10"/>
-      </svg>
-      Monthly
-    </div>
-  </nav>
-
-  <main class="main" id="mainContent"></main>
+  </div>
 </div>
 
-<div class="modal" id="videoModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <div class="modal-title">Video Pipeline Details</div>
-      <button class="modal-close" onclick="closeVideoModal()">&times;</button>
-    </div>
-    <div id="videoModalContent"></div>
+<!-- TRENDS -->
+<div class="section" id="sec-trends">
+  <div class="page-header">
+    <div class="page-title">Trends &amp; Growth</div>
+    <div class="page-sub">Monthly and weekly application volume, jobs created, and joining velocity — February 2025 to March 2026</div>
   </div>
+  <div class="kpi-grid">
+    <div class="kpi navy"><div class="kpi-accent"></div><div class="kpi-label">Peak Month — Apps</div><div class="kpi-val">Feb '26</div><div class="kpi-sub">1,813 applications added</div></div>
+    <div class="kpi slate"><div class="kpi-accent"></div><div class="kpi-label">Peak Month — Jobs</div><div class="kpi-val">Jan '26</div><div class="kpi-sub">202 jobs created</div></div>
+    <div class="kpi teal"><div class="kpi-accent"></div><div class="kpi-label">Best Joining Month</div><div class="kpi-val">Sep '25</div><div class="kpi-sub">52 confirmed joiners</div></div>
+    <div class="kpi red"><div class="kpi-accent"></div><div class="kpi-label">March 2026</div><div class="kpi-val">1,019</div><div class="kpi-sub">Down 44% from Feb peak</div></div>
+  </div>
+  <div class="full card">
+    <div class="card-title">Monthly applications added — Feb 2025 to Mar 2026</div>
+    <div class="chart-h240"><canvas id="monthly-apps-chart" role="img" aria-label="Monthly applications bar chart"></canvas></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Monthly jobs created</div>
+      <div class="chart-h200"><canvas id="monthly-jobs-chart" role="img" aria-label="Monthly jobs created"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Monthly joiners trend</div>
+      <div class="chart-h200"><canvas id="monthly-join-chart" role="img" aria-label="Monthly joiners"></canvas></div>
+    </div>
+  </div>
+  <div class="full card">
+    <div class="card-title">Weekly application volume — last 12 weeks</div>
+    <div class="chart-h180"><canvas id="weekly-chart" role="img" aria-label="Weekly application volume"></canvas></div>
+  </div>
+</div>
+
+<!-- RECRUITERS -->
+<div class="section" id="sec-recruiters">
+  <div class="page-header">
+    <div class="page-title">Recruiter Performance</div>
+    <div class="page-sub">Applications uploaded, pipeline conversion, join rates, and activity levels</div>
+  </div>
+  <div class="full card">
+    <div class="card-title">Top 10 recruiters by applications uploaded</div>
+    <div id="rec-apps-bars"></div>
+  </div>
+  <div class="full card">
+    <div class="card-title">Recruiter pipeline performance — ranked by CVs shared</div>
+    <table class="data-table">
+      <thead><tr><th>Recruiter</th><th class="r">Jobs</th><th class="r">CVs Shared</th><th class="r">Final Sel.</th><th class="r">Joined</th><th class="r">Join Rate</th><th class="r">Performance Tier</th></tr></thead>
+      <tbody id="rec-pipeline-table"></tbody>
+    </table>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Top 10 recruiters by confirmed joiners</div>
+      <div id="rec-join-bars"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Most active — Jan–Mar 2026 avg per month</div>
+      <div id="rec-recent-bars"></div>
+    </div>
+  </div>
+  <div class="full card">
+    <div class="card-title">Efficiency ranking — join rate (min. 50 CVs shared)</div>
+    <div class="chart-h280"><canvas id="rec-efficiency-chart" role="img" aria-label="Recruiter join rate chart"></canvas></div>
+  </div>
+</div>
+
+<!-- CLIENTS -->
+<div class="section" id="sec-clients">
+  <div class="page-header">
+    <div class="page-title">Client Intelligence</div>
+    <div class="page-sub">CV submission volumes, hiring conversion rates, and joiner outcomes by client organisation</div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi navy"><div class="kpi-accent"></div><div class="kpi-label">Top Client by CVs</div><div class="kpi-val">John Deere</div><div class="kpi-sub">1,185 CVs shared</div></div>
+    <div class="kpi teal"><div class="kpi-accent"></div><div class="kpi-label">Top Client by Joiners</div><div class="kpi-val">John Deere</div><div class="kpi-sub">75 joiners · 6.3% rate</div></div>
+    <div class="kpi green"><div class="kpi-accent"></div><div class="kpi-label">Best Conversion Rate</div><div class="kpi-val">Amara Raja</div><div class="kpi-sub">13.6% (6 of 44 CVs)</div></div>
+    <div class="kpi red"><div class="kpi-accent"></div><div class="kpi-label">Jobs with 0 CVs Shared</div><div class="kpi-val">452</div><div class="kpi-sub">26.3% of all posted jobs</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Top 10 clients — CVs shared</div>
+      <div id="client-cv-bars"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top 10 clients — confirmed joiners</div>
+      <div id="client-join-bars"></div>
+    </div>
+  </div>
+  <div class="full card">
+    <div class="card-title">Client conversion table (minimum 30 CVs shared)</div>
+    <table class="data-table">
+      <thead><tr><th>Client</th><th class="r">CVs Shared</th><th class="r">Final Sel.</th><th class="r">Joined</th><th class="r">Join Rate</th><th class="r">Rating</th></tr></thead>
+      <tbody id="client-conv-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ROLES -->
+<div class="section" id="sec-roles">
+  <div class="page-header">
+    <div class="page-title">Roles &amp; Demand Analysis</div>
+    <div class="page-sub">Most in-demand roles by application volume and by actual joining outcomes</div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Top 12 roles by applications received</div>
+      <div id="roles-apps-bars"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top 10 roles by confirmed joiners</div>
+      <div id="roles-join-bars"></div>
+    </div>
+  </div>
+  <div class="full card">
+    <div class="card-title">High-volume roles with zero joiners — review required</div>
+    <table class="data-table">
+      <thead><tr><th>Job Title</th><th>Client</th><th class="r">CVs Shared</th><th class="r">Final Sel.</th><th class="r">Active Pos.</th><th class="r">Action</th></tr></thead>
+      <tbody>
+        <tr><td>Process Asst./Dy. Mgr – Industrialisation</td><td>Mahindra Aerospace</td><td class="r">72</td><td class="r">0</td><td class="r">2</td><td><span class="pill pill-amber">Review</span></td></tr>
+        <tr><td>Delivery Management</td><td>Zeta Tech</td><td class="r">64</td><td class="r">0</td><td class="r">0</td><td><span class="pill pill-red">Closed?</span></td></tr>
+        <tr><td>Internal Audit Executive – Pan India</td><td>AMPL</td><td class="r">64</td><td class="r">0</td><td class="r">5</td><td><span class="pill pill-amber">Review</span></td></tr>
+        <tr><td>Front Line Sales – Hyderabad</td><td>Casagrand</td><td class="r">61</td><td class="r">0</td><td class="r">10</td><td><span class="pill pill-amber">Review</span></td></tr>
+        <tr><td>Service Engineer</td><td>Pinnacle Mobility (EKA RPO)</td><td class="r">56</td><td class="r">0</td><td class="r">37</td><td><span class="pill pill-red">Critical</span></td></tr>
+        <tr><td>PEM &amp; CEM – Substation</td><td>—</td><td class="r">52</td><td class="r">0</td><td class="r">0</td><td><span class="pill pill-slate">Stale</span></td></tr>
+        <tr><td>Software Engineer – Matlab Emb C G6</td><td>John Deere</td><td class="r">52</td><td class="r">0</td><td class="r">2</td><td><span class="pill pill-amber">Review</span></td></tr>
+        <tr><td>Channel Sales Manager</td><td>VECV</td><td class="r">43</td><td class="r">0</td><td class="r">3</td><td><span class="pill pill-amber">Review</span></td></tr>
+        <tr><td>DGM – IT Accounts Payable</td><td>Agratas/Tata Cell</td><td class="r">40</td><td class="r">0</td><td class="r">0</td><td><span class="pill pill-red">Closed?</span></td></tr>
+        <tr><td>GL Accountant</td><td>Pinnacle Mobility (EKA RPO)</td><td class="r">40</td><td class="r">0</td><td class="r">1</td><td><span class="pill pill-amber">Review</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ALERTS -->
+<div class="section" id="sec-alerts">
+  <div class="page-header">
+    <div class="page-title">Risk &amp; Intelligence Alerts</div>
+    <div class="page-sub">Data-derived flags, anomalies, and recommended action items based on full dataset analysis</div>
+  </div>
+  <div style="margin-bottom:20px">
+    <div class="alert-box danger"><div class="alert-icon">▲</div><div><div class="alert-title">Post-offer attrition is critically high</div><div class="alert-body">163 candidates dropped after selection — 52% of total joiners (313). Breakdown: Candidature Dropped (42), Back Out (39), Offer Rejected (36), Drop (34). Immediate intervention required.</div></div></div>
+    <div class="alert-box danger"><div class="alert-icon">▲</div><div><div class="alert-title">452 jobs have zero CVs shared — 26.3% of all posted positions</div><div class="alert-body">Over a quarter of ATS job postings have never had a CV shared with the client. These dormant requisitions require immediate audit to close, reassign, or reactivate.</div></div></div>
+    <div class="alert-box warn"><div class="alert-icon">!</div><div><div class="alert-title">Service Engineer at Pinnacle Mobility — 56 CVs, 0 joined, 37 active positions</div><div class="alert-body">Highest-exposure unfilled role: large active position count, heavy CV investment, and zero conversion. Likely causes: JD-candidate mismatch, client approval delays, or submission quality issues.</div></div></div>
+    <div class="alert-box warn"><div class="alert-icon">!</div><div><div class="alert-title">Application volume declining after February 2026 peak</div><div class="alert-body">Applications peaked at 1,813 in February 2026, dropped to 1,019 in March and 82 in April (partial). Weekly data confirms downtrend: 603/week in early February to 185/week in late March.</div></div></div>
+    <div class="alert-box warn"><div class="alert-icon">!</div><div><div class="alert-title">Seema Goyal BU has the lowest join rate at 2.15%</div><div class="alert-body">3,119 applications, only 67 joiners. Underperforms vs Bhagyashree Lanke (3.40%) and Shruti Gupta (3.42%). Review client mix and recruiter assignment for this BU.</div></div></div>
+    <div class="alert-box info"><div class="alert-icon">i</div><div><div class="alert-title">Gaurav Singh leads team efficiency with a 15.4% join rate</div><div class="alert-body">169 CVs shared, 26 confirmed joiners — approximately 4× the team average. His sourcing and qualification practices should be documented as a team benchmark.</div></div></div>
+    <div class="alert-box info"><div class="alert-icon">i</div><div><div class="alert-title">Amara Raja Batteries has the best client conversion rate at 13.6%</div><div class="alert-body">6 joiners from 44 CVs. Low current volume but strong quality signal. Increasing submission volume with this client is likely to yield proportionally strong returns.</div></div></div>
+    <div class="alert-box info"><div class="alert-icon">i</div><div><div class="alert-title">Joined count (326) exceeds Final Select (67) in the job report</div><div class="alert-body">Suggests Joined is being recorded directly without Final Select being updated first. ATS workflow compliance review recommended.</div></div></div>
+    <div class="alert-box info"><div class="alert-icon">i</div><div><div class="alert-title">Median time-to-candidate: 10 days; mean: 37 days</div><div class="alert-body">Large gap between median and mean indicates a long tail of abandoned requisitions — some 200–430 days old. Stale records inflate cycle times and distort pipeline reporting.</div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Performance scorecard summary</div>
+    <table class="data-table">
+      <thead><tr><th>Metric</th><th>Current Value</th><th>Industry Signal</th><th class="r">Status</th></tr></thead>
+      <tbody>
+        <tr><td>Overall join rate (applications)</td><td>3.02%</td><td>Typical RPO: 3–6%</td><td class="r"><span class="pill pill-amber">Monitor</span></td></tr>
+        <tr><td>CV → Join rate</td><td>3.46%</td><td>Typical: 5–10%</td><td class="r"><span class="pill pill-red">Below Target</span></td></tr>
+        <tr><td>Post-offer attrition rate</td><td>52% of joiners</td><td>Best practice: &lt;15%</td><td class="r"><span class="pill pill-red">Critical</span></td></tr>
+        <tr><td>Dead jobs (0 CVs shared)</td><td>26.3%</td><td>Best practice: &lt;5%</td><td class="r"><span class="pill pill-red">Critical</span></td></tr>
+        <tr><td>Active pipeline share</td><td>62.1%</td><td>Healthy: 50–65%</td><td class="r"><span class="pill pill-teal">On Track</span></td></tr>
+        <tr><td>Rejection rate</td><td>24.4%</td><td>Typical: 20–35%</td><td class="r"><span class="pill pill-teal">Normal</span></td></tr>
+        <tr><td>Median time-to-candidate</td><td>10 days</td><td>Target: &lt;7 days</td><td class="r"><span class="pill pill-amber">Monitor</span></td></tr>
+        <tr><td>Top recruiter join rate (Gaurav Singh)</td><td>15.4%</td><td>Team avg: ~3.5%</td><td class="r"><span class="pill pill-teal">Excellent</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
 </div>
 
 <script>
-const data = {
-  week3: {
-    label: "Week 3 (Mar 16-22)",
-    linkedin: { 
-      posts:42, impressions:9217, clicks:377, likes:132, comments:1, reposts:1,
-      dailyImpressions:[2210,2446,1296,1445,1599,1895,2251],
-      dailyClicks:[97,96,34,42,73,94,79],
-      dailyReactions:[32,77,38,25,20,32,17]
-    },
-    email: { sent:8, delivered:5361, views:576, clicks:63, openRate:10.74, clickRate:1.18 },
-    blog: { posts:7, impressions:476 },
-    users: { newUsers:665, totalUsers:19746 },
-    quora: { posts:50, totalViews:0 },
-    orm: { posts:34, ambitionBox:32, glassdoor:2 },
-    platform: { posts:24, applause:3 },
-    videos: { total:15, confirmed:11, pending:1, done:3 },
-    postTypes: { 'Leadership Changes':14, 'Industry Spotlight':7, 'Job Post':5, 'Work Life Tips':7, 'LinkCXO Says':7 },
-    
-    postTypePerformance: {
-      'Job Post': { posts:5, impressions:3173, reactions:10, ctr:7.19, engagementRate:0.32 },
-      'Industry Spotlight': { posts:7, impressions:2436, reactions:47, ctr:4.27, engagementRate:1.93 },
-      'Leadership Changes': { posts:14, impressions:1776, reactions:38, ctr:1.13, engagementRate:2.14 },
-      'LinkCXO Says': { posts:7, impressions:561, reactions:16, ctr:0.71, engagementRate:2.85 },
-      'Work Life Tips': { posts:7, impressions:529, reactions:15, ctr:1.32, engagementRate:2.84 }
-    },
-    
-    emailMailers: [
-      {name:'R&D',date:'15/03',delivered:709,views:72,clicks:15,openRate:10.2,clickRate:2.1},
-      {name:'Marketing',date:'16/03',delivered:929,views:104,clicks:5,openRate:11.2,clickRate:0.5},
-      {name:'Finance',date:'17/03',delivered:687,views:85,clicks:9,openRate:12.4,clickRate:1.3},
-      {name:'Legal',date:'18/03',delivered:546,views:46,clicks:16,openRate:8.4,clickRate:2.9},
-      {name:'Sales & BD',date:'19/03',delivered:822,views:101,clicks:7,openRate:12.3,clickRate:0.9},
-      {name:'HR',date:'20/03',delivered:687,views:69,clicks:9,openRate:10.0,clickRate:1.3},
-      {name:'Planning',date:'21/03',delivered:265,views:19,clicks:1,openRate:7.2,clickRate:0.4},
-      {name:'R&D 2nd',date:'22/03',delivered:716,views:80,clicks:1,openRate:11.2,clickRate:0.1}
-    ],
-    
-    blogPosts: [
-      {date:'16/03',title:'Recruitment & Onboarding Alignment',impressions:76},
-      {date:'17/03',title:'The Evolving CFO',impressions:98},
-      {date:'18/03',title:'Defining the C-Suite',impressions:62},
-      {date:'19/03',title:'Emerging C-Suite Titles',impressions:92},
-      {date:'20/03',title:'Building High-Performing Teams',impressions:84},
-      {date:'21/03',title:'Women Reshaping Leadership',impressions:64},
-      {date:'22/03',title:'CHROs & AI Transformation',impressions:0}
-    ],
-    
-    topPosts: [
-      {title:'Marketing Job Post',type:'Job Post',date:'16/03',impressions:1294,likes:8,clicks:102},
-      {title:'Captain Fresh Funding',type:'Industry Spotlight',date:'17/03',impressions:997,likes:17,clicks:36},
-      {title:'Strategy Job Post',type:'Job Post',date:'21/03',impressions:783,likes:2,clicks:30},
-      {title:'Boba Bhai Funding',type:'Industry Spotlight',date:'16/03',impressions:647,likes:16,clicks:16},
-      {title:'HR Job Post',type:'Job Post',date:'20/03',impressions:542,likes:0,clicks:38}
-    ],
-    
-    bottomPosts: [
-      {title:'Work Life Tips Post',type:'Work Life Tips',date:'15/03',impressions:39,likes:1,clicks:0},
-      {title:'Work Life Tips Post',type:'Work Life Tips',date:'18/03',impressions:39,likes:2,clicks:1},
-      {title:'Alok Jain – Cadence',type:'Leadership Changes',date:'21/03',impressions:40,likes:1,clicks:1},
-      {title:'Sreejith Vasudevan',type:'Leadership Changes',date:'16/03',impressions:48,likes:2,clicks:0},
-      {title:'Work Life Tips Post',type:'Work Life Tips',date:'21/03',impressions:56,likes:3,clicks:1}
-    ],
-    
-    platformPostMix: {
-      'Leadership Changes':{count:9,percent:37.5},
-      'Industry Spotlight':{count:6,percent:25.0},
-      'Work Life Tips':{count:6,percent:25.0},
-      'LinkCXO Says':{count:1,percent:4.2},
-      'Other':{count:2,percent:8.3}
-    },
-    
-    videosDone: [
-      {name:'Vaijayantimala Belsare',org:'MSKA & Associates – Partner',duration:'45 min'},
-      {name:'Abhimanyu Rathi',org:'RenewCred Carbon – Founder & CEO',duration:'19 min'},
-      {name:'Rohit Manghnani',org:'L&T Energy – VP & Head HR',duration:'25 min'}
-    ],
-    
-    videosConfirmed: [
-      {name:'Bhaswati Ramanujam',org:'Freelance Sr. Marketing Consultant',note:'This Friday'},
-      {name:'Latha Nathan',org:'RoofCoats – Interim MD',note:'This Friday'},
-      {name:'Sonal Goyal',org:'Zingg.AI – Founder',note:'Next Friday'},
-      {name:'Anurag Arora',org:'VFS Global – Strategic Advisor',note:'This Saturday'},
-      {name:'Gowri Ramani',org:'GroWithGowri – Leadership Coach',note:'This Saturday'},
-      {name:'Karan Arora',org:'Mygate – Director Sales & Ops',note:'Time TBC'},
-      {name:'Deepak Batra',org:'—',note:'Timings TBC'},
-      {name:'Kamalpreet Chawla',org:'EXL Services – VP HR',note:'1st April'},
-      {name:'Ramesh Menon',org:'SEEK – Founder',note:'Time to finalize'},
-      {name:'Adetya V N Chopra',org:'HOAG – Founder',note:'Shoot planned'},
-      {name:'Poonam',org:'—',note:'Thursday 28/03/26'}
-    ],
-    
-    videosPending: [
-      {name:'Abhishek Vishwakarma',org:'CARE Analytics – Senior Role',note:'Date not fixed'}
-    ]
-  },
-  
-  week4: {
-    label: "Week 4 (Mar 23-29)",
-    linkedin: { 
-      posts:43, impressions:12892, clicks:448, likes:208, comments:7, reposts:7,
-      dailyImpressions:[3174,2141,1893,2129,2365,2430,2564],
-      dailyClicks:[121,75,59,72,66,81,75],
-      dailyReactions:[49,30,27,25,21,71,30]
-    },
-    email: { sent:7, delivered:10451, views:1644, clicks:132, openRate:15.73, clickRate:1.26 },
-    blog: { posts:4, impressions:380 },
-    users: { newUsers:741, totalUsers:20470 },
-    quora: { posts:15, totalViews:0 },
-    orm: { posts:13, ambitionBox:0, glassdoor:0 },
-    platform: { posts:28, applause:0 },
-    videos: { total:15, confirmed:11, pending:1, done:2 },
-    postTypes: { 'Leadership Changes':16, 'Industry Spotlight':11, 'Job Post':7, 'Work Life Tips':5, 'LinkCXO Says':4 }
+const CD = {
+  responsive: true, maintainAspectRatio: false,
+  plugins: { legend: { display: false } },
+  scales: {
+    x: { ticks: { color: '#9099A8', font: { size: 10 } }, grid: { color: '#F0F2F5' } },
+    y: { ticks: { color: '#9099A8', font: { size: 10 } }, grid: { color: '#F0F2F5' } }
   }
 };
+const CDx = { ...CD, scales: { x: { ticks: { color:'#9099A8', font:{size:10}, autoSkip:false, maxRotation:45 }, grid:{color:'#F0F2F5'} }, y: { ticks:{color:'#9099A8',font:{size:10}}, grid:{color:'#F0F2F5'} } } };
 
-const C = { gold:'#C9A961', green:'#16a34a', red:'#dc2626', blue:'#2563eb', purple:'#9333ea', orange:'#f97316', grey:'#8a9e97', teal:'#14b8a6', gridLine:'rgba(0,0,0,0.05)' };
-let charts = {};
+const inited = {};
 
-function destroyCharts() { Object.keys(charts).forEach(id => { if(charts[id]) { charts[id].destroy(); delete charts[id]; } }); }
-function mkChart(id,cfg) { const el=document.getElementById(id); if(!el)return; const ctx=el.getContext('2d'); if(charts[id])charts[id].destroy(); charts[id]=new Chart(ctx,cfg); }
-function fmt(n) { return n.toLocaleString(); }
-function pct(n) { return n.toFixed(1)+'%'; }
-function pct2(n) { return n.toFixed(2)+'%'; }
+function initSection(id) {
+  if (inited[id]) return;
+  inited[id] = true;
 
-function calc(d) {
-  return {
-    linkedinCTR: (d.linkedin.clicks / d.linkedin.impressions * 100),
-    emailCTR: (d.email.clicks / d.email.views * 100),
-    engagement: d.linkedin.likes + d.linkedin.comments + d.linkedin.reposts,
-    engagementRate: ((d.linkedin.likes + d.linkedin.comments + d.linkedin.reposts) / d.linkedin.impressions * 100),
-    avgEngPerPost: ((d.linkedin.likes + d.linkedin.comments + d.linkedin.reposts) / d.linkedin.posts),
-    dailyCTR: d.linkedin.dailyClicks.map((c,i) => (c / d.linkedin.dailyImpressions[i] * 100))
-  };
-}
+  const mL = ['Feb 25','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan 26','Feb 26','Mar 26'];
 
-function getChange(week,metric) {
-  const curr = data[week];
-  const prev = week==='week4' ? data.week3 : null;
-  if(!prev) return {v:0,c:'',s:''};
-  let cv,pv;
-  if(metric==='impr') { cv=curr.linkedin.impressions; pv=prev.linkedin.impressions; }
-  else if(metric==='clk') { cv=curr.linkedin.clicks; pv=prev.linkedin.clicks; }
-  else if(metric==='open') { cv=curr.email.openRate; pv=prev.email.openRate; }
-  else if(metric==='user') { cv=curr.users.newUsers; pv=prev.users.newUsers; }
-  else return {v:0,c:'',s:''};
-  const chg = ((cv-pv)/pv)*100;
-  return { v:chg, c:chg>0?'up':chg<0?'down':'', s:chg>0?'↑ ':chg<0?'↓ ':'' };
-}
-
-function toggleExpand(id) {
-  const el = document.getElementById(id);
-  el.classList.toggle('open');
-}
-
-function openVideoModal(week) {
-  const d = data[week];
-  let html = '';
-  
-  if(d.videosDone && d.videosDone.length > 0) {
-    html += '<div class="video-list"><div class="video-status-label">Done (' + d.videosDone.length + ')</div>';
-    d.videosDone.forEach(v => {
-      html += `<div class="video-item">
-        <div class="video-name">${v.name}</div>
-        <div class="video-org">${v.org}</div>
-        <div class="video-note">${v.duration}</div>
-      </div>`;
+  if (id === 'overview') {
+    new Chart(document.getElementById('exp-chart'), {
+      type: 'bar',
+      data: { labels: ['Fresher','1–2 yrs','3–5 yrs','6–10 yrs','11–15 yrs','16–30 yrs','30+'], datasets: [{ data: [90,724,2827,3915,1745,1043,7], backgroundColor: ['#9099A8','#344055','#1B3A6B','#1B3A6B','#344055','#C07B0E','#9099A8'], borderRadius: 3 }] },
+      options: CD
     });
-    html += '</div>';
+    new Chart(document.getElementById('status-donut'), {
+      type: 'doughnut',
+      data: { datasets: [{ data: [6426,2522,1014,260,131], backgroundColor: ['#1B3A6B','#B52A2A','#0D7A5F','#C07B0E','#CDD1D8'], borderWidth: 2, borderColor: '#FFFFFF' }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '62%' }
+    });
   }
-  
-  if(d.videosConfirmed && d.videosConfirmed.length > 0) {
-    html += '<div class="video-list"><div class="video-status-label">Confirmed (' + d.videosConfirmed.length + ')</div>';
-    d.videosConfirmed.forEach(v => {
-      html += `<div class="video-item">
-        <div class="video-name">${v.name}</div>
-        <div class="video-org">${v.org}</div>
-        <div class="video-note">${v.note}</div>
-      </div>`;
+
+  if (id === 'trends') {
+    const mA = [710,605,413,572,301,496,327,902,489,884,442,1268,1813,1019];
+    new Chart(document.getElementById('monthly-apps-chart'), {
+      type: 'bar',
+      data: { labels: mL, datasets: [{ data: mA, backgroundColor: mA.map(v=>v===Math.max(...mA)?'#1B3A6B':'#B8C8E8'), borderRadius: 2 }] },
+      options: CDx
     });
-    html += '</div>';
+    new Chart(document.getElementById('monthly-jobs-chart'), {
+      type: 'bar',
+      data: { labels: mL, datasets: [{ data: [169,98,77,69,97,79,59,148,102,104,74,202,162,132], backgroundColor: '#CDD1D8', borderRadius: 2 }] },
+      options: CDx
+    });
+    new Chart(document.getElementById('monthly-join-chart'), {
+      type: 'line',
+      data: { labels: mL, datasets: [{ data: [17,32,11,19,15,20,18,52,34,37,15,25,16,2], borderColor: '#0D7A5F', backgroundColor: 'rgba(13,122,95,0.08)', tension: 0.4, fill: true, pointBackgroundColor: '#0D7A5F', pointRadius: 3, pointBorderColor: '#FFF', pointBorderWidth: 1.5 }] },
+      options: CDx
+    });
+    const wD = [196,226,531,603,479,363,385,264,216,212,207,185];
+    new Chart(document.getElementById('weekly-chart'), {
+      type: 'bar',
+      data: { labels: ['Jan 12','Jan 19','Jan 26','Feb 2','Feb 9','Feb 16','Feb 23','Mar 2','Mar 9','Mar 16','Mar 23','Mar 30'], datasets: [{ data: wD, backgroundColor: wD.map(v=>v>=500?'#1B3A6B':'#B8C8E8'), borderRadius: 2 }] },
+      options: CDx
+    });
   }
-  
-  if(d.videosPending && d.videosPending.length > 0) {
-    html += '<div class="video-list"><div class="video-status-label">Pending (' + d.videosPending.length + ')</div>';
-    d.videosPending.forEach(v => {
-      html += `<div class="video-item">
-        <div class="video-name">${v.name}</div>
-        <div class="video-org">${v.org}</div>
-        <div class="video-note">${v.note}</div>
-      </div>`;
+
+  if (id === 'recruiters') {
+    const rA = [['Charul Sharma',654],['Disha Bavishi',615],['Harita Rani',488],['Bhawna Miglani',429],['Simran Gupta',418],['Priyanka Verma',391],['Aparna Kulshershtha',390],['Ruchi Tripathi',389],['Lucky Kumari',368],['Sourabh Mathpal',364]];
+    document.getElementById('rec-apps-bars').innerHTML = rA.map(([n,v],i)=>`<div class="bar-row"><span class="rank">${i+1}</span><div class="bar-label w160">${n}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/rA[0][1]*100)}%;background:#1B3A6B"></div></div><div class="bar-num">${v}</div></div>`).join('');
+    const rP = [['Amita Singh',143,1410,5,55],['Anupama Pathade',256,1252,3,35],['Harita Rani',167,924,8,40],['Bhawana Rani',191,771,4,31],['Charul Sharma',129,762,13,46],['Sourabh Mathpal',73,431,5,3],['Disha Bavishi',49,394,2,7],['Simran Gupta',45,341,2,14],['Naveen Battula',40,227,0,15],['Ashwini Joshi',46,255,1,0],['Varsha Nayak',33,250,0,5],['Shruti Jindal',53,247,1,1]];
+    document.getElementById('rec-pipeline-table').innerHTML = rP.map(([n,j,cv,fs,jo])=>{
+      const r=cv>0?((jo/cv)*100).toFixed(1):'0.0', rn=parseFloat(r);
+      const [c,l]=rn>=5?['pill-teal','Top Performer']:rn>=3?['pill-navy','Good']:rn>=1?['pill-amber','Average']:['pill-red','Below Target'];
+      return `<tr><td>${n}</td><td class="r">${j}</td><td class="r">${cv.toLocaleString()}</td><td class="r">${fs}</td><td class="r" style="font-weight:600">${jo}</td><td class="r"><span class="pill ${c}">${r}%</span></td><td class="r"><span class="pill ${c}">${l}</span></td></tr>`;
+    }).join('');
+    const rJ = [['Charul Sharma',47],['Anupama Pathade',37],['Harita Rani',24],['Bhawana Rani',20],['Amita Singh',18],['Bhawna Miglani',17],['Disha Bavishi',16],['Simran Gupta',16],['Priyanka Verma',15],['Sourabh Mathpal',13]];
+    document.getElementById('rec-join-bars').innerHTML = rJ.map(([n,v],i)=>`<div class="bar-row"><span class="rank">${i+1}</span><div class="bar-label">${n}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/rJ[0][1]*100)}%;background:#0D7A5F"></div></div><div class="bar-num">${v}</div></div>`).join('');
+    const rR = [['Ruchi Tripathi',72],['Bhawna Miglani',67],['Aparna Kulshershtha',57.5],['Simran Gupta',51.8],['Poornima Tyagi',47.2],['Ashwini Joshi',46.8],['Shruti Jindal',44.2],['Amrit Mallick',43.8],['Lucky Kumari',43.8],['Sourabh Mathpal',43.8]];
+    document.getElementById('rec-recent-bars').innerHTML = rR.map(([n,v])=>`<div class="bar-row"><div class="bar-label">${n}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/rR[0][1]*100)}%;background:#344055"></div></div><div class="bar-num">${v}</div></div>`).join('');
+    const rE = [['Gaurav Singh',15.4],['Naveen Battula',6.6],['Charul Sharma',6.0],['Megha Patel',5.9],['Sriram V',5.3],['Khadija P.',4.8],['Lakshmi Devi',4.3],['Harita Rani',4.3],['Simran Gupta',4.1],['Bhawana Rani',4.0],['Amita Singh',3.9],['Anupama Pathade',2.8],['Shruti Gupta',2.7],['Varsha Nayak',2.0],['Anand Raj',1.9]];
+    new Chart(document.getElementById('rec-efficiency-chart'), {
+      type: 'bar',
+      data: { labels: rE.map(r=>r[0]), datasets: [{ data: rE.map(r=>r[1]), backgroundColor: rE.map(r=>r[1]>=5?'#0D7A5F':r[1]>=3?'#B8C8E8':'#E2E5EA'), borderRadius: 3 }] },
+      options: { ...CDx, scales: { x: { ticks: { color:'#9099A8', font:{size:10}, autoSkip:false, maxRotation:45 }, grid:{color:'#F0F2F5'} }, y: { ticks:{ color:'#9099A8', font:{size:10}, callback:v=>v+'%' }, grid:{color:'#F0F2F5'} } } }
     });
-    html += '</div>';
   }
-  
-  document.getElementById('videoModalContent').innerHTML = html;
-  document.getElementById('videoModal').classList.add('open');
+
+  if (id === 'clients') {
+    const cCV = [['John Deere',1185],['Pinnacle Mobility',744],['Agratas/Tata Cell',529],['AMPL',481],['Autoliv Inc',463],['Mahindra Aerospace',459],['Mahindra & M',404],['Pinnacle Non-RPO',389],['Micro Plastics',283],['Casagrand',237]];
+    document.getElementById('client-cv-bars').innerHTML = cCV.map(([n,v],i)=>`<div class="bar-row"><span class="rank">${i+1}</span><div class="bar-label w100">${n}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/cCV[0][1]*100)}%;background:#1B3A6B"></div></div><div class="bar-num">${v}</div></div>`).join('');
+    const cJ = [['John Deere',75],['Mahindra & M',44],['AMPL',26],['Agratas/Tata Cell',17],['Pinnacle Non-RPO',15],['Pinnacle RPO',9],['Amara Raja',6],['Blue Energy',6],['REXEL India',6],['Xoriant',6]];
+    document.getElementById('client-join-bars').innerHTML = cJ.map(([n,v],i)=>`<div class="bar-row"><span class="rank">${i+1}</span><div class="bar-label w100">${n}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/cJ[0][1]*100)}%;background:#0D7A5F"></div></div><div class="bar-num">${v}</div></div>`).join('');
+    const cC = [['Amara Raja Batteries',44,1,6,13.6],['Mahindra & Mahindra',404,17,44,10.9],['REXEL India',76,0,6,7.9],['John Deere',1185,10,75,6.3],['AMPL',481,3,26,5.4],['Blue Energy Motors',126,4,6,4.8],['Ramky Estates',126,0,6,4.8],['Pinnacle Non-RPO',389,4,15,3.9],['Agratas/Tata Cell',529,2,17,3.2],['Xoriant',165,0,6,3.6],['Micro Plastics',283,0,6,2.1],['Pinnacle RPO',744,0,9,1.2]];
+    document.getElementById('client-conv-table').innerHTML = cC.map(([n,cv,fs,jo,r])=>{
+      const [c,s]=r>=8?['pill-teal','★★★']:r>=4?['pill-navy','★★']:r>=2?['pill-amber','★']:['pill-red','—'];
+      return `<tr><td>${n}</td><td class="r">${cv.toLocaleString()}</td><td class="r">${fs}</td><td class="r" style="font-weight:600">${jo}</td><td class="r"><span class="pill ${c}">${r}%</span></td><td class="r" style="color:#C07B0E">${s}</td></tr>`;
+    }).join('');
+  }
+
+  if (id === 'roles') {
+    const roA = [['Executive – Internal Audit',156],['Territory Sales Mgr',103],['EV Relationship Mgr',102],['Design Lead – Substation',102],['EV Exp Lead & Sr. Consultant',97],['Production Supervisor',92],['Service Engineer',82],['Design Lead (Primary)',78],['Process Asst/Dy. Mgr',73],['Design Lead – Solar',68],['Java Developer',67],['Internal Audit – Pan India',65]];
+    document.getElementById('roles-apps-bars').innerHTML = roA.map(([n,v],i)=>`<div class="bar-row"><span class="rank">${i+1}</span><div class="bar-label w160">${n}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/roA[0][1]*100)}%;background:#C07B0E"></div></div><div class="bar-num">${v}</div></div>`).join('');
+    const roJ = [['EV Exp Lead & Sr. Consultant',24],['Executive – Internal Audit',11],['EV Relationship Manager',11],['Design Lead (Primary)',8],['Insurance Telecaller',7],['Design Lead (Secondary)',7],['Supplier Planner G6',5],['Forecast Analyst G7',5],['Design Lead – Solar',4],['Production Supervisor',4]];
+    document.getElementById('roles-join-bars').innerHTML = roJ.map(([n,v],i)=>`<div class="bar-row"><span class="rank">${i+1}</span><div class="bar-label w160">${n}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/roJ[0][1]*100)}%;background:#1C6B3A"></div></div><div class="bar-num">${v}</div></div>`).join('');
+  }
 }
 
-function closeVideoModal() {
-  document.getElementById('videoModal').classList.remove('open');
+function show(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  el.classList.add('active');
+  initSection(id);
 }
 
-function showPage(id,nav) {
-  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
-  if(nav)nav.classList.add('active');
-  destroyCharts();
-  if(id==='week3'||id==='week4') renderWeek(id);
-  else if(id==='2week') render2Week();
-  else if(id==='comparison') renderCompare();
-  else if(id==='monthly') renderMonthly();
-}
-
-function renderWeek(week) {
-  const d = data[week];
-  const c = calc(d);
-  const ch1=getChange(week,'impr'), ch2=getChange(week,'clk'), ch3=getChange(week,'open'), ch4=getChange(week,'user');
-  
-  const ptKeys = Object.keys(d.postTypes);
-  const ptVals = Object.values(d.postTypes);
-  
-  const hasDetailedData = d.postTypePerformance !== undefined;
-  
-  document.getElementById('mainContent').innerHTML = `
-  <div class="page">
-    <div class="page-header">
-      <h1>${d.label}</h1>
-      <p>Performance overview and key marketing metrics</p>
-    </div>
-
-    <h2 class="section-header">Primary Metrics</h2>
-    <div class="row-5">
-      <div class="kpi">
-        <div class="kpi-label">LinkedIn Impressions</div>
-        <div class="kpi-val">${fmt(d.linkedin.impressions)}</div>
-        <div class="kpi-sub ${ch1.c}">${ch1.s}${pct(Math.abs(ch1.v))} vs last week</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Total Clicks</div>
-        <div class="kpi-val">${fmt(d.linkedin.clicks)}</div>
-        <div class="kpi-sub ${ch2.c}">${ch2.s}${pct(Math.abs(ch2.v))} vs last week</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">LinkedIn CTR</div>
-        <div class="kpi-val">${pct2(c.linkedinCTR)}</div>
-        <div class="kpi-sub">Clicks / Impressions</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Email Open Rate</div>
-        <div class="kpi-val">${pct(d.email.openRate)}</div>
-        <div class="kpi-sub ${ch3.c}">${ch3.s}${pct(Math.abs(ch3.v))} vs last week</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">New Users</div>
-        <div class="kpi-val">${fmt(d.users.newUsers)}</div>
-        <div class="kpi-sub ${ch4.c}">${ch4.s}${pct(Math.abs(ch4.v))} vs last week</div>
-      </div>
-    </div>
-
-    <h2 class="section-header">Engagement Metrics</h2>
-    <div class="row-5">
-      <div class="kpi">
-        <div class="kpi-label">Total Engagement</div>
-        <div class="kpi-val">${fmt(c.engagement)}</div>
-        <div class="kpi-sub">Likes + Comments + Reposts</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Engagement Rate</div>
-        <div class="kpi-val">${pct2(c.engagementRate)}</div>
-        <div class="kpi-sub">% of Impressions</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Avg Eng / Post</div>
-        <div class="kpi-val">${c.avgEngPerPost.toFixed(1)}</div>
-        <div class="kpi-sub">Per LinkedIn post</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Likes</div>
-        <div class="kpi-val">${fmt(d.linkedin.likes)}</div>
-        <div class="kpi-sub">${pct2(d.linkedin.likes/c.engagement*100)} of engagement</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Comments</div>
-        <div class="kpi-val">${d.linkedin.comments}</div>
-        <div class="kpi-sub">${pct2(d.linkedin.comments/c.engagement*100)} of engagement</div>
-      </div>
-    </div>
-
-    <h2 class="section-header">Email Performance</h2>
-    <div class="row-4">
-      <div class="kpi">
-        <div class="kpi-label">Campaigns Sent</div>
-        <div class="kpi-val">${d.email.sent}</div>
-        <div class="kpi-sub">${fmt(d.email.delivered)} delivered</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Email Views</div>
-        <div class="kpi-val">${fmt(d.email.views)}</div>
-        <div class="kpi-sub">${pct(d.email.openRate)} open rate</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Email Clicks</div>
-        <div class="kpi-val">${d.email.clicks}</div>
-        <div class="kpi-sub">${pct2(d.email.clickRate)} click rate</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Email CTR</div>
-        <div class="kpi-val">${pct2(c.emailCTR)}</div>
-        <div class="kpi-sub">Clicks / Opens</div>
-      </div>
-    </div>
-
-    <h2 class="section-header">Performance Trends</h2>
-    <div class="row-3">
-      <div class="chart-box">
-        <div class="chart-hdr">Daily LinkedIn Impressions</div>
-        <div class="chart-wrap"><canvas id="ch1"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-hdr">Daily CTR Trend</div>
-        <div class="chart-wrap"><canvas id="ch2"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-hdr">Engagement Breakdown</div>
-        <div class="chart-wrap"><canvas id="ch3"></canvas></div>
-      </div>
-    </div>
-
-    <div class="row-2">
-      <div class="chart-box">
-        <div class="chart-hdr">Email Funnel</div>
-        <div class="chart-wrap"><canvas id="ch4"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-hdr">Content by Channel</div>
-        <div class="chart-wrap"><canvas id="ch5"></canvas></div>
-      </div>
-    </div>
-
-    <h2 class="section-header">Post Type Breakdown</h2>
-    <div class="row-2">
-      <div class="chart-box">
-        <div class="chart-hdr">Post Type Distribution</div>
-        <div class="chart-wrap"><canvas id="ch6"></canvas></div>
-      </div>
-      <div class="smol-grid" style="align-content:start;">
-        ${ptKeys.map((key,i) => `
-          <div class="smol-card">
-            <div class="smol-label">${key}</div>
-            <div class="smol-val ${ptVals[i]===0?'empty-state':''}">${ptVals[i] || '—'}</div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-
-    ${hasDetailedData ? `
-    <h2 class="section-header">Post Type Performance Analysis</h2>
-    <button class="expand-btn" onclick="toggleExpand('postTypeDetails')">Show Detailed Performance</button>
-    <div class="expandable" id="postTypeDetails">
-      <table>
-        <thead>
-          <tr>
-            <th>Post Type</th>
-            <th>Posts</th>
-            <th>Impressions</th>
-            <th>Reactions</th>
-            <th>CTR</th>
-            <th>Engagement Rate</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${Object.entries(d.postTypePerformance).map(([type,perf]) => `
-            <tr>
-              <td class="text-col"><strong>${type}</strong></td>
-              <td>${perf.posts}</td>
-              <td>${fmt(perf.impressions)}</td>
-              <td>${perf.reactions}</td>
-              <td>${pct2(perf.ctr)}</td>
-              <td>${pct2(perf.engagementRate)}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-      
-      <div class="row-2" style="margin-top:24px;">
-        <div class="chart-box">
-          <div class="chart-hdr">CTR by Post Type</div>
-          <div class="chart-wrap"><canvas id="chPostCTR"></canvas></div>
-        </div>
-        <div class="chart-box">
-          <div class="chart-hdr">Engagement Rate by Post Type</div>
-          <div class="chart-wrap"><canvas id="chPostEng"></canvas></div>
-        </div>
-      </div>
-    </div>
-    ` : ''}
-
-    ${d.topPosts ? `
-    <h2 class="section-header">Top & Bottom Performing Posts</h2>
-    <button class="expand-btn" onclick="toggleExpand('topBottomPosts')">Show Top & Bottom Posts</button>
-    <div class="expandable" id="topBottomPosts">
-      <h3 style="font-size:14px;font-weight:600;margin:24px 0 16px 0;color:var(--text);">Top 5 Posts (Highest Impressions)</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Post</th>
-            <th>Type</th>
-            <th>Date</th>
-            <th>Impressions</th>
-            <th>Likes</th>
-            <th>Clicks</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${d.topPosts.map(p => `
-            <tr>
-              <td class="text-col">${p.title}</td>
-              <td class="text-col">${p.type}</td>
-              <td>${p.date}</td>
-              <td>${fmt(p.impressions)}</td>
-              <td>${p.likes}</td>
-              <td>${p.clicks}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-      
-      <h3 style="font-size:14px;font-weight:600;margin:32px 0 16px 0;color:var(--text);">Bottom 5 Posts (Lowest Impressions)</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Post</th>
-            <th>Type</th>
-            <th>Date</th>
-            <th>Impressions</th>
-            <th>Likes</th>
-            <th>Clicks</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${d.bottomPosts.map(p => `
-            <tr>
-              <td class="text-col">${p.title}</td>
-              <td class="text-col">${p.type}</td>
-              <td>${p.date}</td>
-              <td>${fmt(p.impressions)}</td>
-              <td>${p.likes}</td>
-              <td>${p.clicks}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-    ` : ''}
-
-    ${d.emailMailers ? `
-    <h2 class="section-header">Email Mailer Details</h2>
-    <button class="expand-btn" onclick="toggleExpand('emailDetails')">Show Individual Campaign Performance</button>
-    <div class="expandable" id="emailDetails">
-      <table>
-        <thead>
-          <tr>
-            <th>Campaign</th>
-            <th>Date</th>
-            <th>Delivered</th>
-            <th>Views</th>
-            <th>Clicks</th>
-            <th>Open Rate</th>
-            <th>Click Rate</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${d.emailMailers.map(m => `
-            <tr>
-              <td class="text-col"><strong>${m.name}</strong></td>
-              <td>${m.date}</td>
-              <td>${fmt(m.delivered)}</td>
-              <td>${m.views}</td>
-              <td>${m.clicks}</td>
-              <td>${pct(m.openRate)}</td>
-              <td>${pct(m.clickRate)}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-      
-      <div class="chart-box" style="margin-top:24px;">
-        <div class="chart-hdr">Open & Click Rates by Campaign</div>
-        <div class="chart-wrap"><canvas id="chEmailRates"></canvas></div>
-      </div>
-    </div>
-    ` : ''}
-
-    ${d.blogPosts ? `
-    <h2 class="section-header">Blog Post Details</h2>
-    <button class="expand-btn" onclick="toggleExpand('blogDetails')">Show Individual Blog Posts</button>
-    <div class="expandable" id="blogDetails">
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Title</th>
-            <th>Impressions</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${d.blogPosts.map(b => `
-            <tr>
-              <td>${b.date}</td>
-              <td class="text-col">${b.title}</td>
-              <td>${b.impressions > 0 ? fmt(b.impressions) : '—'}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-      
-      <div class="chart-box" style="margin-top:24px;">
-        <div class="chart-hdr">Blog Impressions by Post</div>
-        <div class="chart-wrap"><canvas id="chBlogImpr"></canvas></div>
-      </div>
-    </div>
-    ` : ''}
-
-    <h2 class="section-header">Channel Breakdown</h2>
-    <div class="smol-grid">
-      <div class="smol-card">
-        <div class="smol-label">LinkedIn Posts</div>
-        <div class="smol-val">${d.linkedin.posts}</div>
-      </div>
-      <div class="smol-card">
-        <div class="smol-label">Platform Posts</div>
-        <div class="smol-val">${d.platform.posts}</div>
-      </div>
-      ${d.platform.applause > 0 ? `
-      <div class="smol-card" style="border-left-color:${C.green};">
-        <div class="smol-label">Posts with Applause</div>
-        <div class="smol-val">${d.platform.applause}</div>
-      </div>
-      ` : ''}
-      <div class="smol-card">
-        <div class="smol-label">Blog Posts</div>
-        <div class="smol-val">${d.blog.posts}</div>
-      </div>
-      <div class="smol-card">
-        <div class="smol-label">Blog Impressions</div>
-        <div class="smol-val">${fmt(d.blog.impressions)}</div>
-      </div>
-      <div class="smol-card">
-        <div class="smol-label">Quora Posts</div>
-        <div class="smol-val">${d.quora.posts}${d.quora.posts >= 50 ? '+' : ''}</div>
-      </div>
-      <div class="smol-card">
-        <div class="smol-label">Total ORM Activity</div>
-        <div class="smol-val">${d.orm.posts}</div>
-      </div>
-      ${d.orm.ambitionBox > 0 ? `
-      <div class="smol-card" style="border-left-color:${C.blue};">
-        <div class="smol-label">AmbitionBox</div>
-        <div class="smol-val">${d.orm.ambitionBox}</div>
-      </div>
-      ` : ''}
-      ${d.orm.glassdoor > 0 ? `
-      <div class="smol-card" style="border-left-color:${C.purple};">
-        <div class="smol-label">Glassdoor</div>
-        <div class="smol-val">${d.orm.glassdoor}</div>
-      </div>
-      ` : ''}
-      <div class="smol-card">
-        <div class="smol-label">Total Platform Users</div>
-        <div class="smol-val">${fmt(d.users.totalUsers)}</div>
-      </div>
-      <div class="smol-card">
-        <div class="smol-label">Video Pipeline</div>
-        <div class="smol-val">${d.videos.total}</div>
-      </div>
-    </div>
-
-    ${d.platformPostMix ? `
-    <h2 class="section-header">Platform Post Type Mix</h2>
-    <div class="row-2">
-      <div class="chart-box">
-        <div class="chart-hdr">Platform Post Distribution</div>
-        <div class="chart-wrap"><canvas id="chPlatformMix"></canvas></div>
-      </div>
-      <div class="smol-grid" style="align-content:start;">
-        ${Object.entries(d.platformPostMix).map(([type,data]) => `
-          <div class="smol-card">
-            <div class="smol-label">${type}</div>
-            <div class="smol-val">${data.count}</div>
-            <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">${pct(data.percent)} of posts</div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-    ` : ''}
-
-    <h2 class="section-header">YourStory Video Pipeline</h2>
-    <div class="row-3">
-      <div class="smol-card" style="border-left-color:${C.green};">
-        <div class="smol-label">Done</div>
-        <div class="smol-val ${d.videos.done===0?'empty-state':''}">${d.videos.done || '—'}</div>
-      </div>
-      <div class="smol-card" style="border-left-color:${C.gold};">
-        <div class="smol-label">Confirmed</div>
-        <div class="smol-val ${d.videos.confirmed===0?'empty-state':''}">${d.videos.confirmed || '—'}</div>
-      </div>
-      <div class="smol-card" style="border-left-color:${C.blue};">
-        <div class="smol-label">Pending</div>
-        <div class="smol-val ${d.videos.pending===0?'empty-state':''}">${d.videos.pending || '—'}</div>
-      </div>
-    </div>
-    
-    ${(d.videosDone || d.videosConfirmed || d.videosPending) ? `
-    <button class="expand-btn" onclick="openVideoModal('${week}')">View Video Pipeline Details</button>
-    ` : ''}
-  </div>`;
-
-  setTimeout(() => {
-    // Daily Impressions
-    mkChart('ch1', {
-      type:'line',
-      data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-        datasets:[{ label:'Impressions', data:d.linkedin.dailyImpressions, borderColor:C.gold,
-          backgroundColor:'rgba(201,169,97,0.08)', tension:0.4, fill:true, pointRadius:5,
-          pointBackgroundColor:C.gold, pointBorderColor:'#fff', pointBorderWidth:2, borderWidth:3 }]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
-        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
-      }
-    });
-
-    // Daily CTR
-    mkChart('ch2', {
-      type:'line',
-      data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-        datasets:[{ label:'CTR %', data:c.dailyCTR, borderColor:C.blue,
-          backgroundColor:'rgba(37,99,235,0.08)', tension:0.4, fill:true, pointRadius:5,
-          pointBackgroundColor:C.blue, pointBorderColor:'#fff', pointBorderWidth:2, borderWidth:3 }]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
-        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine},ticks:{callback:v=>v.toFixed(1)+'%'}}, x:{grid:{display:false}} }
-      }
-    });
-
-    // Engagement Breakdown
-    mkChart('ch3', {
-      type:'doughnut',
-      data:{ labels:['Likes','Comments','Reposts'],
-        datasets:[{ data:[d.linkedin.likes,d.linkedin.comments,d.linkedin.reposts],
-          backgroundColor:[C.gold,C.blue,C.green], borderWidth:0 }]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
-    });
-
-    // Email Funnel
-    mkChart('ch4', {
-      type:'bar',
-      data:{ labels:['Sent','Delivered','Opened','Clicked'],
-        datasets:[{ label:'Count', data:[d.email.sent,d.email.delivered,d.email.views,d.email.clicks],
-          backgroundColor:[C.grey,C.gold,C.blue,C.green], borderRadius:6 }]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
-        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
-      }
-    });
-
-    // Content by Channel
-    mkChart('ch5', {
-      type:'bar',
-      data:{ labels:['LinkedIn','Platform','Blog','Quora','ORM'],
-        datasets:[{ label:'Posts', data:[d.linkedin.posts,d.platform.posts,d.blog.posts,d.quora.posts,d.orm.posts],
-          backgroundColor:C.gold, borderRadius:6 }]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
-        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
-      }
-    });
-
-    // Post Types
-    mkChart('ch6', {
-      type:'doughnut',
-      data:{ labels:ptKeys, datasets:[{ data:ptVals, backgroundColor:[C.gold,C.blue,C.green,C.purple,C.orange], borderWidth:0 }] },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
-    });
-    
-    // Post Type Performance Charts (if data exists)
-    if(d.postTypePerformance) {
-      const ptTypes = Object.keys(d.postTypePerformance);
-      const ptCTRs = ptTypes.map(t => d.postTypePerformance[t].ctr);
-      const ptEngs = ptTypes.map(t => d.postTypePerformance[t].engagementRate);
-      
-      mkChart('chPostCTR', {
-        type:'bar',
-        data:{ labels:ptTypes, datasets:[{ data:ptCTRs, backgroundColor:C.blue, borderRadius:6 }] },
-        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
-          scales:{ y:{beginAtZero:true,grid:{color:C.gridLine},ticks:{callback:v=>v.toFixed(1)+'%'}}, x:{grid:{display:false}} }
-        }
-      });
-      
-      mkChart('chPostEng', {
-        type:'bar',
-        data:{ labels:ptTypes, datasets:[{ data:ptEngs, backgroundColor:C.green, borderRadius:6 }] },
-        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
-          scales:{ y:{beginAtZero:true,grid:{color:C.gridLine},ticks:{callback:v=>v.toFixed(2)+'%'}}, x:{grid:{display:false}} }
-        }
-      });
-    }
-    
-    // Email Rates Chart (if data exists)
-    if(d.emailMailers) {
-      const emailNames = d.emailMailers.map(m => m.name);
-      const openRates = d.emailMailers.map(m => m.openRate);
-      const clickRates = d.emailMailers.map(m => m.clickRate);
-      
-      mkChart('chEmailRates', {
-        type:'bar',
-        data:{ labels:emailNames,
-          datasets:[
-            { label:'Open Rate %', data:openRates, backgroundColor:C.blue, borderRadius:6 },
-            { label:'Click Rate %', data:clickRates, backgroundColor:C.green, borderRadius:6 }
-          ]
-        },
-        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
-          scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
-        }
-      });
-    }
-    
-    // Blog Impressions Chart (if data exists)
-    if(d.blogPosts) {
-      const blogTitles = d.blogPosts.map(b => b.title.substring(0,20) + '...');
-      const blogImprs = d.blogPosts.map(b => b.impressions);
-      
-      mkChart('chBlogImpr', {
-        type:'bar',
-        data:{ labels:blogTitles, datasets:[{ data:blogImprs, backgroundColor:C.teal, borderRadius:6 }] },
-        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
-          scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
-        }
-      });
-    }
-    
-    // Platform Mix Chart (if data exists)
-    if(d.platformPostMix) {
-      const pmTypes = Object.keys(d.platformPostMix);
-      const pmCounts = pmTypes.map(t => d.platformPostMix[t].count);
-      
-      mkChart('chPlatformMix', {
-        type:'doughnut',
-        data:{ labels:pmTypes, datasets:[{ data:pmCounts, backgroundColor:[C.gold,C.blue,C.green,C.purple,C.orange], borderWidth:0 }] },
-        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
-      });
-    }
-  }, 50);
-}
-
-function render2Week() {
-  const w3=data.week3, w4=data.week4;
-  const c3=calc(w3), c4=calc(w4);
-  const c = {
-    li:{ p:w3.linkedin.posts+w4.linkedin.posts, i:w3.linkedin.impressions+w4.linkedin.impressions,
-         c:w3.linkedin.clicks+w4.linkedin.clicks, l:w3.linkedin.likes+w4.linkedin.likes,
-         co:w3.linkedin.comments+w4.linkedin.comments, r:w3.linkedin.reposts+w4.linkedin.reposts },
-    em:{ s:w3.email.sent+w4.email.sent, d:w3.email.delivered+w4.email.delivered,
-         v:w3.email.views+w4.email.views, c:w3.email.clicks+w4.email.clicks },
-    bl:{ p:w3.blog.posts+w4.blog.posts, i:w3.blog.impressions+w4.blog.impressions },
-    us:{ n:w3.users.newUsers+w4.users.newUsers, t:w4.users.totalUsers },
-    qu:{ p:w3.quora.posts+w4.quora.posts },
-    or:{ p:w3.orm.posts+w4.orm.posts },
-    pl:{ p:w3.platform.posts+w4.platform.posts }
-  };
-
-  const avgCTR = (c.li.c / c.li.i * 100);
-  const avgEmailCTR = (c.em.c / c.em.v * 100);
-  const totalEng = c.li.l + c.li.co + c.li.r;
-
-  document.getElementById('mainContent').innerHTML = `
-  <div class="page">
-    <div class="page-header">
-      <h1>2-Week Cumulative Performance</h1>
-      <p>Combined metrics from Week 3 and Week 4</p>
-    </div>
-
-    <h2 class="section-header">Primary Metrics</h2>
-    <div class="row-5">
-      <div class="kpi">
-        <div class="kpi-label">Total Impressions</div>
-        <div class="kpi-val">${fmt(c.li.i)}</div>
-        <div class="kpi-sub">2-week total</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Total Clicks</div>
-        <div class="kpi-val">${fmt(c.li.c)}</div>
-        <div class="kpi-sub">2-week total</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Avg CTR</div>
-        <div class="kpi-val">${pct2(avgCTR)}</div>
-        <div class="kpi-sub">2-week average</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Total Engagement</div>
-        <div class="kpi-val">${fmt(totalEng)}</div>
-        <div class="kpi-sub">Likes + Comments + Reposts</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">New Users</div>
-        <div class="kpi-val">${fmt(c.us.n)}</div>
-        <div class="kpi-sub">2-week total</div>
-      </div>
-    </div>
-
-    <h2 class="section-header">Email Performance</h2>
-    <div class="row-4">
-      <div class="kpi">
-        <div class="kpi-label">Email Campaigns</div>
-        <div class="kpi-val">${c.em.s}</div>
-        <div class="kpi-sub">${fmt(c.em.d)} delivered</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Avg Open Rate</div>
-        <div class="kpi-val">${pct(c.em.v/c.em.d*100)}</div>
-        <div class="kpi-sub">2-week average</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Total Email Clicks</div>
-        <div class="kpi-val">${c.em.c}</div>
-        <div class="kpi-sub">2-week total</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Email CTR</div>
-        <div class="kpi-val">${pct2(avgEmailCTR)}</div>
-        <div class="kpi-sub">Clicks / Opens</div>
-      </div>
-    </div>
-
-    <h2 class="section-header">Comparison Charts</h2>
-    <div class="row-2">
-      <div class="chart-box">
-        <div class="chart-hdr">Week-by-Week Metrics</div>
-        <div class="chart-wrap"><canvas id="ch1"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-hdr">Week-by-Week CTR Comparison</div>
-        <div class="chart-wrap"><canvas id="ch2"></canvas></div>
-      </div>
-    </div>
-
-    <div class="row-2">
-      <div class="chart-box">
-        <div class="chart-hdr">Engagement Breakdown</div>
-        <div class="chart-wrap"><canvas id="ch3"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-hdr">Channel Distribution</div>
-        <div class="chart-wrap"><canvas id="ch4"></canvas></div>
-      </div>
-    </div>
-
-    <h2 class="section-header">Channel Summary</h2>
-    <div class="smol-grid">
-      <div class="smol-card"><div class="smol-label">LinkedIn</div><div class="smol-val">${c.li.p}</div></div>
-      <div class="smol-card"><div class="smol-label">Platform</div><div class="smol-val">${c.pl.p}</div></div>
-      <div class="smol-card"><div class="smol-label">Blog</div><div class="smol-val">${c.bl.p}</div></div>
-      <div class="smol-card"><div class="smol-label">Blog Impressions</div><div class="smol-val">${fmt(c.bl.i)}</div></div>
-      <div class="smol-card"><div class="smol-label">Quora</div><div class="smol-val">${c.qu.p}</div></div>
-      <div class="smol-card"><div class="smol-label">ORM</div><div class="smol-val">${c.or.p}</div></div>
-    </div>
-  </div>`;
-
-  setTimeout(() => {
-    mkChart('ch1', {
-      type:'bar',
-      data:{ labels:['Impressions','Clicks','Likes','Email Views'],
-        datasets:[
-          { label:'Week 3', data:[w3.linkedin.impressions,w3.linkedin.clicks,w3.linkedin.likes,w3.email.views],
-            backgroundColor:'#e5e7eb', borderRadius:6 },
-          { label:'Week 4', data:[w4.linkedin.impressions,w4.linkedin.clicks,w4.linkedin.likes,w4.email.views],
-            backgroundColor:C.gold, borderRadius:6 }
-        ]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
-        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
-      }
-    });
-
-    mkChart('ch2', {
-      type:'bar',
-      data:{ labels:['LinkedIn CTR','Email CTR'],
-        datasets:[
-          { label:'Week 3', data:[c3.linkedinCTR,c3.emailCTR], backgroundColor:'#e5e7eb', borderRadius:6 },
-          { label:'Week 4', data:[c4.linkedinCTR,c4.emailCTR], backgroundColor:C.gold, borderRadius:6 }
-        ]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
-        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine},ticks:{callback:v=>v.toFixed(1)+'%'}}, x:{grid:{display:false}} }
-      }
-    });
-
-    mkChart('ch3', {
-      type:'bar',
-      data:{ labels:['Likes','Comments','Reposts'],
-        datasets:[
-          { label:'Week 3', data:[w3.linkedin.likes,w3.linkedin.comments,w3.linkedin.reposts],
-            backgroundColor:'#e5e7eb', borderRadius:6 },
-          { label:'Week 4', data:[w4.linkedin.likes,w4.linkedin.comments,w4.linkedin.reposts],
-            backgroundColor:C.gold, borderRadius:6 }
-        ]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
-        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
-      }
-    });
-
-    mkChart('ch4', {
-      type:'pie',
-      data:{ labels:['LinkedIn','Platform','Blog','Email','Quora'],
-        datasets:[{ data:[c.li.p,c.pl.p,c.bl.p,c.em.s,c.qu.p],
-          backgroundColor:[C.gold,C.blue,C.green,C.purple,'#e5e7eb'], borderWidth:0 }]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
-    });
-  }, 50);
-}
-
-function renderCompare() {
-  const w3=data.week3, w4=data.week4;
-  const c3=calc(w3), c4=calc(w4);
-  const calc2 = (m) => (((w4.linkedin[m]-w3.linkedin[m])/w3.linkedin[m])*100).toFixed(1);
-
-  document.getElementById('mainContent').innerHTML = `
-  <div class="page">
-    <div class="page-header">
-      <h1>Week-on-Week Comparison</h1>
-      <p>Performance changes between Week 3 and Week 4</p>
-    </div>
-
-    <h2 class="section-header">Key Metrics Comparison</h2>
-    <table>
-      <thead>
-        <tr><th>Metric</th><th>Week 3</th><th>Week 4</th><th>Change</th><th>% Change</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>LinkedIn Impressions</strong></td>
-          <td>${fmt(w3.linkedin.impressions)}</td>
-          <td>${fmt(w4.linkedin.impressions)}</td>
-          <td>${fmt(w4.linkedin.impressions-w3.linkedin.impressions)}</td>
-          <td style="color:${C.green}">↑ ${calc2('impressions')}%</td>
-        </tr>
-        <tr>
-          <td><strong>LinkedIn Clicks</strong></td>
-          <td>${fmt(w3.linkedin.clicks)}</td>
-          <td>${fmt(w4.linkedin.clicks)}</td>
-          <td>${fmt(w4.linkedin.clicks-w3.linkedin.clicks)}</td>
-          <td style="color:${C.green}">↑ ${calc2('clicks')}%</td>
-        </tr>
-        <tr>
-          <td><strong>LinkedIn CTR</strong></td>
-          <td>${pct2(c3.linkedinCTR)}</td>
-          <td>${pct2(c4.linkedinCTR)}</td>
-          <td>${(c4.linkedinCTR-c3.linkedinCTR).toFixed(2)}pp</td>
-          <td style="color:${c4.linkedinCTR>c3.linkedinCTR?C.green:C.red}">${c4.linkedinCTR>c3.linkedinCTR?'↑':'↓'} ${Math.abs(((c4.linkedinCTR-c3.linkedinCTR)/c3.linkedinCTR)*100).toFixed(1)}%</td>
-        </tr>
-        <tr>
-          <td><strong>Total Engagement</strong></td>
-          <td>${fmt(c3.engagement)}</td>
-          <td>${fmt(c4.engagement)}</td>
-          <td>${fmt(c4.engagement-c3.engagement)}</td>
-          <td style="color:${C.green}">↑ ${(((c4.engagement-c3.engagement)/c3.engagement)*100).toFixed(1)}%</td>
-        </tr>
-        <tr>
-          <td><strong>Email Open Rate</strong></td>
-          <td>${pct(w3.email.openRate)}</td>
-          <td>${pct(w4.email.openRate)}</td>
-          <td>${(w4.email.openRate-w3.email.openRate).toFixed(2)}pp</td>
-          <td style="color:${C.green}">↑ ${(((w4.email.openRate-w3.email.openRate)/w3.email.openRate)*100).toFixed(1)}%</td>
-        </tr>
-        <tr>
-          <td><strong>Email CTR</strong></td>
-          <td>${pct2(c3.emailCTR)}</td>
-          <td>${pct2(c4.emailCTR)}</td>
-          <td>${(c4.emailCTR-c3.emailCTR).toFixed(2)}pp</td>
-          <td style="color:${c4.emailCTR>c3.emailCTR?C.green:C.red}">${c4.emailCTR>c3.emailCTR?'↑':'↓'} ${Math.abs(((c4.emailCTR-c3.emailCTR)/c3.emailCTR)*100).toFixed(1)}%</td>
-        </tr>
-        <tr>
-          <td><strong>New Users</strong></td>
-          <td>${fmt(w3.users.newUsers)}</td>
-          <td>${fmt(w4.users.newUsers)}</td>
-          <td>${fmt(w4.users.newUsers-w3.users.newUsers)}</td>
-          <td style="color:${C.green}">↑ ${(((w4.users.newUsers-w3.users.newUsers)/w3.users.newUsers)*100).toFixed(1)}%</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h2 class="section-header">Visual Comparison</h2>
-    <div class="row-2">
-      <div class="chart-box">
-        <div class="chart-hdr">Key Metrics Side-by-Side</div>
-        <div class="chart-wrap"><canvas id="ch1"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-hdr">Percentage Growth</div>
-        <div class="chart-wrap"><canvas id="ch2"></canvas></div>
-      </div>
-    </div>
-
-    <div class="row-2">
-      <div class="chart-box">
-        <div class="chart-hdr">CTR Comparison</div>
-        <div class="chart-wrap"><canvas id="ch3"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-hdr">Engagement Comparison</div>
-        <div class="chart-wrap"><canvas id="ch4"></canvas></div>
-      </div>
-    </div>
-  </div>`;
-
-  setTimeout(() => {
-    mkChart('ch1', {
-      type:'bar',
-      data:{ labels:['Impressions','Clicks','Engagement','New Users'],
-        datasets:[
-          { label:'Week 3', data:[w3.linkedin.impressions,w3.linkedin.clicks,c3.engagement,w3.users.newUsers],
-            backgroundColor:'#e5e7eb', borderRadius:6 },
-          { label:'Week 4', data:[w4.linkedin.impressions,w4.linkedin.clicks,c4.engagement,w4.users.newUsers],
-            backgroundColor:C.gold, borderRadius:6 }
-        ]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
-        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
-      }
-    });
-
-    mkChart('ch2', {
-      type:'bar',
-      data:{ labels:['Impressions','Clicks','Engagement','New Users'],
-        datasets:[{
-          data:[calc2('impressions'),calc2('clicks'),(((c4.engagement-c3.engagement)/c3.engagement)*100).toFixed(1),(((w4.users.newUsers-w3.users.newUsers)/w3.users.newUsers)*100).toFixed(1)],
-          backgroundColor:C.green, borderRadius:6
-        }]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
-        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine},ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} }
-      }
-    });
-
-    mkChart('ch3', {
-      type:'bar',
-      data:{ labels:['LinkedIn CTR','Email CTR'],
-        datasets:[
-          { label:'Week 3', data:[c3.linkedinCTR,c3.emailCTR], backgroundColor:'#e5e7eb', borderRadius:6 },
-          { label:'Week 4', data:[c4.linkedinCTR,c4.emailCTR], backgroundColor:C.gold, borderRadius:6 }
-        ]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
-        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine},ticks:{callback:v=>v.toFixed(1)+'%'}}, x:{grid:{display:false}} }
-      }
-    });
-
-    mkChart('ch4', {
-      type:'bar',
-      data:{ labels:['Likes','Comments','Reposts'],
-        datasets:[
-          { label:'Week 3', data:[w3.linkedin.likes,w3.linkedin.comments,w3.linkedin.reposts],
-            backgroundColor:'#e5e7eb', borderRadius:6 },
-          { label:'Week 4', data:[w4.linkedin.likes,w4.linkedin.comments,w4.linkedin.reposts],
-            backgroundColor:C.gold, borderRadius:6 }
-        ]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
-        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
-      }
-    });
-  }, 50);
-}
-
-function renderMonthly() {
-  const w3=data.week3, w4=data.week4;
-  const c3=calc(w3), c4=calc(w4);
-  const m = {
-    li:{ p:w3.linkedin.posts+w4.linkedin.posts, i:w3.linkedin.impressions+w4.linkedin.impressions,
-         c:w3.linkedin.clicks+w4.linkedin.clicks, l:w3.linkedin.likes+w4.linkedin.likes,
-         co:w3.linkedin.comments+w4.linkedin.comments, r:w3.linkedin.reposts+w4.linkedin.reposts },
-    em:{ s:w3.email.sent+w4.email.sent, d:w3.email.delivered+w4.email.delivered, v:w3.email.views+w4.email.views, c:w3.email.clicks+w4.email.clicks },
-    bl:{ p:w3.blog.posts+w4.blog.posts, i:w3.blog.impressions+w4.blog.impressions },
-    us:{ n:w3.users.newUsers+w4.users.newUsers, t:w4.users.totalUsers },
-    pl:{ p:w3.platform.posts+w4.platform.posts },
-    qu:{ p:w3.quora.posts+w4.quora.posts },
-    or:{ p:w3.orm.posts+w4.orm.posts }
-  };
-
-  const avgCTR = (m.li.c / m.li.i * 100);
-  const totalEng = m.li.l + m.li.co + m.li.r;
-
-  document.getElementById('mainContent').innerHTML = `
-  <div class="page">
-    <div class="page-header">
-      <h1>Monthly Performance — March 2026</h1>
-      <p>Complete overview of all marketing activities</p>
-    </div>
-
-    <h2 class="section-header">Primary Metrics</h2>
-    <div class="row-5">
-      <div class="kpi">
-        <div class="kpi-label">Monthly Impressions</div>
-        <div class="kpi-val">${fmt(m.li.i)}</div>
-        <div class="kpi-sub">LinkedIn total</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Monthly Clicks</div>
-        <div class="kpi-val">${fmt(m.li.c)}</div>
-        <div class="kpi-sub">LinkedIn total</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Avg CTR</div>
-        <div class="kpi-val">${pct2(avgCTR)}</div>
-        <div class="kpi-sub">Monthly average</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Total Engagement</div>
-        <div class="kpi-val">${fmt(totalEng)}</div>
-        <div class="kpi-sub">Likes + Comments + Reposts</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">User Growth</div>
-        <div class="kpi-val">${fmt(m.us.n)}</div>
-        <div class="kpi-sub">New users</div>
-      </div>
-    </div>
-
-    <h2 class="section-header">Email & Content</h2>
-    <div class="row-4">
-      <div class="kpi">
-        <div class="kpi-label">Email Performance</div>
-        <div class="kpi-val">${pct(m.em.v/m.em.d*100)}</div>
-        <div class="kpi-sub">Open rate</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Content Published</div>
-        <div class="kpi-val">${m.li.p+m.bl.p+m.pl.p+m.qu.p}</div>
-        <div class="kpi-sub">All channels</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Blog Reach</div>
-        <div class="kpi-val">${fmt(m.bl.i)}</div>
-        <div class="kpi-sub">Total impressions</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Platform Users</div>
-        <div class="kpi-val">${fmt(m.us.t)}</div>
-        <div class="kpi-sub">Total registered</div>
-      </div>
-    </div>
-
-    <h2 class="section-header">Monthly Charts</h2>
-    <div class="row-2">
-      <div class="chart-box">
-        <div class="chart-hdr">Weekly Performance Breakdown</div>
-        <div class="chart-wrap"><canvas id="ch1"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-hdr">Weekly CTR Trend</div>
-        <div class="chart-wrap"><canvas id="ch2"></canvas></div>
-      </div>
-    </div>
-
-    <div class="row-2">
-      <div class="chart-box">
-        <div class="chart-hdr">Engagement Breakdown</div>
-        <div class="chart-wrap"><canvas id="ch3"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-hdr">Channel Distribution</div>
-        <div class="chart-wrap"><canvas id="ch4"></canvas></div>
-      </div>
-    </div>
-
-    <h2 class="section-header">Channel Summary</h2>
-    <div class="smol-grid">
-      <div class="smol-card"><div class="smol-label">LinkedIn</div><div class="smol-val">${m.li.p}</div></div>
-      <div class="smol-card"><div class="smol-label">Platform</div><div class="smol-val">${m.pl.p}</div></div>
-      <div class="smol-card"><div class="smol-label">Blog</div><div class="smol-val">${m.bl.p}</div></div>
-      <div class="smol-card"><div class="smol-label">Blog Impressions</div><div class="smol-val">${fmt(m.bl.i)}</div></div>
-      <div class="smol-card"><div class="smol-label">Quora</div><div class="smol-val">${m.qu.p}</div></div>
-      <div class="smol-card"><div class="smol-label">ORM</div><div class="smol-val">${m.or.p}</div></div>
-      <div class="smol-card"><div class="smol-label">Emails</div><div class="smol-val">${m.em.s}</div></div>
-      <div class="smol-card"><div class="smol-label">Current Users</div><div class="smol-val">${fmt(m.us.t)}</div></div>
-    </div>
-  </div>`;
-
-  setTimeout(() => {
-    mkChart('ch1', {
-      type:'bar',
-      data:{ labels:['Week 3','Week 4'],
-        datasets:[
-          { label:'Impressions', data:[w3.linkedin.impressions,w4.linkedin.impressions], backgroundColor:C.gold, borderRadius:6 },
-          { label:'Clicks', data:[w3.linkedin.clicks,w4.linkedin.clicks], backgroundColor:C.blue, borderRadius:6 },
-          { label:'Engagement', data:[c3.engagement,c4.engagement], backgroundColor:C.green, borderRadius:6 }
-        ]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
-        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine}}, x:{grid:{display:false}} }
-      }
-    });
-
-    mkChart('ch2', {
-      type:'line',
-      data:{ labels:['Week 3','Week 4'],
-        datasets:[{ label:'CTR %', data:[c3.linkedinCTR,c4.linkedinCTR], borderColor:C.blue,
-          backgroundColor:'rgba(37,99,235,0.08)', tension:0.4, fill:true, pointRadius:6,
-          pointBackgroundColor:C.blue, pointBorderColor:'#fff', pointBorderWidth:2, borderWidth:3 }]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
-        scales:{ y:{beginAtZero:true,grid:{color:C.gridLine},ticks:{callback:v=>v.toFixed(1)+'%'}}, x:{grid:{display:false}} }
-      }
-    });
-
-    mkChart('ch3', {
-      type:'doughnut',
-      data:{ labels:['Likes','Comments','Reposts'],
-        datasets:[{ data:[m.li.l,m.li.co,m.li.r], backgroundColor:[C.gold,C.blue,C.green], borderWidth:0 }]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
-    });
-
-    mkChart('ch4', {
-      type:'doughnut',
-      data:{ labels:['LinkedIn','Platform','Quora','ORM','Blog'],
-        datasets:[{ data:[m.li.p,m.pl.p,m.qu.p,m.or.p,m.bl.p],
-          backgroundColor:[C.gold,C.blue,C.green,C.purple,C.orange], borderWidth:0 }]
-      },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
-    });
-  }, 50);
-}
-
-function toggleMobileNav() {
-  const nav = document.querySelector('.sidenav');
-  const overlay = document.getElementById('mobileNavOverlay');
-  if(nav.classList.contains('mobile-open')) { closeMobileNav(); }
-  else { nav.classList.add('mobile-open'); overlay.classList.add('visible'); }
-}
-
-function closeMobileNav() {
-  document.querySelector('.sidenav').classList.remove('mobile-open');
-  document.getElementById('mobileNavOverlay').classList.remove('visible');
-}
-
-showPage('week4', document.querySelector('.nav-item'));
+// Init the default visible section on load
+initSection('overview');
 </script>
 </body>
 </html>
